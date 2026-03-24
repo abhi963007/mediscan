@@ -6,7 +6,8 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import heroImage from '../assets/hero_background.png';
+import Lottie from 'lottie-react';
+import healthAnimation from '../assets/health.json';
 
 const P = 'var(--color-primary)';
 const PD = 'var(--color-primary-dark)';
@@ -88,14 +89,14 @@ const LandingPage = () => {
             </div>
           </motion.div>
 
-          {/* Hero Image Card */}
+          {/* Hero Animation Card */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="relative">
             <div className="absolute -inset-2 rounded-[36px] blur-3xl opacity-20 animate-pulse"
               style={{ background: `linear-gradient(135deg, ${P}, ${PL})` }} />
-            <div className="relative rounded-[32px] overflow-hidden aspect-[4/3]"
+            <div className="relative rounded-[32px] overflow-hidden aspect-[4/3] flex items-center justify-center bg-white"
               style={{ border: '8px solid #fff', boxShadow: 'var(--shadow-premium)' }}>
-              <img src={heroImage} alt="Modern hospital operations room" className="w-full h-full object-cover" />
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,84,64,0.4) 0%, transparent 60%)' }} />
+              
+              <Lottie animationData={healthAnimation} loop={true} className="w-full h-full" />
 
               {/* Floating ID Card */}
               <motion.div
