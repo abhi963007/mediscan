@@ -6,8 +6,8 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Lottie from 'lottie-react';
-import healthAnimation from '../assets/health.json';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import healthAnimation from '../assets/health.lottie';
 
 const P = 'var(--color-primary)';
 const PD = 'var(--color-primary-dark)';
@@ -89,31 +89,12 @@ const LandingPage = () => {
             </div>
           </motion.div>
 
-          {/* Hero Animation Card */}
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="relative">
-            <div className="absolute -inset-2 rounded-[36px] blur-3xl opacity-20 animate-pulse"
+          {/* Hero Animation */}
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="relative flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full blur-3xl opacity-15 animate-pulse"
               style={{ background: `linear-gradient(135deg, ${P}, ${PL})` }} />
-            <div className="relative rounded-[32px] overflow-hidden aspect-[4/3] flex items-center justify-center bg-white"
-              style={{ border: '8px solid #fff', boxShadow: 'var(--shadow-premium)' }}>
-              
-              <Lottie animationData={healthAnimation} loop={true} className="w-full h-full" />
-
-              {/* Floating ID Card */}
-              <motion.div
-                initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 1 }}
-                className="absolute bottom-6 left-6 right-6 p-5 flex items-center gap-4"
-                style={{ backgroundColor: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(24px)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.3)', boxShadow: 'var(--shadow-premium)' }}
-              >
-                <div className="w-14 h-14 rounded-[14px] flex items-center justify-center p-2 flex-shrink-0"
-                  style={{ backgroundColor: 'white', border: '1px solid rgba(15,110,86,0.1)', boxShadow: 'var(--shadow-subtle)' }}>
-                  <QrCode size={36} style={{ color: P }} />
-                </div>
-                <div className="flex-1">
-                  <div className="font-black text-base uppercase tracking-tight" style={{ fontFamily: 'var(--font-display)', color: PD }}>Patient ID: MS-2026-891</div>
-                  <div className="text-sm font-medium" style={{ color: P }}>Last Synced: 2 mins ago • General Medicine</div>
-                </div>
-                <TrendingUp style={{ color: P }} />
-              </motion.div>
+            <div className="relative w-full aspect-square max-w-[600px]">
+              <DotLottieReact src={healthAnimation} loop autoplay className="w-full h-full" />
             </div>
           </motion.div>
         </div>

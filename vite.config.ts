@@ -9,6 +9,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  assetsInclude: ['**/*.lottie'],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
