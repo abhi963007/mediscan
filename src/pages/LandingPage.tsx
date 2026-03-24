@@ -90,7 +90,8 @@ const LandingPage = () => {
           </motion.div>
 
           {/* Hero Animation */}
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="relative flex items-center justify-center">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} 
+            className="relative flex items-center justify-center -translate-y-12 lg:-translate-y-16">
             <div className="absolute inset-0 rounded-full blur-3xl opacity-15 animate-pulse"
               style={{ background: `linear-gradient(135deg, ${P}, ${PL})` }} />
             <div className="relative w-full aspect-square max-w-[600px]">
@@ -157,7 +158,7 @@ const LandingPage = () => {
             </span>
           </div>
           <div className="text-sm font-medium" style={{ color: '#9CA3AF' }}>
-            © 2026 MediScan Healthcare Solutions. Built with ❤️ for Clinicians.
+            © 2026 MediScan Healthcare Solutions.
           </div>
           <div className="flex gap-8">
             <a href="#" className="font-bold text-xs uppercase" style={{ color: P }}>Privacy Policy</a>
