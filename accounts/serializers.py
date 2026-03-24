@@ -1,0 +1,63 @@
+from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.exceptions import AuthenticationFailed
+from .models import CustomUser
+from patients.models import Patient
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'username', 'email', 'role', 'is_approved')
+        read_only_fields = ('is_approved',)
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+    
+    # Patient specific fields
+    full_name = serializers.CharField(required=False, write_only=True)
+    phone = serializers.CharField(required=False, write_only=True)
+    age = serializers.IntegerField(required=False, write_only=True)
+    gender = serializers.CharField(required=False, write_only=True)
+    blood_group = serializers.CharField(required=False, write_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'password', 'email', 'role', 'full_name', 'phone', 'age', 'gender', 'blood_group')
+
+    def create(self, validated_data):
+        role = validated_data.get('role', 'patient')
+        user = CustomUser.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            password=validated_data['password'],
+            role=role
+        )
+
+        if role == 'patient':
+            Patient.objects.create(
+                user=user,
+                full_name=validated_data.get('full_name', ''),
+                phone=validated_data.get('phone', ''),
+                age=validated_data.get('age', 0),
+                gender=validated_data.get('gender', 'Male'),
+                blood_group=validated_data.get('blood_group', 'O+'),
+            )
+        return user
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if hasattr(instance, 'patient_profile') and instance.patient_profile:
+            ret['uhid'] = instance.patient_profile.uhid
+        return ret
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        if not self.user.is_approved:
+            raise AuthenticationFailed('Your account is pending approval by an administrator.')
+        
+        data['role'] = self.user.role
+        data['username'] = self.user.username
+        if self.user.role == 'patient' and hasattr(self.user, 'patient_profile'):
+            data['uhid'] = self.user.patient_profile.uhid
+        return data
