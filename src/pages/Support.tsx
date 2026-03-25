@@ -1,58 +1,71 @@
 import { motion } from 'framer-motion';
-import { Mail, Phone, MessageSquare, ArrowLeft, HeartPulse } from 'lucide-react';
+import { Mail, Phone, MessageSquare, ArrowLeft, HeartPulse, ShieldCheck, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const P = 'var(--color-primary)';
-const PD = 'var(--color-primary-dark)';
-
 const Support = () => {
-  return (
-    <div className="min-h-screen py-20 px-8 md:px-16 flex flex-col items-center justify-center relative overflow-hidden"
-      style={{ backgroundColor: 'var(--color-background)' }}>
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] rounded-full blur-[120px] opacity-10"
-        style={{ backgroundColor: P, transform: 'translate(-50%, -50%)' }} />
+    return (
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 md:p-12 relative overflow-hidden">
+            {/* Abstract background elements */}
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[120px]" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-green-500/5 rounded-full blur-[120px]" />
 
-      <div className="max-w-4xl w-full mx-auto relative z-10">
-        <Link to="/" className="inline-flex items-center gap-2 mb-10 text-sm font-bold uppercase tracking-widest text-gray-500 hover:text-[var(--color-primary)] transition-colors">
-          <ArrowLeft size={16} /> Back to Home
-        </Link>
-        
-        <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
-          className="card-premium p-12 md:p-20 text-center relative overflow-hidden">
-          <HeartPulse size={120} className="absolute -right-10 -bottom-10 opacity-5" style={{ color: P }} />
-          
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: PD, lineHeight: 1, marginBottom: '2rem' }}
-            className="italic uppercase tracking-tighter">
-            Dedicated <span style={{ color: P }}>Support</span>
-          </h1>
-          <p className="text-xl max-w-2xl mx-auto font-medium" style={{ color: '#6B7280' }}>
-            Encountering a bug or need architecture assistance for your hospital? We are here to help scale your digital transformation.
-          </p>
+            <div className="max-w-6xl w-full relative z-10">
+                <Link to="/" className="inline-flex items-center gap-2 mb-12 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-black transition-all group">
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Home
+                </Link>
 
-          <div className="grid md:grid-cols-3 gap-8 mt-16 text-left">
-            <div className="p-8 rounded-[24px] border border-gray-100 hover:border-gray-200 transition-colors"
-              style={{ backgroundColor: 'rgba(255,255,255,0.6)' }}>
-              <Mail style={{ color: P }} className="mb-4" size={32} />
-              <div className="text-xs font-black tracking-widest uppercase text-gray-400 mb-2">Email Us</div>
-              <div className="font-bold text-lg" style={{ color: PD }}>support@mediscan.hms</div>
+                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                    <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }}>
+                        <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-gray-900 leading-[0.85] mb-8">
+                            Dedicated <br />
+                            <span className="text-[var(--color-primary)]">Support</span>
+                        </h1>
+                        <p className="text-xl font-medium text-gray-500 max-w-lg mb-12 leading-relaxed">
+                            Encountering a bug or need architecture assistance for your hospital? We are here to help scale your digital transformation.
+                        </p>
+
+                        <div className="flex flex-wrap gap-4">
+                            <div className="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
+                                <ShieldCheck className="text-blue-500" size={20} />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Secure Protocol</span>
+                            </div>
+                            <div className="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
+                                <Globe className="text-green-500" size={20} />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">24/7 Global Response</span>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
+                        {[
+                            { icon: <Mail />, label: 'Email Support', val: 'support@mediscan.hms', sub: 'Average response: 2 Hours' },
+                            { icon: <Phone />, label: 'Toll-Free Architecture', val: '1-800-442-QRMD', sub: 'Available 10AM - 6PM' },
+                            { icon: <MessageSquare />, label: 'In-App Live Chat', val: 'Launch Dashboard Chat', sub: 'Instant connection to dev team' }
+                        ].map((item, i) => (
+                            <div key={i} className="group p-8 bg-white rounded-[40px] border border-gray-100 shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-[var(--color-primary)]/10 transition-all hover:-translate-y-1 flex items-center gap-8">
+                                <div className="w-16 h-16 bg-gray-50 rounded-[24px] flex items-center justify-center text-[var(--color-primary)] group-hover:bg-[var(--color-primary)] group-hover:text-white transition-all shadow-inner">
+                                    {item.icon}
+                                </div>
+                                <div className="flex-1">
+                                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{item.label}</div>
+                                    <div className="text-2xl font-black italic uppercase tracking-tight text-gray-900 leading-none mb-1">{item.val}</div>
+                                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{item.sub}</div>
+                                </div>
+                                <div className="w-12 h-12 rounded-full border border-gray-100 flex items-center justify-center text-gray-300 group-hover:text-[var(--color-primary)] group-hover:border-[var(--color-primary)] transition-all">
+                                    <ArrowLeft className="rotate-180" size={20} />
+                                </div>
+                            </div>
+                        ))}
+                    </motion.div>
+                </div>
             </div>
-            <div className="p-8 rounded-[24px] border border-gray-100 hover:border-gray-200 transition-colors"
-              style={{ backgroundColor: 'rgba(255,255,255,0.6)' }}>
-              <Phone style={{ color: P }} className="mb-4" size={32} />
-              <div className="text-xs font-black tracking-widest uppercase text-gray-400 mb-2">Call Toll-Free</div>
-              <div className="font-bold text-lg" style={{ color: PD }}>1-800-442-QRMD</div>
+
+            {/* Decorative Pulse Icon */}
+            <div className="absolute -bottom-20 -right-20 opacity-[0.03] rotate-[-15deg]">
+                <HeartPulse size={400} />
             </div>
-            <div className="p-8 rounded-[24px] border border-gray-100 hover:border-gray-200 transition-colors"
-              style={{ backgroundColor: 'rgba(255,255,255,0.6)' }}>
-              <MessageSquare style={{ color: P }} className="mb-4" size={32} />
-              <div className="text-xs font-black tracking-widest uppercase text-gray-400 mb-2">Live Chat</div>
-              <div className="font-bold text-lg" style={{ color: PD }}>In-App Dashboard</div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default Support;

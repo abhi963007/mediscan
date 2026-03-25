@@ -63,7 +63,7 @@ const HospitalOverview = () => {
                         <ShieldCheck size={48} />
                     </div>
                     <div>
-                        <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-2">Facility Security Score</h3>
+                        <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-2 text-white">Facility Security Score</h3>
                         <p className="text-green-100 font-bold uppercase tracking-widest text-xs leading-relaxed max-w-sm">All medical credentials in this institution are globally verified. Encryption protocols operational.</p>
                         <div className="mt-4 inline-block font-black uppercase text-[10px] bg-white/10 px-4 py-2 rounded-full border border-white/20 backdrop-blur-sm shadow-sm">
                             99.9% Integrity

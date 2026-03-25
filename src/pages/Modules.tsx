@@ -1,84 +1,118 @@
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Building2, UserCog, Users, Settings, Calendar, Scan, Stethoscope, ArrowLeft } from 'lucide-react';
+import { Building2, UserCog, Users, Settings, Calendar, Scan, Stethoscope, ArrowLeft, HeartPulse, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const P = 'var(--color-primary)';
-const PD = 'var(--color-primary-dark)';
-
 const moduleList = [
-  {
-    icon: <Building2 size={40} />,
-    title: 'Hospital Registration & Verification',
-    desc: 'Hospitals register by providing their details (contact, location, address, email). A central Admin verifies each hospital before they can access the platform. The Admin also manages the global medicine list.',
-  },
-  {
-    icon: <UserCog size={40} />,
-    title: 'Doctor Detail Authentication',
-    desc: 'Hospital admins add doctors working in their institute. The system generates unique credentials (username & password) that are sent to each doctor for individual login access.',
-  },
-  {
-    icon: <Users size={40} />,
-    title: 'Employee Detail Authentication',
-    desc: 'Hospital admins manage all staff (receptionists, lab technicians, etc.) in the same way — creating accounts and sending login credentials to corresponding employees.',
-  },
-  {
-    icon: <Settings size={40} />,
-    title: 'Hospital Settings',
-    desc: 'Hospital admins configure consultation fees per doctor and set their official operating timings. They also control the total number of available online booking seats per day.',
-  },
-  {
-    icon: <Calendar size={40} />,
-    title: 'Online Booking',
-    desc: 'Patients search for verified hospitals and available doctors, view real-time seat availability for a specific day, book consultations, manage bookings (view/cancel), and complete payments online.',
-  },
-  {
-    icon: <Scan size={40} />,
-    title: 'Patient Visit',
-    desc: 'New patients are issued a unique QR Code card upon first visit. Reception staff scan returning patient QR codes to instantly retrieve their profile and create appointment queues against available doctors.',
-  },
-  {
-    icon: <Stethoscope size={40} />,
-    title: 'Treatment',
-    desc: 'Doctors scan patient QR codes to access the full treatment history — all past diagnoses, prescriptions, and vitals. Doctors view their appointment queue, examine patients, and prescribe medicines from the master list.',
-  },
+    {
+        icon: <Building2 size={56} strokeWidth={1.5} />,
+        title: 'Hospital Registration & Verification',
+        desc: 'Seamless onboarding for healthcare institutions with multi-tier verification protocols and global medicine catalogue management.',
+        tag: 'ADMIN INFRA'
+    },
+    {
+        icon: <UserCog size={56} strokeWidth={1.5} />,
+        title: 'Doctor Detail Authentication',
+        desc: 'Automated credential generation and secure RBAC-enabled access for clinical specialists across the network.',
+        tag: 'SPECIALISTS'
+    },
+    {
+        icon: <Users size={56} strokeWidth={1.5} />,
+        title: 'Employee Detail Authentication',
+        desc: 'Full-spectrum staff management from receptionists to lab staff, with unique encrypted login environments.',
+        tag: 'PERSONNEL'
+    },
+    {
+        icon: <Settings size={56} strokeWidth={1.5} />,
+        title: 'Hospital Settings & Capacity',
+        desc: 'Granular control over consultation fees, operating hours, and online seat allocation for optimized patient inflow.',
+        tag: 'FACILITY CONTROL'
+    },
+    {
+        icon: <Calendar size={56} strokeWidth={1.5} />,
+        title: 'Universal Online Booking',
+        desc: 'Advanced search engine for patients to discover hospitals, view real-time slots, and book verified consultations.',
+        tag: 'PATIENT ACCESS'
+    },
+    {
+        icon: <Scan size={56} strokeWidth={1.5} />,
+        title: 'QR-Code Patient Visit',
+        desc: 'Proprietary biometric-grade QR card system for instant patient check-ins and automated queue population.',
+        tag: 'FRONT DESK'
+    },
+    {
+        icon: <Stethoscope size={56} strokeWidth={1.5} />,
+        title: 'Clinical Treatment Terminal',
+        desc: 'High-performance dashboard for doctors to view longitudinal treatment history, prescriptions, and vital statistics.',
+        tag: 'CLINICAL CARE'
+    },
 ];
 
 const Modules = () => {
-  return (
-    <div className="min-h-screen py-20 px-8 md:px-16" style={{ backgroundColor: 'var(--color-background)' }}>
-      <div className="max-w-7xl mx-auto">
-        <Link to="/" className="inline-flex items-center gap-2 mb-10 text-sm font-bold uppercase tracking-widest text-gray-500 hover:text-[var(--color-primary)] transition-colors">
-          <ArrowLeft size={16} /> Back to Home
-        </Link>
-        
-        <div className="mb-20 text-center md:text-left">
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(3rem, 5vw, 4.5rem)', color: PD, lineHeight: 1 }}>
-            System <span style={{ color: P, fontStyle: 'italic' }}>Modules</span>
-          </h1>
-          <p className="text-xl max-w-2xl mt-6 font-medium" style={{ color: '#6B7280' }}>
-            7 integrated modules powering the complete Global Patient ecosystem — from hospital onboarding to bedside treatment.
-          </p>
-        </div>
+    return (
+        <div className="min-h-screen bg-white flex flex-col items-center py-24 px-6 md:px-12 relative overflow-hidden">
+            {/* Background elements */}
+            <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-blue-50/30 rounded-full blur-[160px] -z-10" />
+            <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-green-50/30 rounded-full blur-[160px] -z-10" />
 
-        <div className="flex flex-col gap-12">
-          {moduleList.map((m, i) => (
-            <motion.div key={i} initial={{ opacity: 0, x: i % 2 === 0 ? -40 : 40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
-              className="flex flex-col md:flex-row items-start gap-8 card-premium" style={{ borderLeft: `8px solid ${P}` }}>
-              <div className="w-20 h-20 min-w-[5rem] rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'rgba(15,110,86,0.08)', color: P }}>
-                {m.icon}
-              </div>
-              <div>
-                <div className="text-[10px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: P, fontFamily: 'var(--font-display)' }}>MODULE {String(i + 1).padStart(2, '0')}</div>
-                <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-3" style={{ fontFamily: 'var(--font-display)', color: PD }}>{m.title}</h3>
-                <p className="text-lg font-medium leading-relaxed" style={{ color: '#6B7280' }}>{m.desc}</p>
-              </div>
-            </motion.div>
-          ))}
+            <div className="max-w-6xl w-full">
+                <Link to="/" className="inline-flex items-center gap-2 mb-16 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-black transition-all group">
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Home
+                </Link>
+
+                <div className="mb-24 flex flex-col items-center text-center">
+                    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 mb-6 bg-gray-50 px-5 py-2 rounded-full border border-gray-100 shadow-sm">
+                        <Activity className="text-[var(--color-primary)]" size={14} />
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500">System Architecture</span>
+                    </motion.div>
+                    <motion.h1 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-6xl md:text-[5.5rem] font-black italic uppercase tracking-tighter text-gray-900 leading-[0.85] mb-8">
+                        Core <span className="text-[var(--color-primary)]">Modules</span>
+                    </motion.h1>
+                    <p className="text-xl font-medium text-gray-500 max-w-2xl leading-relaxed">
+                        Explore the 7 high-performance engines driving the Global Patient ecosystem — engineered for speed, security, and medical integrity.
+                    </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-1 gap-8">
+                    {moduleList.map((m, i) => (
+                        <motion.div 
+                            key={i} 
+                            initial={{ opacity: 0, y: 30 }} 
+                            whileInView={{ opacity: 1, y: 0 }} 
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1 }}
+                            className="group relative bg-white rounded-[48px] p-2 pr-12 border border-gray-100 shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-[var(--color-primary)]/10 transition-all hover:-translate-y-2 flex flex-col md:flex-row items-center gap-10"
+                        >
+                            <div className="md:w-48 py-10 px-6 bg-gray-50 rounded-[40px] flex items-center justify-center text-[var(--color-primary)] group-hover:bg-[var(--color-primary)] group-hover:text-white transition-all shadow-inner border border-gray-100">
+                                {m.icon}
+                            </div>
+
+                            <div className="flex-1 py-6 md:py-0 text-center md:text-left">
+                                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--color-primary)] mb-3 inline-block px-3 py-1 bg-green-50 rounded-full border border-green-100">{m.tag}</span>
+                                <h3 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-gray-900 mb-4 group-hover:text-[var(--color-primary)] transition-colors leading-none">
+                                    {m.title}
+                                </h3>
+                                <p className="text-lg font-medium text-gray-500 leading-relaxed max-w-2xl">
+                                    {m.desc}
+                                </p>
+                            </div>
+
+                            <div className="hidden md:flex flex-col items-center">
+                                <div className="text-[2rem] font-black italic text-gray-100 tracking-tighter leading-none group-hover:text-[var(--color-primary)]/10 transition-colors uppercase">
+                                    {String(i + 1).padStart(2, '0')}
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Background Decorative Icon */}
+            <div className="absolute top-20 left-[-100px] opacity-[0.02] -rotate-12 pointer-events-none">
+                <HeartPulse size={500} />
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Modules;
