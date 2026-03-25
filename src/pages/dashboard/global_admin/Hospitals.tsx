@@ -31,7 +31,10 @@ const Hospitals = () => {
 
     const fetchHospitals = async () => {
         try {
-            const res = await axios.get('http://127.0.0.1:8000/api/hospitals/');
+            const token = localStorage.getItem('access');
+            const res = await axios.get('http://127.0.0.1:8000/api/hospitals/', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setHospitals(res.data);
         } catch (err) {
             console.error(err);
@@ -42,7 +45,10 @@ const Hospitals = () => {
 
     const fetchAdmins = async (hospitalId: number) => {
         try {
-            const res = await axios.get(`http://127.0.0.1:8000/api/auth/hospital-admins/?hospital=${hospitalId}`);
+            const token = localStorage.getItem('access');
+            const res = await axios.get(`http://127.0.0.1:8000/api/auth/hospital-admins/?hospital=${hospitalId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setAdmins(res.data);
         } catch (err) {
             console.error(err);
@@ -55,7 +61,10 @@ const Hospitals = () => {
 
     const handleApprove = async (id: number) => {
         try {
-            await axios.post(`http://127.0.0.1:8000/api/hospitals/${id}/approve/`);
+            const token = localStorage.getItem('access');
+            await axios.post(`http://127.0.0.1:8000/api/hospitals/${id}/approve/`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             fetchHospitals();
         } catch (err) {
             alert('Failed to approve hospital');
@@ -65,7 +74,10 @@ const Hospitals = () => {
     const handleCreateHospital = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await axios.post('http://127.0.0.1:8000/api/hospitals/', newHospital);
+            const token = localStorage.getItem('access');
+            await axios.post('http://127.0.0.1:8000/api/hospitals/', newHospital, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setShowAddModal(false);
             setNewHospital({ name: '', contact: '', email: '', location: '', address: '' });
             fetchHospitals();
@@ -78,9 +90,12 @@ const Hospitals = () => {
         e.preventDefault();
         if (!showAdminModal) return;
         try {
+            const token = localStorage.getItem('access');
             await axios.post('http://127.0.0.1:8000/api/auth/create-hospital-admin/', {
                 ...newAdmin,
                 hospital: showAdminModal.id
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
             });
             setNewAdmin({ username: '', password: '', email: '' });
             fetchAdmins(showAdminModal.id);

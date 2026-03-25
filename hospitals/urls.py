@@ -3,9 +3,9 @@ from rest_framework.routers import DefaultRouter
 from .views import HospitalViewSet, HospitalSettingsView, DoctorSlotViewSet, MedicineMasterViewSet
 
 router = DefaultRouter()
-router.register(r'', HospitalViewSet, basename='hospital')
 router.register(r'doctor-slots', DoctorSlotViewSet, basename='doctorslot')
 router.register(r'medicines', MedicineMasterViewSet, basename='medicine')
+router.register(r'', HospitalViewSet, basename='hospital')
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -42,9 +42,17 @@ class DoctorSlotViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 
+from rest_framework.pagination import PageNumberPagination
+
+class MedicinePagination(PageNumberPagination):
+    page_size = 5 # Showing exactly 5 medicines as requested
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class MedicineMasterViewSet(viewsets.ModelViewSet):
-    queryset = MedicineMaster.objects.all()
+    queryset = MedicineMaster.objects.all().order_by('id') # ID 1, 2, 3... order as requested
     serializer_class = MedicineMasterSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'category']
+    pagination_class = MedicinePagination

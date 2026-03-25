@@ -13,7 +13,7 @@ const Treatment = () => {
     const [error, setError] = useState('');
 
     const [consultation, setConsultation] = useState({ chief_complaint: '', diagnosis: '', blood_pressure: '', temperature: '' });
-    const [prescriptions, setPrescriptions] = useState([{ medicine: '', dosage: '', duration: '', instructions: '' }]);
+    const [prescriptions, setPrescriptions] = useState<any[]>([{ medicine: '', dosage: '', duration: '', instructions: '', temp_search: '', show_list: false }]);
 
     const fetchMeds = async () => {
         try {
@@ -50,7 +50,7 @@ const Treatment = () => {
     };
 
     const handleAddPrescriptionRow = () => {
-        setPrescriptions([...prescriptions, { medicine: '', dosage: '', duration: '', instructions: '' }]);
+        setPrescriptions([...prescriptions, { medicine: '', dosage: '', duration: '', instructions: '', temp_search: '', show_list: false }]);
     };
 
     const handleSaveConsultation = async (e: React.FormEvent) => {
@@ -76,7 +76,7 @@ const Treatment = () => {
             setPatient(null);
             setUhid('');
             setConsultation({ chief_complaint: '', diagnosis: '', blood_pressure: '', temperature: '' });
-            setPrescriptions([{ medicine: '', dosage: '', duration: '', instructions: '' }]);
+            setPrescriptions([{ medicine: '', dosage: '', duration: '', instructions: '', temp_search: '', show_list: false }]);
         } catch (err) {
             alert('Failed to save consultation.');
         }
@@ -203,13 +203,61 @@ const Treatment = () => {
                                         {prescriptions.map((p, idx) => (
                                             <div key={idx} className="flex gap-4 items-center bg-gray-50 p-2 pl-4 rounded-2xl border border-gray-100 transition-all hover:bg-gray-100/80">
                                                 <div className="font-display font-black text-gray-300 text-xl italic drop-shadow-sm pr-2 border-r border-gray-200">{idx + 1}</div>
-                                                <select className="flex-[2] bg-transparent font-bold text-gray-800 uppercase text-xs tracking-widest outline-none appearance-none"
-                                                    value={p.medicine} onChange={e => {
-                                                        const np = [...prescriptions]; np[idx].medicine = e.target.value; setPrescriptions(np);
-                                                    }}>
-                                                    <option value="">-- SELECT MEDICINE --</option>
-                                                    {medicines.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                                                </select>
+                                                <div className="flex-[2] relative">
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="SEARCH MEDICINE..."
+                                                        className="w-full bg-transparent font-black text-gray-800 uppercase text-[11px] tracking-widest outline-none"
+                                                        value={medicines.find(m => m.id.toString() === p.medicine)?.name || p.temp_search || ''}
+                                                        onChange={e => {
+                                                            const val = e.target.value;
+                                                            const np = [...prescriptions];
+                                                            np[idx].temp_search = val;
+                                                            np[idx].show_list = true;
+                                                            // Clear actual medicine ID if they start typing
+                                                            if (val === '') np[idx].medicine = '';
+                                                            setPrescriptions(np);
+                                                        }}
+                                                        onFocus={() => {
+                                                            const np = [...prescriptions];
+                                                            np[idx].show_list = true;
+                                                            setPrescriptions(np);
+                                                        }}
+                                                    />
+                                                    <AnimatePresence>
+                                                        {p.show_list && (
+                                                            <motion.div 
+                                                                initial={{ opacity: 0, y: 10 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                exit={{ opacity: 0 }}
+                                                                className="absolute left-0 right-0 top-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 max-h-60 overflow-y-auto"
+                                                            >
+                                                                {medicines
+                                                                    .filter(m => m.name.toLowerCase().includes((p.temp_search || '').toLowerCase()))
+                                                                    .map(m => (
+                                                                        <div 
+                                                                            key={m.id} 
+                                                                            onClick={() => {
+                                                                                const np = [...prescriptions];
+                                                                                np[idx].medicine = m.id.toString();
+                                                                                np[idx].temp_search = m.name;
+                                                                                np[idx].show_list = false;
+                                                                                setPrescriptions(np);
+                                                                            }}
+                                                                            className="p-4 hover:bg-blue-50 cursor-pointer border-b border-gray-50 last:border-0"
+                                                                        >
+                                                                            <p className="text-[11px] font-black uppercase text-gray-800 tracking-widest">{m.name}</p>
+                                                                            <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">{m.category}</p>
+                                                                        </div>
+                                                                    ))
+                                                                }
+                                                                {medicines.filter(m => m.name.toLowerCase().includes((p.temp_search || '').toLowerCase())).length === 0 && (
+                                                                    <div className="p-4 text-[10px] font-bold text-gray-400 italic">No exact matches found</div>
+                                                                )}
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
                                                 <input type="text" placeholder="Dosage (1-0-1)" className="flex-1 bg-white border border-gray-200 py-3 px-4 rounded-xl font-bold uppercase text-[10px] tracking-widest outline-none focus:border-blue-400"
                                                     value={p.dosage} onChange={e => { const np = [...prescriptions]; np[idx].dosage = e.target.value; setPrescriptions(np); }} />
                                                 <input type="text" placeholder="Duration (5 Days)" className="flex-1 bg-white border border-gray-200 py-3 px-4 rounded-xl font-bold uppercase text-[10px] tracking-widest outline-none focus:border-blue-400"
