@@ -10,12 +10,24 @@ const RegisterPatient = () => {
     });
     
     const [success, setSuccess] = useState<any>(null);
+    const [qrUrl, setQrUrl] = useState<string | null>(null);
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const res = await axios.post('http://127.0.0.1:8000/api/auth/register/', formData);
             setSuccess(res.data);
+            // Fetch the patient profile to get QR code URL
+            const token = localStorage.getItem('access');
+            if (res.data.uhid || res.data.username) {
+                const uhid = res.data.uhid || res.data.username;
+                const patientRes = await axios.get(`http://127.0.0.1:8000/api/patients/?search=${uhid}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (patientRes.data.length > 0 && patientRes.data[0].qr_code) {
+                    setQrUrl(`http://127.0.0.1:8000${patientRes.data[0].qr_code}`);
+                }
+            }
             setFormData({ username: '', password: '', email: '', full_name: '', phone: '', age: '', gender: 'Male', blood_group: 'O+', role: 'patient' });
         } catch (err: any) {
             alert('Failed to register patient: ' + JSON.stringify(err.response?.data));
@@ -68,12 +80,19 @@ const RegisterPatient = () => {
                             <p className="font-bold text-gray-500 uppercase tracking-widest text-sm mb-6">UHID: {success.uhid || success.username}</p>
                             
                             <div className="p-8 bg-white rounded-[32px] border border-gray-100 shadow-sm flex flex-col items-center">
-                                {/* Normally fetch the actual QR image here dynamically. Since it's local, we use a placeholder styling */}
-                                <div className="w-48 h-48 bg-gray-100 rounded-2xl flex items-center justify-center mb-6">
-                                    <QrCode size={64} className="text-gray-400" />
-                                </div>
-                                <span className="font-display font-bold text-gray-600 tracking-widest uppercase">E-Card Ready</span>
+                                {qrUrl ? (
+                                    <img src={qrUrl} alt="Patient QR Code" className="w-48 h-48 object-cover rounded-2xl" />
+                                ) : (
+                                    <div className="w-48 h-48 bg-gray-100 rounded-2xl flex items-center justify-center mb-6">
+                                        <QrCode size={64} className="text-gray-400" />
+                                    </div>
+                                )}
+                                <span className="font-display font-bold text-gray-600 tracking-widest uppercase mt-4">E-Card Ready</span>
                             </div>
+                            <button onClick={() => { setSuccess(null); setQrUrl(null); }}
+                                className="mt-6 text-xs font-black uppercase tracking-widest text-gray-500 hover:text-black transition-colors">
+                                Register Another Patient
+                            </button>
                         </motion.div>
                     ) : (
                         <div className="z-10 opacity-50 flex flex-col items-center">

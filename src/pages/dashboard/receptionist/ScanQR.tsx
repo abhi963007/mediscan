@@ -17,7 +17,10 @@ const ScanQR = () => {
     const processScan = async (scannedUhid: string) => {
         try {
             setError('');
-            const res = await axios.get(`http://127.0.0.1:8000/api/patients/?search=${scannedUhid}`);
+            const token = localStorage.getItem('access');
+            const res = await axios.get(`http://127.0.0.1:8000/api/patients/?search=${scannedUhid}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             if (res.data.length > 0) {
                 setPatient(res.data[0]);
                 fetchHospitalDoctors();

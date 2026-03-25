@@ -17,7 +17,10 @@ const Treatment = () => {
 
     const fetchMeds = async () => {
         try {
-            const res = await axios.get('http://127.0.0.1:8000/api/hospitals/medicines/');
+            const token = localStorage.getItem('access');
+            const res = await axios.get('http://127.0.0.1:8000/api/hospitals/medicines/', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setMedicines(res.data);
         } catch (err) { }
     };
@@ -27,7 +30,10 @@ const Treatment = () => {
     const handleScan = async () => {
         try {
             setError('');
-            const res = await axios.get(`http://127.0.0.1:8000/api/patients/?search=${uhid}`);
+            const token = localStorage.getItem('access');
+            const res = await axios.get(`http://127.0.0.1:8000/api/patients/?search=${uhid}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             if (res.data.length > 0) {
                 const p = res.data[0];
                 setPatient(p);
@@ -44,7 +50,10 @@ const Treatment = () => {
 
     const fetchHistory = async (id: number) => {
         try {
-            const res = await axios.get(`http://127.0.0.1:8000/api/patients/consultations/?patient=${id}`);
+            const token = localStorage.getItem('access');
+            const res = await axios.get(`http://127.0.0.1:8000/api/patients/consultations/?patient=${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setHistory(res.data);
         } catch (err) { }
     };
@@ -56,10 +65,13 @@ const Treatment = () => {
     const handleSaveConsultation = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const token = localStorage.getItem('access');
+            const headers = { Authorization: `Bearer ${token}` };
+            
             const res = await axios.post('http://127.0.0.1:8000/api/patients/consultations/', {
                 patient: patient.id,
                 ...consultation
-            });
+            }, { headers });
             const c_id = res.data.id;
             
             // Save prescriptions
@@ -69,7 +81,7 @@ const Treatment = () => {
                         consultation: c_id,
                         ...p,
                         medicine: parseInt(p.medicine)
-                    });
+                    }, { headers });
                 }
             }
             alert('Consultation Saved Successfully to Global Registry!');

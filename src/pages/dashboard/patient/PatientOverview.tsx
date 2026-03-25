@@ -13,7 +13,10 @@ const PatientOverview = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await axios.get('http://127.0.0.1:8000/api/auth/dashboard-stats/');
+                const token = localStorage.getItem('access');
+                const res = await axios.get('http://127.0.0.1:8000/api/auth/dashboard-stats/', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
                 setStats(res.data);
                 setLoading(false);
             } catch (err) {

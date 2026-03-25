@@ -13,13 +13,16 @@ const MyHistory = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch Appointments
-                const resA = await axios.get('http://127.0.0.1:8000/api/appointments/');
+                const token = localStorage.getItem('access');
+                const headers = { Authorization: `Bearer ${token}` };
+
+                // Fetch Appointments (filtered by user role in backend)
+                const resA = await axios.get('http://127.0.0.1:8000/api/appointments/', { headers });
                 setAppointments(resA.data);
                 
                 // Fetch Consultations (History)
                 if (user?.id) {
-                    const resC = await axios.get(`http://127.0.0.1:8000/api/patients/consultations/?patient=${user.id}`);
+                    const resC = await axios.get(`http://127.0.0.1:8000/api/patients/consultations/?patient=${user.id}`, { headers });
                     setHistory(resC.data);
                 }
                 setLoading(false);
@@ -32,8 +35,11 @@ const MyHistory = () => {
 
     const handleCancel = async (id: number) => {
         try {
-            await axios.post(`http://127.0.0.1:8000/api/appointments/${id}/cancel/`);
-            setAppointments(appointments.map(a => a.id === id ? { ...a, status: 'Cancelled' } : a));
+            const token = localStorage.getItem('access');
+            await axios.post(`http://127.0.0.1:8000/api/appointments/${id}/cancel/`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAppointments(appointments.map(a => a.id === id ? { ...a, status: 'cancelled' } : a));
         } catch (err) {
             alert('Cancel failed');
         }

@@ -10,7 +10,10 @@ const Appointments = () => {
     useEffect(() => {
         const fetchAppts = async () => {
             try {
-                const res = await axios.get('http://127.0.0.1:8000/api/appointments/');
+                const token = localStorage.getItem('access');
+                const res = await axios.get('http://127.0.0.1:8000/api/appointments/', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
                 setAppointments(res.data);
                 setLoading(false);
             } catch (err) {
@@ -22,8 +25,11 @@ const Appointments = () => {
 
     const handleCancel = async (id: number) => {
         try {
-            await axios.post(`http://127.0.0.1:8000/api/appointments/${id}/cancel/`);
-            setAppointments(appointments.map(a => a.id === id ? { ...a, status: 'Cancelled' } : a));
+            const token = localStorage.getItem('access');
+            await axios.post(`http://127.0.0.1:8000/api/appointments/${id}/cancel/`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAppointments(appointments.map(a => a.id === id ? { ...a, status: 'cancelled' } : a));
         } catch (err) {
             alert('Cancel failed');
         }
@@ -38,7 +44,7 @@ const Appointments = () => {
                 <div className="card-premium p-6 flex justify-between items-center bg-gradient-to-br from-blue-600 to-indigo-800 text-white shadow-xl shadow-blue-900/20">
                     <div>
                         <h4 className="text-xs font-black uppercase tracking-widest text-blue-200 mb-1">Queue Size</h4>
-                        <p className="text-4xl font-black italic tracking-tighter">{appointments.filter(a => a.status === 'Booked').length}</p>
+                        <p className="text-4xl font-black italic tracking-tighter">{appointments.filter(a => a.status === 'pending' || a.status === 'confirmed').length}</p>
                     </div>
                     <div className="w-16 h-16 bg-white/10 rounded-[20px] flex items-center justify-center backdrop-blur-sm shadow-inner">
                         <Stethoscope size={32} className="text-blue-100" />
@@ -77,12 +83,15 @@ const Appointments = () => {
                                         </span>
                                     </td>
                                     <td className="p-6 font-bold text-[10px] uppercase tracking-widest">
-                                        <span className={`px-4 py-2 rounded-xl border shadow-sm ${a.status === 'Booked' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
+                                        <span className={`px-4 py-2 rounded-xl border shadow-sm ${
+                                            a.status === 'confirmed' ? 'bg-green-50 text-green-700 border-green-200' :
+                                            a.status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                                            'bg-red-50 text-red-600 border-red-200'}`}>
                                             {a.status}
                                         </span>
                                     </td>
                                     <td className="p-6 pr-8 text-right">
-                                        {a.status === 'Booked' && (
+                                        {(a.status === 'pending' || a.status === 'confirmed') && (
                                             <button onClick={() => handleCancel(a.id)} className="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold uppercase text-[10px] tracking-widest px-4 py-2 flex items-center justify-center gap-2 rounded-xl transition-colors ml-auto">
                                                 Mark Unattended
                                             </button>
