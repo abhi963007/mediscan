@@ -79,7 +79,7 @@ const LandingPage = () => {
               <Link 
                 key={link.path} 
                 to={link.path} 
-                className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 hover:text-[var(--color-primary)] transition-all relative group"
+                className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 hover:text-[var(--color-primary)] transition-all relative group font-['Montserrat']"
               >
                 {link.name}
                 <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[var(--color-primary)] group-hover:w-full transition-all" />
@@ -88,10 +88,10 @@ const LandingPage = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link to="/dashboard" className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors mr-4">
+            <Link to="/dashboard" className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors mr-4 font-['Montserrat']">
                 Hospital Login
             </Link>
-            <Link to="/dashboard" className="bg-gray-900 text-white px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[var(--color-primary)] hover:scale-105 transition-all shadow-xl shadow-gray-200">
+            <Link to="/dashboard" className="bg-gray-900 text-white px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[var(--color-primary)] hover:scale-105 transition-all shadow-xl shadow-gray-200 font-['Montserrat']">
               Launch Console
             </Link>
           </div>
@@ -121,15 +121,15 @@ const LandingPage = () => {
               </span>
             </h1>
 
-            <p className="text-xl md:text-2xl font-medium text-gray-500 max-w-xl mb-12 leading-relaxed">
+            <p className="text-xl md:text-2xl font-medium text-gray-500 max-w-xl mb-12 leading-relaxed font-['Montserrat']">
               Propelling patient care into the digital age with biometric-grade QR card systems, unified health history, and global clinic reach.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-5">
-              <Link to="/dashboard/register" className="group relative bg-[var(--color-primary)] text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-green-900/10 hover:scale-105 transition-all flex items-center justify-center gap-3 whitespace-nowrap">
+              <Link to="/dashboard/register" className="group relative bg-[var(--color-primary)] text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-green-900/10 hover:scale-105 transition-all flex items-center justify-center gap-3 whitespace-nowrap font-['Montserrat']">
                 Register Patient <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link to="/modules" className="bg-white border-2 border-gray-100 text-gray-900 px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] hover:bg-gray-50 transition-all flex items-center justify-center gap-3 whitespace-nowrap">
+              <Link to="/modules" className="bg-white border-2 border-gray-100 text-gray-900 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-50 transition-all flex items-center justify-center gap-3 whitespace-nowrap font-['Montserrat']">
                 Discover System
               </Link>
             </div>
@@ -173,7 +173,7 @@ const LandingPage = () => {
                 >
                     <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white"><Zap size={20} /></div>
                     <div>
-                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Network Speed</div>
+                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest font-['Montserrat']">Network Speed</div>
                         <div className="text-xl font-black text-gray-900 uppercase italic">0.2ms</div>
                     </div>
                 </motion.div>
@@ -185,7 +185,7 @@ const LandingPage = () => {
                 >
                     <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white"><Globe size={20} /></div>
                     <div>
-                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Available In</div>
+                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest font-['Montserrat']">Available In</div>
                         <div className="text-xl font-black text-gray-900 uppercase italic">45 Branches</div>
                     </div>
                 </motion.div>
@@ -215,8 +215,8 @@ const LandingPage = () => {
               <div className="text-5xl lg:text-6xl xl:text-7xl font-black italic tracking-tighter mb-4 text-gray-900 whitespace-nowrap">
                 <CountUp value={stat.val} suffix={stat.suffix} />
               </div>
-              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-primary)] mb-2">{stat.label}</div>
-              <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{stat.desc}</div>
+              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-primary)] mb-2 font-['Montserrat']">{stat.label}</div>
+              <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest font-['Montserrat']">{stat.desc}</div>
             </motion.div>
           ))}
         </div>
@@ -238,7 +238,7 @@ const LandingPage = () => {
                 Ready To Digitize <br />
                 Your Institution?
               </h2>
-              <p className="text-xl md:text-2xl font-medium opacity-80 mb-16 leading-relaxed max-w-2xl mx-auto text-white/90">
+              <p className="text-xl md:text-2xl font-medium opacity-80 mb-16 leading-relaxed max-w-2xl mx-auto text-white/90 font-['Montserrat']">
                 Join the network of medical facilities transforming patient identification and historical data storage with QR technology.
               </p>
               <Link to="/dashboard" className="bg-white text-gray-900 px-12 py-8 rounded-[40px] text-2xl font-black uppercase tracking-tighter hover:scale-110 transition-all inline-flex items-center gap-6 shadow-2xl">
@@ -256,12 +256,12 @@ const LandingPage = () => {
             <div className="w-10 h-10 rounded-xl bg-gray-900 flex items-center justify-center text-white"><QrCode size={20} /></div>
             <span className="text-xl font-black italic uppercase tracking-tighter text-gray-900">MediScan</span>
           </div>
-          <div className="flex flex-wrap justify-center gap-12 font-black uppercase text-[10px] tracking-[0.2em] text-gray-400">
+          <div className="flex flex-wrap justify-center gap-12 font-black uppercase text-[10px] tracking-[0.2em] text-gray-400 font-['Montserrat']">
             <Link to="/modules" className="hover:text-gray-900 transition-colors">Infrastructure</Link>
             <Link to="/support" className="hover:text-gray-900 transition-colors">Deployment Support</Link>
             <Link to="/features" className="hover:text-gray-900 transition-colors">Privacy Protocols</Link>
           </div>
-          <div className="text-[10px] font-black uppercase tracking-widest text-gray-300">
+          <div className="text-[10px] font-black uppercase tracking-widest text-gray-300 font-['Montserrat']">
             © 2026 MediScan Healthcare Solutions.
           </div>
         </div>

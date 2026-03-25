@@ -9,15 +9,15 @@ const Features = () => {
   return (
     <div className="min-h-screen py-20 px-8 md:px-16" style={{ backgroundColor: 'var(--color-background)' }}>
       <div className="max-w-7xl mx-auto">
-        <Link to="/" className="inline-flex items-center gap-2 mb-10 text-sm font-bold uppercase tracking-widest text-gray-500 hover:text-[var(--color-primary)] transition-colors">
-          <ArrowLeft size={16} /> Back to Home
+        <Link to="/" className="inline-flex items-center gap-2 mb-10 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-black transition-all group font-['Montserrat']">
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Home
         </Link>
         
         <div className="mb-20 text-center md:text-left">
           <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(3rem, 5vw, 4.5rem)', color: PD, lineHeight: 1 }}>
             Core <span style={{ color: P, fontStyle: 'italic' }}>Features</span>
           </h1>
-          <p className="text-xl max-w-2xl mt-6 font-medium" style={{ color: '#6B7280' }}>
+          <p className="text-xl max-w-2xl mt-6 font-medium font-['Montserrat']" style={{ color: '#6B7280' }}>
             A comprehensive breakdown of the tools powering MediScan.
           </p>
         </div>
@@ -38,7 +38,7 @@ const Features = () => {
                 {feat.icon}
               </div>
               <h3 className="text-2xl mb-4 italic uppercase tracking-tighter" style={{ fontFamily: 'var(--font-display)', fontWeight: 900, color: PD }}>{feat.title}</h3>
-              <p className="leading-relaxed font-medium" style={{ color: '#6B7280' }}>{feat.desc}</p>
+              <p className="leading-relaxed font-medium font-['Montserrat'] text-sm" style={{ color: '#6B7280' }}>{feat.desc}</p>
             </motion.div>
           ))}
         </div>

@@ -56,19 +56,19 @@ const Modules = () => {
             <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-green-50/30 rounded-full blur-[160px] -z-10" />
 
             <div className="max-w-6xl w-full">
-                <Link to="/" className="inline-flex items-center gap-2 mb-16 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-black transition-all group">
+                <Link to="/" className="inline-flex items-center gap-2 mb-16 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-black transition-all group font-['Montserrat']">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Home
                 </Link>
 
                 <div className="mb-24 flex flex-col items-center text-center">
                     <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 mb-6 bg-gray-50 px-5 py-2 rounded-full border border-gray-100 shadow-sm">
                         <Activity className="text-[var(--color-primary)]" size={14} />
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500">System Architecture</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 font-['Montserrat']">System Architecture</span>
                     </motion.div>
                     <motion.h1 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-6xl md:text-[5.5rem] font-black italic uppercase tracking-tighter text-gray-900 leading-[0.85] mb-8">
                         Core <span className="text-[var(--color-primary)]">Modules</span>
                     </motion.h1>
-                    <p className="text-xl font-medium text-gray-500 max-w-2xl leading-relaxed">
+                    <p className="text-xl font-medium text-gray-500 max-w-2xl leading-relaxed font-['Montserrat']">
                         Explore the 7 high-performance engines driving the Global Patient ecosystem — engineered for speed, security, and medical integrity.
                     </p>
                 </div>
@@ -88,11 +88,11 @@ const Modules = () => {
                             </div>
 
                             <div className="flex-1 py-6 md:py-0 text-center md:text-left">
-                                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--color-primary)] mb-3 inline-block px-3 py-1 bg-green-50 rounded-full border border-green-100">{m.tag}</span>
+                                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--color-primary)] mb-3 inline-block px-3 py-1 bg-green-50 rounded-full border border-green-100 font-['Montserrat']">{m.tag}</span>
                                 <h3 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-gray-900 mb-4 group-hover:text-[var(--color-primary)] transition-colors leading-none">
                                     {m.title}
                                 </h3>
-                                <p className="text-lg font-medium text-gray-500 leading-relaxed max-w-2xl">
+                                <p className="text-lg font-medium text-gray-500 leading-relaxed max-w-2xl font-['Montserrat']">
                                     {m.desc}
                                 </p>
                             </div>

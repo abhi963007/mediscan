@@ -10,7 +10,7 @@ const Support = () => {
             <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-green-500/5 rounded-full blur-[120px]" />
 
             <div className="max-w-6xl w-full relative z-10">
-                <Link to="/" className="inline-flex items-center gap-2 mb-12 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-black transition-all group">
+                <Link to="/" className="inline-flex items-center gap-2 mb-12 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-black transition-all group font-['Montserrat']">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Home
                 </Link>
 
@@ -20,18 +20,18 @@ const Support = () => {
                             Dedicated <br />
                             <span className="text-[var(--color-primary)]">Support</span>
                         </h1>
-                        <p className="text-xl font-medium text-gray-500 max-w-lg mb-12 leading-relaxed">
+                        <p className="text-xl font-medium text-gray-500 max-w-lg mb-12 leading-relaxed font-['Montserrat']">
                             Encountering a bug or need architecture assistance for your hospital? We are here to help scale your digital transformation.
                         </p>
 
                         <div className="flex flex-wrap gap-4">
                             <div className="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
                                 <ShieldCheck className="text-blue-500" size={20} />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Secure Protocol</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 font-['Montserrat']">Secure Protocol</span>
                             </div>
                             <div className="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
                                 <Globe className="text-green-500" size={20} />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">24/7 Global Response</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 font-['Montserrat']">24/7 Global Response</span>
                             </div>
                         </div>
                     </motion.div>
@@ -47,9 +47,9 @@ const Support = () => {
                                     {item.icon}
                                 </div>
                                 <div className="flex-1">
-                                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{item.label}</div>
+                                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1 font-['Montserrat']">{item.label}</div>
                                     <div className="text-2xl font-black italic uppercase tracking-tight text-gray-900 leading-none mb-1">{item.val}</div>
-                                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{item.sub}</div>
+                                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-['Montserrat']">{item.sub}</div>
                                 </div>
                                 <div className="w-12 h-12 rounded-full border border-gray-100 flex items-center justify-center text-gray-300 group-hover:text-[var(--color-primary)] group-hover:border-[var(--color-primary)] transition-all">
                                     <ArrowLeft className="rotate-180" size={20} />
