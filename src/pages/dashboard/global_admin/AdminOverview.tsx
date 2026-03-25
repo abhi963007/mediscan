@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import { Building2, Users, Pill, Activity, ShieldAlert } from 'lucide-react';
+import { Building2, Users, Pill, Activity, ShieldAlert, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const AdminOverview = () => {
     const [stats, setStats] = useState<any>(null);
@@ -19,6 +21,89 @@ const AdminOverview = () => {
         };
         fetchStats();
     }, []);
+
+    const handleNetworkAudit = async () => {
+        try {
+            const token = localStorage.getItem('access');
+            const resHospitals = await axios.get('http://127.0.0.1:8000/api/hospitals/', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const hospitals = resHospitals.data || [];
+
+            const doc = new jsPDF();
+            
+            // Header Section
+            doc.setFillColor(34, 197, 94); // Primary Green
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setFontSize(24);
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.text("MEDISCAN: GLOBAL NETWORK AUDIT", 20, 25);
+            
+            doc.setFontSize(10);
+            doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 32);
+            
+            // Stats Snapshot
+            doc.setTextColor(0,0,0);
+            doc.setFontSize(14);
+            doc.text("NETWORK STATS SUMMARY", 20, 55);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Total Registered Hospitals: ${stats?.total_hospitals || 0}`, 20, 65);
+            doc.text(`Global Patient Base: ${stats?.total_patients || 0}`, 20, 72);
+            doc.text(`Medicine Master Size: ${stats?.total_medicines || 0}`, 20, 79);
+            doc.text(`Operational Health: 100% (All Nodes Syncing)`, 20, 86);
+            
+            // Hospital List Table
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text("HOSPITAL REGISTERY LEDGER", 20, 105);
+            
+            autoTable(doc, {
+                startY: 110,
+                head: [['ID', 'Hospital Name', 'Category', 'Verified']],
+                body: hospitals.map((h: any) => [
+                    h.id, 
+                    h.name, 
+                    h.category || 'General', 
+                    h.is_verified ? 'YES' : 'PENDING'
+                ]),
+                theme: 'striped',
+                headStyles: { fillColor: [31, 41, 55] },
+                alternateRowStyles: { fillColor: [249, 250, 251] }
+            });
+
+            doc.save("Mediscan_Network_Audit.pdf");
+        } catch (err) {
+            alert('Audit Generation Failed. Database offline.');
+        }
+    };
+
+    const handleExportLedger = async () => {
+        try {
+            const token = localStorage.getItem('access');
+            const res = await axios.get('http://127.0.0.1:8000/api/hospitals/medicines/', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            
+            // Basic CSV conversion
+            const medicines = res.data.results || [];
+            const header = "ID,Name,Category\n";
+            const csv = header + medicines.map((m: any) => `${m.id},${m.name},${m.category}`).join("\n");
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'mediscan_global_medicines.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } catch (err) {
+            alert('Failed to export ledger. Please check connections.');
+        }
+    };
 
     if (loading) return <div className="p-8 font-black uppercase tracking-widest text-gray-400">Syncing Global Data...</div>;
 
@@ -64,11 +149,11 @@ const AdminOverview = () => {
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-widest max-w-xs mt-2">All global servers are operational. Real-time monitoring enabled.</p>
                 </div>
                 
-                <div className="card-premium p-8 border border-gray-100">
+                <div className="card-premium p-8 border border-gray-100 shadow-sm">
                     <h3 className="text-lg font-black uppercase italic text-gray-800 tracking-tighter mb-4">Quick Actions</h3>
                     <div className="space-y-4">
-                        <button className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-black transition-colors">Generate Network Audit</button>
-                        <button className="w-full py-4 border-2 border-gray-100 text-gray-600 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-gray-50 transition-colors">Export Global Ledger</button>
+                        <button onClick={handleNetworkAudit} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-black transition-colors shadow-lg active:scale-95">Generate Network Audit</button>
+                        <button onClick={handleExportLedger} className="w-full py-4 border-2 border-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-50 transition-colors active:scale-95">Export Global Ledger</button>
                     </div>
                 </div>
             </div>

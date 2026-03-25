@@ -59,6 +59,20 @@ class CreateHospitalStaffView(generics.CreateAPIView):
 
         return super().post(request, *args, **kwargs)
 
+class HospitalStaffListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role != 'hospital_admin':
+            return CustomUser.objects.none()
+        
+        if not user.hospital:
+            return CustomUser.objects.none()
+            
+        return CustomUser.objects.filter(hospital=user.hospital).exclude(id=user.id)
+
 class CreateHospitalAdminView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     permission_classes = (IsAuthenticated,)

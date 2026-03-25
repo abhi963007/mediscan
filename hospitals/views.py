@@ -26,6 +26,39 @@ class HospitalViewSet(viewsets.ModelViewSet):
         HospitalSettings.objects.get_or_create(hospital=hospital)
         return Response({'status': 'Hospital verified successfully'})
 
+    @action(detail=False, methods=['get', 'patch'], url_path='my-settings')
+    def my_settings(self, request):
+        if not request.user.hospital:
+            return Response({'error': 'No hospital linked to your account'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        settings, _ = HospitalSettings.objects.get_or_create(hospital=request.user.hospital)
+        if request.method == 'PATCH':
+            serializer = HospitalSettingsSerializer(settings, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer = HospitalSettingsSerializer(settings)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'], url_path='my-slots')
+    def my_slots(self, request):
+        if not request.user.hospital:
+            return Response({'error': 'No hospital linked to your account'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        slots = DoctorSlot.objects.filter(hospital=request.user.hospital)
+        serializer = DoctorSlotSerializer(slots, many=True)
+        return Response(serializer.data)
+
+
+    @action(detail=True, methods=['get'], url_path='hospital-slots', permission_classes=[IsAuthenticated])
+    def hospital_slots(self, request, pk=None):
+        hospital = self.get_object()
+        slots = DoctorSlot.objects.filter(hospital=hospital)
+        serializer = DoctorSlotSerializer(slots, many=True)
+        return Response(serializer.data)
+
 
 class HospitalSettingsView(generics.RetrieveUpdateAPIView):
     serializer_class = HospitalSettingsSerializer
@@ -40,6 +73,13 @@ class DoctorSlotViewSet(viewsets.ModelViewSet):
     queryset = DoctorSlot.objects.all()
     serializer_class = DoctorSlotSerializer
     permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # Override to ensure hospital is set correctly if not provided
+        if not serializer.validated_data.get('hospital') and self.request.user.hospital:
+            serializer.save(hospital=self.request.user.hospital)
+        else:
+            serializer.save()
 
 
 from rest_framework.pagination import PageNumberPagination

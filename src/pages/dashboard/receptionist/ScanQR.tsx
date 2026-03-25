@@ -67,26 +67,37 @@ const ScanQR = () => {
     };
 
     const fetchHospitalDoctors = async () => {
-        // Technically we need endpoints to get doctors belonging to our hospital.
-        // Assuming we rely on generic endpoints for now or mock the list.
         try {
-            const res = await axios.get(`http://127.0.0.1:8000/api/hospitals/settings/`); // Let's pretend it returns doctor slots
+            const token = localStorage.getItem('access');
+            // Fetch public slots/doctors for this hospital
+            // In a real scenario, the receptionist's hospital ID is known from user profile
+            if (!user?.hospital) return;
+            
+            const res = await axios.get(`http://127.0.0.1:8000/api/hospitals/${user.hospital}/hospital-slots/`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setDoctors(res.data);
         } catch (err) {
-            // fallback
-            setDoctors([{ id: 1, doctor: { username: 'Dr. John Doe', id: 2 }, consultation_fee: 500 }]);
+            console.error(err);
         }
     };
 
     const handleBook = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const token = localStorage.getItem('access');
+            const selectedSlot = doctors.find(d => d.doctor === parseInt(appointment.doctor_id));
+            
             await axios.post('http://127.0.0.1:8000/api/appointments/', {
-                patient: patient.user.id,
+                patient: patient.user, // The patient user ID
                 doctor: appointment.doctor_id,
                 hospital: user?.hospital,
-                appointment_date: `${appointment.date}T${appointment.time}Z`, // naive parsing
-                payment_status: 'Paid'
+                appointment_date: appointment.date,
+                time_slot: appointment.time,
+                fee: selectedSlot?.consultation_fee || 0,
+                payment_status: 'paid'
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
             });
             alert('Appointment Scheduled Successfully!');
             setPatient(null);

@@ -17,8 +17,11 @@ const BookAppointment = () => {
     useEffect(() => {
         const fetchHospitals = async () => {
             try {
+                const token = localStorage.getItem('access');
                 // Should fetch only verified hospitals
-                const res = await axios.get('http://127.0.0.1:8000/api/hospitals/');
+                const res = await axios.get('http://127.0.0.1:8000/api/hospitals/', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
                 setHospitals(res.data.filter((h: any) => h.is_verified));
             } catch (err) {}
         };
@@ -27,8 +30,11 @@ const BookAppointment = () => {
 
     const fetchDoctors = async (hospitalId: number) => {
         try {
-            // Ideally an API to fetch doctors by hospital ID
-            const res = await axios.get(`http://127.0.0.1:8000/api/hospitals/settings/`);
+            const token = localStorage.getItem('access');
+            // Fetch public slots/doctors for this hospital
+            const res = await axios.get(`http://127.0.0.1:8000/api/hospitals/${hospitalId}/hospital-slots/`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setDoctors(res.data);
         } catch (err) {}
     };
@@ -42,12 +48,17 @@ const BookAppointment = () => {
     const handleBook = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const token = localStorage.getItem('access');
             await axios.post('http://127.0.0.1:8000/api/appointments/', {
                 patient: user?.id,
-                doctor: selectedDoctor.doctor.id,
+                doctor: selectedDoctor.doctor,
                 hospital: selectedHospital.id,
-                appointment_date: `${appointmentDate}T${appointmentTime}Z`,
-                payment_status: 'Paid'
+                appointment_date: appointmentDate,
+                time_slot: appointmentTime,
+                fee: selectedDoctor.consultation_fee,
+                payment_status: 'paid'
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
             });
             setBookingSuccess(true);
         } catch (err) {

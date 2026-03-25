@@ -1,38 +1,103 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { Settings, Clock, IndianRupee, Smartphone, AlertCircle } from 'lucide-react';
+import { Settings, Clock, IndianRupee, Smartphone, Plus, Trash2, X } from 'lucide-react';
+
+interface Slot {
+    id: number;
+    doctor: number;
+    doctor_name?: string;
+    consultation_fee: string;
+    start_time: string;
+    end_time: string;
+}
 
 const HospitalSettings = () => {
     const [seats, setSeats] = useState(0);
-    const [doctors, setDoctors] = useState<any[]>([]);
+    const [doctors, setDoctors] = useState<Slot[]>([]);
+    const [availableDoctors, setAvailableDoctors] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isAddingSlot, setIsAddingSlot] = useState(false);
+    
+    // New Slot Form
+    const [newSlot, setNewSlot] = useState({
+        doctor: '',
+        consultation_fee: '500',
+        start_time: '09:00',
+        end_time: '17:00'
+    });
+
+    const fetchSettings = async () => {
+        try {
+            const token = localStorage.getItem('access');
+            // Fetch online seats
+            const resSeats = await axios.get('http://127.0.0.1:8000/api/hospitals/my-settings/', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setSeats(resSeats.data.online_seats);
+
+            // Fetch doctor slots
+            const resSlots = await axios.get('http://127.0.0.1:8000/api/hospitals/my-slots/', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setDoctors(resSlots.data);
+
+            // Fetch staff to find doctors
+            const resStaff = await axios.get('http://127.0.0.1:8000/api/auth/staff/', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAvailableDoctors(resStaff.data.filter((s: any) => s.role === 'doctor'));
+
+            setLoading(false);
+        } catch (err) {
+            console.error(err);
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        // Fetch seats and doctor configurations from API
-        const fetchSettings = async () => {
-            try {
-                // Assuming this generic endpoint returns the hospital settings configured
-                const res = await axios.get('http://127.0.0.1:8000/api/hospitals/settings/');
-                // Let's pretend the API returns array of DoctorSlot configurations
-                setDoctors(res.data);
-                // Hardcoding seats for now, normally it would be in HospitalSettings model attached to hospital
-                setSeats(50);
-                setLoading(false);
-            } catch (err) {
-                setLoading(false);
-            }
-        };
         fetchSettings();
     }, []);
 
     const handleSaveSeats = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            // Ideally a PATCH to /api/hospitals/my_settings
+            const token = localStorage.getItem('access');
+            await axios.patch('http://127.0.0.1:8000/api/hospitals/my-settings/', {
+                online_seats: seats
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             alert(`Updated daily online capacity to ${seats} seats.`);
         } catch (err) {
             alert('Failed to update capacity.');
+        }
+    };
+
+    const handleCreateSlot = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('access');
+            await axios.post('http://127.0.0.1:8000/api/hospitals/doctor-slots/', newSlot, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setIsAddingSlot(false);
+            fetchSettings();
+        } catch (err) {
+            alert('Failed to create slot.');
+        }
+    };
+
+    const handleDeleteSlot = async (id: number) => {
+        if (!window.confirm('Remove this doctor configuration?')) return;
+        try {
+            const token = localStorage.getItem('access');
+            await axios.delete(`http://127.0.0.1:8000/api/hospitals/doctor-slots/${id}/`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            fetchSettings();
+        } catch (err) {
+            alert('Failed to delete slot.');
         }
     };
 
@@ -44,74 +109,91 @@ const HospitalSettings = () => {
             <div className="grid lg:grid-cols-12 gap-10">
                 {/* Online Seats Configuration */}
                 <div className="lg:col-span-4">
-                    <form onSubmit={handleSaveSeats} className="card-premium p-8 bg-gradient-to-br from-green-50 to-white border-2 border-[var(--color-primary)] shadow-2xl shadow-green-900/10">
-                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-[var(--color-primary)] mb-6 shadow-sm border border-green-100">
+                    <form onSubmit={handleSaveSeats} className="card-premium p-8 bg-gradient-to-br from-green-50/50 to-white border-2 border-green-600/20 shadow-2xl shadow-green-900/5">
+                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-green-600 mb-6 shadow-sm border border-green-100">
                             <Smartphone size={32} />
                         </div>
-                        <h3 className="text-2xl font-black uppercase italic tracking-tighter text-gray-900 mb-2">Online Capacity</h3>
-                        <p className="text-xs font-medium text-gray-500 mb-6">Patient Visit module and Online Booking use this threshold for daily online seats limits.</p>
+                        <h3 className="text-2xl font-black uppercase italic tracking-tighter text-gray-900 mb-2">Capacity Control</h3>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-8 leading-relaxed">Daily threshold for network-wide online bookings.</p>
                         
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-2 px-1 text-center">Seats limit per day</label>
-                        <input type="number" className="w-full text-center text-4xl font-black italic tracking-tighter text-[var(--color-primary)] py-6 bg-white border-b-4 border-green-200 focus:border-green-600 outline-none transition-colors rounded-none px-4 shadow-inner decoration-transparent"
-                            value={seats} onChange={e => setSeats(parseInt(e.target.value))} />
+                        <div className="relative group">
+                            <input type="number" className="w-full text-center text-5xl font-black italic tracking-tighter text-gray-900 py-8 bg-white/50 border-2 border-transparent border-b-gray-100 focus:border-green-500 focus:bg-white outline-none transition-all rounded-3xl"
+                                value={seats} onChange={e => setSeats(parseInt(e.target.value))} />
+                            <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">Global Seat Limit</div>
+                        </div>
                         
-                        <button type="submit" className="w-full mt-8 py-4 rounded-xl font-black text-sm uppercase tracking-widest text-white shadow-xl shadow-[var(--color-primary)]/40 hover:scale-[1.02] transition-transform bg-[var(--color-primary)]">
-                            Enforce Limit
+                        <button type="submit" className="w-full mt-6 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] text-white shadow-xl shadow-green-900/20 hover:scale-[1.02] active:scale-95 transition-all bg-gray-900">
+                            Update Registry
                         </button>
                     </form>
-
-                    <div className="card-premium p-6 mt-6 bg-gray-50 border border-gray-100 flex gap-4">
-                        <AlertCircle size={24} className="text-gray-400 shrink-0" />
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest leading-relaxed">
-                            Capacity settings instantly affect global patient booking network visibility for your institution.
-                        </p>
-                    </div>
                 </div>
 
                 {/* Doctor Consultations Configuration */}
                 <div className="lg:col-span-8">
-                    <div className="card-premium p-8 border border-gray-100 h-full">
-                        <div className="flex justify-between items-center mb-8 pb-6 border-b border-gray-100">
+                    <div className="card-premium p-10 border border-gray-100 min-h-full">
+                        <div className="flex justify-between items-center mb-10">
                             <div>
-                                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-gray-900 flex items-center gap-3">
-                                    <Settings size={28} className="text-gray-300" /> Specialist Roster
+                                <h3 className="text-3xl font-black uppercase italic tracking-tighter text-gray-900 flex items-center gap-4">
+                                    <Settings size={32} className="text-green-600" /> Specialist Rules
                                 </h3>
-                                <p className="text-xs font-bold text-[var(--color-primary)] uppercase tracking-widest mt-1 pl-10">Fees & Timings Config</p>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2">Manage consultation fees & timing slots</p>
                             </div>
+                            <button onClick={() => setIsAddingSlot(true)} className="w-14 h-14 rounded-2xl bg-gray-900 text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl shadow-gray-900/20">
+                                <Plus size={24} />
+                            </button>
                         </div>
 
+                        <AnimatePresence>
+                            {isAddingSlot && (
+                                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="mb-10 p-8 border-2 border-dashed border-gray-200 rounded-[32px] bg-gray-50/30">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <h4 className="font-black uppercase italic tracking-tighter text-gray-800">Assign New Doctor Slot</h4>
+                                        <button onClick={() => setIsAddingSlot(false)} className="text-gray-400 hover:text-black"><X size={20} /></button>
+                                    </div>
+                                    <form onSubmit={handleCreateSlot} className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                        <select required className="input-field py-3 font-bold" value={newSlot.doctor} onChange={e => setNewSlot({...newSlot, doctor: e.target.value})}>
+                                            <option value="">Select Doctor</option>
+                                            {availableDoctors.map(d => (
+                                                <option key={d.id} value={d.id}>@{d.username}</option>
+                                            ))}
+                                        </select>
+                                        <input type="number" placeholder="Fee (Rs)" required className="input-field py-3 font-bold" value={newSlot.consultation_fee} onChange={e => setNewSlot({...newSlot, consultation_fee: e.target.value})} />
+                                        <input type="time" required className="input-field py-3 font-bold" value={newSlot.start_time} onChange={e => setNewSlot({...newSlot, start_time: e.target.value})} />
+                                        <input type="time" required className="input-field py-3 font-bold" value={newSlot.end_time} onChange={e => setNewSlot({...newSlot, end_time: e.target.value})} />
+                                        <button type="submit" className="col-span-full mt-2 py-4 rounded-xl bg-green-600 text-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-green-600/20">Initialize Configuration</button>
+                                    </form>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
                         {loading ? (
-                            <div className="text-center font-bold text-gray-300 uppercase italic tracking-widest py-20">Syncing...</div>
+                            <div className="p-20 text-center font-black uppercase tracking-[0.3em] text-gray-200 animate-pulse italic">Syncing Specialist Network...</div>
                         ) : (
-                            <div className="space-y-4">
+                            <div className="grid gap-4">
                                 {doctors.map(d => (
-                                    <div key={d.id} className="bg-white p-6 rounded-2xl border-2 border-gray-50 flex items-center justify-between gap-6 hover:border-gray-200 transition-colors shadow-sm">
-                                        <div className="flex-1">
-                                            <h4 className="text-lg font-black uppercase tracking-tighter text-gray-800">Dr. {d.doctor?.username}</h4>
-                                            <div className="flex items-center gap-4 mt-2">
-                                                <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400 uppercase bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
-                                                    <Clock size={12} className="text-[var(--color-primary)]" />
-                                                    {d.start_time} - {d.end_time}
-                                                </div>
-                                                <div className="flex items-center gap-1.5 text-xs font-bold text-green-700 uppercase bg-green-50 px-3 py-1.5 rounded-lg">
-                                                    <IndianRupee size={12} />
-                                                    {d.consultation_fee} Fee
+                                    <div key={d.id} className="group bg-white p-6 rounded-[32px] border-2 border-gray-50 flex flex-col sm:flex-row items-center justify-between gap-6 hover:border-green-500/20 hover:shadow-2xl hover:shadow-green-900/5 transition-all">
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-16 h-16 rounded-2xl bg-gray-900 text-white flex items-center justify-center font-black italic text-xl">
+                                                {d.doctor_name?.substring(0,2).toUpperCase() || "DR"}
+                                            </div>
+                                            <div>
+                                                <h4 className="text-xl font-black uppercase tracking-tighter text-gray-900 italic">Dr. {d.doctor_name}</h4>
+                                                <div className="flex gap-3 mt-2">
+                                                    <span className="flex items-center gap-1.5 text-[10px] font-black text-gray-400 uppercase tracking-widest"><Clock size={12} className="text-green-500" /> {d.start_time.substring(0,5)} - {d.end_time.substring(0,5)}</span>
+                                                    <span className="flex items-center gap-1.5 text-[10px] font-black text-green-600 uppercase tracking-widest bg-green-50 px-3 py-1 rounded-full"><IndianRupee size={12} /> {d.consultation_fee}</span>
                                                 </div>
                                             </div>
                                         </div>
                                         
-                                        <div className="shrink-0 flex gap-3 flex-col sm:flex-row">
-                                            {/* Dummy inputs for update demo */}
-                                            <div className="relative">
-                                                <IndianRupee size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                                <input type="number" defaultValue={d.consultation_fee} className="w-24 bg-gray-50 border border-gray-200 rounded-xl py-2 pl-8 pr-3 font-bold text-gray-700 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
-                                            </div>
-                                            <button onClick={() => alert('Timing & Fee updated')} className="px-6 py-2 rounded-xl border border-gray-200 text-gray-600 font-bold text-xs uppercase hover:bg-black hover:text-white transition-all shadow-sm">Update</button>
-                                        </div>
+                                        <button onClick={() => handleDeleteSlot(d.id)} className="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all">
+                                            <Trash2 size={18} />
+                                        </button>
                                     </div>
                                 ))}
                                 {doctors.length === 0 && (
-                                    <div className="bg-dashed border-2 p-10 rounded-3xl text-center text-gray-400 font-bold uppercase tracking-widest">No configurations assigned yet.</div>
+                                    <div className="py-20 text-center border-2 border-dashed border-gray-100 rounded-[40px]">
+                                        <p className="font-black uppercase tracking-[0.2em] text-gray-200 italic">No specialists configured</p>
+                                    </div>
                                 )}
                             </div>
                         )}
