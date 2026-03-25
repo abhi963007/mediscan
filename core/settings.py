@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     # Local Apps
     'accounts',
     'patients',
+    'hospitals',
+    'appointments',
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'

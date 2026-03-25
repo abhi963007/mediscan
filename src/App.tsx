@@ -2,9 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import DashboardLayout from './layouts/DashboardLayout';
-import Overview from './pages/dashboard/Overview';
-import Registration from './pages/dashboard/Registration';
-import Scanner from './pages/dashboard/Scanner';
+
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { useAuth } from './contexts/AuthContext';
@@ -13,21 +11,32 @@ import Features from './pages/Features';
 import Modules from './pages/Modules';
 import Support from './pages/Support';
 
-// Placeholder Pages
-const Placeholder = ({ title }: { title: string }) => (
-  <div className="flex flex-col items-center justify-center py-40 gap-5 text-center px-10">
-    <div className="w-24 h-24 rounded-[32px] flex items-center justify-center animate-pulse"
-      style={{ background: 'rgba(15,110,86,0.1)', color: 'var(--color-primary)' }}>
-      <div style={{ fontSize: '2.5rem', fontFamily: 'var(--font-display)', fontWeight: 900, fontStyle: 'italic' }}>!</div>
-    </div>
-    <div style={{ fontSize: '2.25rem', fontFamily: 'var(--font-display)', fontWeight: 900, color: 'var(--color-primary-dark)', textTransform: 'uppercase', fontStyle: 'italic', letterSpacing: '-0.04em' }}>
-      {title} <span style={{ color: '#D1D5DB', fontWeight: 300 }}>Module</span>
-    </div>
-    <p style={{ color: '#9CA3AF', fontWeight: 500, maxWidth: '24rem' }}>
-      This module is part of the integrated MediScan suite and is currently under active deployment.
-    </p>
-  </div>
-);
+// Global Admin Pages
+import AdminOverview from './pages/dashboard/global_admin/AdminOverview';
+import Hospitals from './pages/dashboard/global_admin/Hospitals';
+import Medicines from './pages/dashboard/global_admin/Medicines';
+
+// Hospital Admin Pages
+import HospitalOverview from './pages/dashboard/hospital_admin/HospitalOverview';
+import StaffManagement from './pages/dashboard/hospital_admin/StaffManagement';
+import HospitalSettings from './pages/dashboard/hospital_admin/HospitalSettings';
+
+// Receptionist Pages
+import ReceptionistOverview from './pages/dashboard/receptionist/ReceptionistOverview';
+import RegisterPatient from './pages/dashboard/receptionist/RegisterPatient';
+import ScanQR from './pages/dashboard/receptionist/ScanQR';
+import ReceptionistAppointments from './pages/dashboard/receptionist/Appointments';
+
+// Doctor Pages
+import DoctorOverview from './pages/dashboard/doctor/DoctorOverview';
+import Treatment from './pages/dashboard/doctor/Treatment';
+import DoctorAppointments from './pages/dashboard/doctor/Appointments';
+
+// Patient Pages
+import PatientOverview from './pages/dashboard/patient/PatientOverview';
+import BookAppointment from './pages/dashboard/patient/BookAppointment';
+import MyHistory from './pages/dashboard/patient/MyHistory';
+
 
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: string[] }) => {
   const { user } = useAuth();
@@ -44,6 +53,21 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode,
   return children;
 };
 
+// Auto-redirect to specific dashboards based on role
+const DashboardRoot = () => {
+    const { user } = useAuth();
+    if (!user) return <Navigate to="/login" replace />;
+    
+    switch (user.role) {
+        case 'admin': return <Navigate to="/dashboard/admin" replace />;
+        case 'hospital_admin': return <Navigate to="/dashboard/hospital" replace />;
+        case 'doctor': return <Navigate to="/dashboard/doctor" replace />;
+        case 'receptionist': return <Navigate to="/dashboard/staff" replace />;
+        case 'patient': return <Navigate to="/dashboard/patient" replace />;
+        default: return <Navigate to="/login" replace />;
+    }
+}
+
 function App() {
   return (
     <Routes>
@@ -54,32 +78,45 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Main App Dashboard — all sub-pages have /dashboard/* paths */}
       <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
-        <Route index element={<Overview />} />
+        <Route index element={<DashboardRoot />} />
         
-        {/* Only Receptionists or Admins can register patients manually */}
-        <Route path="register" element={
-          <ProtectedRoute allowedRoles={['receptionist', 'admin']}>
-            <Registration />
-          </ProtectedRoute>
-        } />
-        
-        {/* Only Doctors, Receptionists, and Admins need the scanner */}
-        <Route path="scan" element={
-          <ProtectedRoute allowedRoles={['doctor', 'receptionist', 'admin']}>
-            <Scanner />
-          </ProtectedRoute>
-        } />
-        
-        <Route path="patients" element={<Placeholder title="Patients Directory" />} />
-        <Route path="appointments" element={<Placeholder title="Schedules" />} />
-        <Route path="billing" element={<Placeholder title="Billing Desk" />} />
-        <Route path="reports" element={<Placeholder title="Analytics" />} />
-        <Route path="settings" element={<Placeholder title="Branch Settings" />} />
-        <Route path="consultation/:id" element={<Placeholder title="EMR Consultation" />} />
-        <Route path="patients/:id" element={<Placeholder title="Patient Profile" />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        {/* === GLOBAL ADMIN DRILLDOWN === */}
+        <Route path="admin">
+           <Route index element={<ProtectedRoute allowedRoles={['admin']}><AdminOverview /></ProtectedRoute>} />
+           <Route path="hospitals" element={<ProtectedRoute allowedRoles={['admin']}><Hospitals /></ProtectedRoute>} />
+           <Route path="medicines" element={<ProtectedRoute allowedRoles={['admin']}><Medicines /></ProtectedRoute>} />
+        </Route>
+
+        {/* === HOSPITAL ADMIN DRILLDOWN === */}
+        <Route path="hospital">
+           <Route index element={<ProtectedRoute allowedRoles={['hospital_admin']}><HospitalOverview /></ProtectedRoute>} />
+           <Route path="staff" element={<ProtectedRoute allowedRoles={['hospital_admin']}><StaffManagement /></ProtectedRoute>} />
+           <Route path="settings" element={<ProtectedRoute allowedRoles={['hospital_admin']}><HospitalSettings /></ProtectedRoute>} />
+        </Route>
+
+        {/* === RECEPTIONIST / STAFF DRILLDOWN === */}
+        <Route path="staff">
+           <Route index element={<ProtectedRoute allowedRoles={['receptionist']}><ReceptionistOverview /></ProtectedRoute>} />
+           <Route path="register" element={<ProtectedRoute allowedRoles={['receptionist']}><RegisterPatient /></ProtectedRoute>} />
+           <Route path="scan" element={<ProtectedRoute allowedRoles={['receptionist']}><ScanQR /></ProtectedRoute>} />
+           <Route path="appointments" element={<ProtectedRoute allowedRoles={['receptionist']}><ReceptionistAppointments /></ProtectedRoute>} />
+        </Route>
+
+        {/* === DOCTOR DRILLDOWN === */}
+        <Route path="doctor">
+           <Route index element={<ProtectedRoute allowedRoles={['doctor']}><DoctorOverview /></ProtectedRoute>} />
+           <Route path="treatment" element={<ProtectedRoute allowedRoles={['doctor']}><Treatment /></ProtectedRoute>} />
+           <Route path="appointments" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorAppointments /></ProtectedRoute>} />
+        </Route>
+
+        {/* === PATIENT DRILLDOWN === */}
+        <Route path="patient">
+           <Route index element={<ProtectedRoute allowedRoles={['patient']}><PatientOverview /></ProtectedRoute>} />
+           <Route path="book" element={<ProtectedRoute allowedRoles={['patient']}><BookAppointment /></ProtectedRoute>} />
+           <Route path="history" element={<ProtectedRoute allowedRoles={['patient']}><MyHistory /></ProtectedRoute>} />
+        </Route>
+
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

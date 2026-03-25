@@ -1,17 +1,46 @@
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Users, CreditCard, Calendar, BarChart3, Scan, ArrowLeft } from 'lucide-react';
+import { Building2, UserCog, Users, Settings, Calendar, Scan, Stethoscope, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const P = 'var(--color-primary)';
 const PD = 'var(--color-primary-dark)';
 
 const moduleList = [
-  { icon: <Scan size={40} />, title: 'Reception Desk', desc: 'Secure entry points where patients register, sync QR identifiers, and are quickly triaged into the next available doctor queue.' },
-  { icon: <Users size={40} />, title: 'Doctor EMR', desc: 'Clinical dashboards granting doctors real-time vitals, historical diagnoses, and an integrated prescription builder for paperless handouts.' },
-  { icon: <CreditCard size={40} />, title: 'Billing Center', desc: 'Financial aggregators grouping consultation charges, pharmacy receipts, and lab fees into single unified patient invoices.' },
-  { icon: <Calendar size={40} />, title: 'Scheduling System', desc: 'Automated appointment calendars allowing receptionists to seamlessly book follow-ups and avoid overlapping timeslots.' },
-  { icon: <LayoutDashboard size={40} />, title: 'Pharmacy Point', desc: 'Instant fulfillment interface where pharmacists scan a patient\'s QR to view, dispense, and clear active doctor prescriptions.' },
-  { icon: <BarChart3 size={40} />, title: 'Hospital Analytics', desc: 'C-Level executive insights tracking daily hospital footfall, revenue streams, and average consultation durations for optimization.' },
+  {
+    icon: <Building2 size={40} />,
+    title: 'Hospital Registration & Verification',
+    desc: 'Hospitals register by providing their details (contact, location, address, email). A central Admin verifies each hospital before they can access the platform. The Admin also manages the global medicine list.',
+  },
+  {
+    icon: <UserCog size={40} />,
+    title: 'Doctor Detail Authentication',
+    desc: 'Hospital admins add doctors working in their institute. The system generates unique credentials (username & password) that are sent to each doctor for individual login access.',
+  },
+  {
+    icon: <Users size={40} />,
+    title: 'Employee Detail Authentication',
+    desc: 'Hospital admins manage all staff (receptionists, lab technicians, etc.) in the same way — creating accounts and sending login credentials to corresponding employees.',
+  },
+  {
+    icon: <Settings size={40} />,
+    title: 'Hospital Settings',
+    desc: 'Hospital admins configure consultation fees per doctor and set their official operating timings. They also control the total number of available online booking seats per day.',
+  },
+  {
+    icon: <Calendar size={40} />,
+    title: 'Online Booking',
+    desc: 'Patients search for verified hospitals and available doctors, view real-time seat availability for a specific day, book consultations, manage bookings (view/cancel), and complete payments online.',
+  },
+  {
+    icon: <Scan size={40} />,
+    title: 'Patient Visit',
+    desc: 'New patients are issued a unique QR Code card upon first visit. Reception staff scan returning patient QR codes to instantly retrieve their profile and create appointment queues against available doctors.',
+  },
+  {
+    icon: <Stethoscope size={40} />,
+    title: 'Treatment',
+    desc: 'Doctors scan patient QR codes to access the full treatment history — all past diagnoses, prescriptions, and vitals. Doctors view their appointment queue, examine patients, and prescribe medicines from the master list.',
+  },
 ];
 
 const Modules = () => {
@@ -27,20 +56,21 @@ const Modules = () => {
             System <span style={{ color: P, fontStyle: 'italic' }}>Modules</span>
           </h1>
           <p className="text-xl max-w-2xl mt-6 font-medium" style={{ color: '#6B7280' }}>
-            A modular approach allowing flexible adoption across any clinical department.
+            7 integrated modules powering the complete Global Patient ecosystem — from hospital onboarding to bedside treatment.
           </p>
         </div>
 
         <div className="flex flex-col gap-12">
           {moduleList.map((m, i) => (
-            <motion.div key={i} initial={{ opacity: 0, x: i % 2 === 0 ? -40 : 40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.15 }}
-              className="flex flex-col md:flex-row items-center gap-8 card-premium" style={{ borderLeft: `8px solid ${P}` }}>
-              <div className="w-24 h-24 rounded-full flex items-center justify-center flex-shrink-0"
+            <motion.div key={i} initial={{ opacity: 0, x: i % 2 === 0 ? -40 : 40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
+              className="flex flex-col md:flex-row items-start gap-8 card-premium" style={{ borderLeft: `8px solid ${P}` }}>
+              <div className="w-20 h-20 min-w-[5rem] rounded-full flex items-center justify-center"
                 style={{ backgroundColor: 'rgba(15,110,86,0.08)', color: P }}>
                 {m.icon}
               </div>
               <div>
-                <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-4" style={{ fontFamily: 'var(--font-display)', color: PD }}>{m.title}</h3>
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: P, fontFamily: 'var(--font-display)' }}>MODULE {String(i + 1).padStart(2, '0')}</div>
+                <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-3" style={{ fontFamily: 'var(--font-display)', color: PD }}>{m.title}</h3>
                 <p className="text-lg font-medium leading-relaxed" style={{ color: '#6B7280' }}>{m.desc}</p>
               </div>
             </motion.div>

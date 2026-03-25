@@ -61,3 +61,27 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         if self.user.role == 'patient' and hasattr(self.user, 'patient_profile'):
             data['uhid'] = self.user.patient_profile.uhid
         return data
+
+class HospitalStaffSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'username', 'password', 'email', 'role', 'is_approved', 'hospital')
+        read_only_fields = ('is_approved', 'hospital')
+
+    def create(self, validated_data):
+        hospital = self.context['request'].user.hospital
+        role = validated_data.get('role')
+        if role not in ['doctor', 'receptionist']:
+            raise serializers.ValidationError("Only doctors and receptionists can be created.")
+
+        user = CustomUser.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            password=validated_data['password'],
+            role=role,
+            hospital=hospital,
+            is_approved=True  # Auto approved because hospital admin creates them
+        )
+        return user

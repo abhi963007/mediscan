@@ -1,0 +1,20 @@
+{
+  "pythonVersion": "3.12",
+  "pythonPlatform": "Windows",
+  "venvPath": ".",
+  "venv": "venv",
+  "include": [
+    "accounts",
+    "patients",
+    "hospitals",
+    "appointments",
+    "core"
+  ],
+  "exclude": [
+    "venv",
+    "node_modules",
+    "src"
+  ],
+  "reportMissingImports": "warning",
+  "reportMissingModuleSource": "none"
+}

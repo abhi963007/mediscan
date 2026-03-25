@@ -8,5 +8,5 @@ router.register(r'consultations', ConsultationViewSet)
 router.register(r'prescriptions', PrescriptionViewSet)
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('', include(router.urls)),
 ]

@@ -1,21 +1,12 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, Navigate } from 'react-router-dom';
 import { 
-  LayoutDashboard, 
-  UserPlus, 
-  Users, 
-  Calendar, 
-  CreditCard, 
-  BarChart3, 
-  Settings, 
-  Scan, 
-  Bell, 
-  Search,
-  ChevronRight,
-  LogOut,
+  Building2, Pill, Users, Settings, UserPlus, Scan, 
+  Calendar, Stethoscope, Search, LogOut, ChevronRight, Bell, HeartPulse
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
+
 
 interface SidebarLinkProps {
   to: string;
@@ -28,7 +19,7 @@ const SidebarLink = ({ to, icon, label, collapsed }: SidebarLinkProps) => {
   return (
     <NavLink
       to={to}
-      end={to === '/dashboard'}
+      end={true}
       className={({ isActive }) =>
         `flex items-center gap-4 px-4 py-3.5 rounded-[16px] transition-all duration-300 group relative
         ${isActive
@@ -67,13 +58,60 @@ const DashboardLayout = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
 
-  // Derive a readable page title from path segment
   const segment = location.pathname.split('/').filter(Boolean).pop() ?? 'dashboard';
   const pageTitle = segment.charAt(0).toUpperCase() + segment.slice(1);
 
   if (!user) {
-    return null;
+    return <Navigate to="/login" replace />;
   }
+
+  const renderNavLinks = () => {
+    switch (user.role) {
+      case 'admin':
+        return (
+          <>
+            <SidebarLink to="/dashboard/admin" icon={<Search size={20} />} label="Overview" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/admin/hospitals" icon={<Building2 size={20} />} label="Hospitals Registry" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/admin/medicines" icon={<Pill size={20} />} label="Medicine Master" collapsed={collapsed} />
+          </>
+        );
+      case 'hospital_admin':
+        return (
+          <>
+            <SidebarLink to="/dashboard/hospital" icon={<Building2 size={20} />} label="Hospital Status" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/hospital/staff" icon={<Users size={20} />} label="Staff Registry" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/hospital/settings" icon={<Settings size={20} />} label="Settings" collapsed={collapsed} />
+          </>
+        );
+      case 'receptionist':
+        return (
+          <>
+            <SidebarLink to="/dashboard/staff" icon={<Building2 size={20} />} label="Reception Desk" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/staff/register" icon={<UserPlus size={20} />} label="Patient Register" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/staff/scan" icon={<Scan size={20} />} label="QR Scanner" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/staff/appointments" icon={<Calendar size={20} />} label="Appointments" collapsed={collapsed} />
+          </>
+        );
+      case 'doctor':
+        return (
+          <>
+            <SidebarLink to="/dashboard/doctor" icon={<Stethoscope size={20} />} label="Doctor Desk" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/doctor/appointments" icon={<Calendar size={20} />} label="My Appointments" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/doctor/treatment" icon={<HeartPulse size={20} />} label="Treatment Desk" collapsed={collapsed} />
+          </>
+        );
+      case 'patient':
+        return (
+          <>
+            <SidebarLink to="/dashboard/patient" icon={<Scan size={20} />} label="My E-Card" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/patient/book" icon={<Calendar size={20} />} label="Book Online" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/patient/history" icon={<HeartPulse size={20} />} label="My History" collapsed={collapsed} />
+          </>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="flex min-h-screen overflow-hidden" style={{ backgroundColor: 'var(--color-background)' }}>
@@ -89,52 +127,38 @@ const DashboardLayout = () => {
           <div className="mb-8 px-2 flex items-center h-12">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white flex-shrink-0"
               style={{ backgroundColor: 'var(--color-primary)' }}>
-              <Scan size={16} />
+              <HeartPulse size={16} />
             </div>
             {!collapsed && (
-              <motion.span
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="ml-3 font-black italic text-xl tracking-tighter whitespace-nowrap overflow-hidden"
-                style={{ fontFamily: 'var(--font-display)', color: 'var(--color-primary-dark)' }}
+                className="ml-3 flex flex-col justify-center"
               >
-                MediScan
-              </motion.span>
+                 <span className="font-black italic text-xl tracking-tighter whitespace-nowrap leading-none"
+                  style={{ fontFamily: 'var(--font-display)', color: 'var(--color-primary-dark)' }}>
+                  MediScan
+                 </span>
+                 <span className="text-[10px] uppercase font-bold text-green-600 tracking-wider">Global System</span>
+              </motion.div>
             )}
           </div>
 
-          {/* Nav Label */}
           <div className="px-4 mb-2 h-4">
             {!collapsed && (
               <span className="text-[10px] font-black tracking-[0.2em] text-gray-400 uppercase select-none"
                 style={{ fontFamily: 'var(--font-display)' }}>
-                Main Menu
+                {user.role.replace('_', ' ')} Panel
               </span>
             )}
           </div>
 
-          {/* Navigation links */}
-          <SidebarLink to="/dashboard" icon={<LayoutDashboard size={20} />} label="Overview" collapsed={collapsed} />
+          {renderNavLinks()}
           
-          {['receptionist', 'admin'].includes(user.role) && (
-            <SidebarLink to="/dashboard/register" icon={<UserPlus size={20} />} label="Registration" collapsed={collapsed} />
-          )}
-          
-          {['doctor', 'receptionist', 'admin'].includes(user.role) && (
-            <SidebarLink to="/dashboard/scan" icon={<Scan size={20} />} label="QR Scanner" collapsed={collapsed} />
-          )}
-          
-          {['doctor', 'receptionist', 'admin'].includes(user.role) && (
-            <SidebarLink to="/dashboard/patients" icon={<Users size={20} />} label="Patients" collapsed={collapsed} />
-          )}
-          <SidebarLink to="/dashboard/appointments" icon={<Calendar size={20} />} label="Schedules" collapsed={collapsed} />
-          <SidebarLink to="/dashboard/billing" icon={<CreditCard size={20} />} label="Billing" collapsed={collapsed} />
-          <SidebarLink to="/dashboard/reports" icon={<BarChart3 size={20} />} label="Analytics" collapsed={collapsed} />
         </div>
 
         {/* Sidebar Footer */}
         <div className="p-5 space-y-2 border-t" style={{ borderColor: 'rgba(0,0,0,0.04)' }}>
-          <SidebarLink to="/dashboard/settings" icon={<Settings size={20} />} label="Settings" collapsed={collapsed} />
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="w-full flex items-center gap-4 px-4 py-3.5 rounded-[16px] text-gray-400 hover:bg-gray-50 transition-all group"
@@ -154,7 +178,6 @@ const DashboardLayout = () => {
 
       {/* ─── Main Content ─── */}
       <main className="flex-1 overflow-y-auto h-screen">
-        {/* Top Header */}
         <header className="sticky top-0 z-40 px-10 h-20 flex items-center justify-between"
           style={{ backgroundColor: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(24px)', borderBottom: '1px solid rgba(0,0,0,0.04)' }}>
           <div className="flex items-center gap-6">
@@ -169,37 +192,11 @@ const DashboardLayout = () => {
                 textDecorationThickness: '4px',
                 textUnderlineOffset: '6px',
               }}>
-              {pageTitle}
+              {pageTitle === 'Admin' || pageTitle === 'Hospital' || pageTitle === 'Staff' || pageTitle === 'Doctor' || pageTitle === 'Patient' ? 'Overview' : pageTitle}
             </h1>
-            <div className="hidden md:flex items-center px-4 py-2 rounded-[12px] gap-3 w-64 transition-all"
-              style={{ backgroundColor: 'var(--color-background)', border: '1px solid rgba(0,0,0,0.04)' }}>
-              <Search size={16} className="text-gray-400" />
-              <input
-                type="text"
-                placeholder="Find patient, UHID..."
-                className="bg-transparent text-sm w-full outline-none font-medium"
-                style={{ color: 'var(--color-primary-dark)' }}
-              />
-            </div>
           </div>
 
           <div className="flex items-center gap-5">
-            <div className="hidden sm:flex flex-col text-right">
-              <div className="text-xs font-black uppercase tracking-[0.15em] text-gray-400"
-                style={{ fontFamily: 'var(--font-display)' }}>
-                Tuesday, 24 March
-              </div>
-              <div className="text-sm font-bold italic" style={{ color: 'var(--color-primary)' }}>16:58 IST</div>
-            </div>
-
-            <div className="w-px h-8 bg-black/5" />
-
-            <button className="relative w-10 h-10 flex items-center justify-center text-gray-500 rounded-[12px] transition-all hover:bg-gray-50">
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full border-2 border-white"
-                style={{ backgroundColor: 'var(--color-red)' }} />
-            </button>
-
             <div className="flex items-center gap-3 pl-4 pr-1 py-1 rounded-[16px] transition-all"
               style={{ backgroundColor: 'rgba(15,110,86,0.05)', border: '1px solid rgba(15,110,86,0.1)' }}>
               <div className="flex flex-col text-right">
@@ -224,7 +221,6 @@ const DashboardLayout = () => {
           </div>
         </header>
 
-        {/* Page Content */}
         <div className="p-10" style={{ maxWidth: '1600px', margin: '0 auto' }}>
           <Outlet />
         </div>
