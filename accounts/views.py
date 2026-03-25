@@ -58,6 +58,30 @@ class CreateHospitalStaffView(generics.CreateAPIView):
             return Response({'error': 'Your account is not linked to any hospital.'}, status=status.HTTP_400_BAD_REQUEST)
 
         return super().post(request, *args, **kwargs)
+
+class CreateHospitalAdminView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        if request.user.role != 'admin' and not request.user.is_superuser:
+            return Response({'error': 'Permission denied. Only global admins can create hospital admins.'}, status=status.HTTP_403_FORBIDDEN)
+        
+        request.data['role'] = 'hospital_admin'
+        return super().post(request, *args, **kwargs)
+
+class HospitalAdminsListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        if self.request.user.role != 'admin' and not self.request.user.is_superuser:
+            return CustomUser.objects.none()
+        hospital_id = self.request.query_params.get('hospital')
+        if hospital_id:
+            return CustomUser.objects.filter(role='hospital_admin', hospital_id=hospital_id)
+        return CustomUser.objects.filter(role='hospital_admin')
 from rest_framework.views import APIView
 from django.db.models import Count, Sum
 from hospitals.models import Hospital, MedicineMaster
@@ -100,9 +124,11 @@ class DashboardStatsView(APIView):
                 'patients_treated': Appointment.objects.filter(doctor=user, status='Completed').count() # Assuming status completed exists or we add it
             }
         elif role == 'patient':
+            patient_profile = getattr(user, 'patient_profile', None)
             stats = {
                 'my_appointments': Appointment.objects.filter(patient=user).count(),
-                'last_visit': Appointment.objects.filter(patient=user).order_by('-appointment_date').first().appointment_date if Appointment.objects.filter(patient=user).exists() else None
+                'last_visit': Appointment.objects.filter(patient=user).order_by('-appointment_date').first().appointment_date if Appointment.objects.filter(patient=user).exists() else None,
+                'qr_code_url': patient_profile.qr_code.url if patient_profile and patient_profile.qr_code else None
             }
 
         return Response(stats)

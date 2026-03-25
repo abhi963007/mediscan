@@ -7,6 +7,7 @@ interface User {
   role: string;
   is_approved: boolean;
   uhid?: string;
+  hospital?: number;
 }
 
 interface AuthContextType {

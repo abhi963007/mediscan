@@ -51,7 +51,7 @@ const Register = () => {
       <div className="max-w-5xl w-full flex flex-col md:flex-row gap-0 overflow-hidden rounded-[40px] shadow-2xl bg-white/70 backdrop-blur-xl border border-white">
         {/* Left Side: Animation */}
         <div className="hidden md:flex flex-1 items-center justify-center p-8 bg-gray-50/50">
-           <div className="w-full h-full scale-110 transform">
+           <div className="w-full h-[380px]">
               <DotLottieReact
                 src={signupAnimation}
                 loop

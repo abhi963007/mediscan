@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { ScanFace, UserCheck, CalendarDays, Key, HeartPulse, Clock } from 'lucide-react';
+import { ScanFace, UserCheck, CalendarDays, Key, HeartPulse, Clock, UploadCloud } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
+import jsQR from 'jsqr';
 
 const ScanQR = () => {
     const { user } = useAuth();
@@ -11,11 +12,12 @@ const ScanQR = () => {
     const [doctors, setDoctors] = useState<any[]>([]);
     const [appointment, setAppointment] = useState({ date: '', time: '', doctor_id: '' });
     const [error, setError] = useState('');
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleSimulatedScan = async () => {
+    const processScan = async (scannedUhid: string) => {
         try {
             setError('');
-            const res = await axios.get(`http://127.0.0.1:8000/api/patients/?search=${uhid}`);
+            const res = await axios.get(`http://127.0.0.1:8000/api/patients/?search=${scannedUhid}`);
             if (res.data.length > 0) {
                 setPatient(res.data[0]);
                 fetchHospitalDoctors();
@@ -27,6 +29,41 @@ const ScanQR = () => {
             setError('Error processing scan.');
             setPatient(null);
         }
+    };
+
+    const handleSimulatedScan = () => {
+        if (!uhid) return;
+        processScan(uhid);
+    };
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setError('');
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                if (context) {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    context.drawImage(img, 0, 0);
+                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+                    if (code) {
+                        setUhid(code.data);
+                        processScan(code.data);
+                    } else {
+                        setError('No valid QR code found in the image.');
+                    }
+                }
+            };
+            img.src = event.target?.result as string;
+        };
+        reader.readAsDataURL(file);
     };
 
     const fetchHospitalDoctors = async () => {
@@ -82,18 +119,41 @@ const ScanQR = () => {
 
                     <h3 className="text-xl font-black uppercase text-gray-900 tracking-tighter mb-6">Device Emulation</h3>
                     
-                    <div className="flex gap-4 w-full">
-                        <div className="relative flex-1">
-                            <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                            <input 
-                                type="text" 
-                                placeholder="Enter UHID (e.g., GP-6231)" 
-                                className="w-full bg-white border-2 border-gray-200 py-4 pl-12 pr-4 rounded-xl font-bold tracking-widest uppercase outline-none focus:border-green-500 transition-colors"
-                                value={uhid} onChange={e => setUhid(e.target.value)} 
-                            />
+                    <div className="flex flex-col gap-6 w-full">
+                        <div className="flex gap-4 w-full">
+                            <div className="relative flex-1">
+                                <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                                <input 
+                                    type="text" 
+                                    placeholder="Enter UHID (e.g., GP-6231)" 
+                                    className="w-full bg-white border-2 border-gray-200 py-4 pl-12 pr-4 rounded-xl font-bold tracking-widest uppercase outline-none focus:border-green-500 transition-colors"
+                                    value={uhid} onChange={e => setUhid(e.target.value)} 
+                                />
+                            </div>
+                            <button onClick={handleSimulatedScan} className="btn-primary py-4 px-8 rounded-xl font-black uppercase tracking-widest shadow-xl shadow-green-900/10 hover:shadow-green-900/20">
+                                Scan Read
+                            </button>
                         </div>
-                        <button onClick={handleSimulatedScan} className="btn-primary py-4 px-8 rounded-xl font-black uppercase tracking-widest shadow-xl shadow-green-900/10 hover:shadow-green-900/20">
-                            Scan Read
+
+                        <div className="flex items-center gap-4 w-full">
+                            <div className="h-px bg-gray-200 flex-1"></div>
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">OR UPLOAD CARD</span>
+                            <div className="h-px bg-gray-200 flex-1"></div>
+                        </div>
+
+                        <input 
+                            type="file" 
+                            className="hidden" 
+                            ref={fileInputRef} 
+                            accept="image/*" 
+                            onChange={handleFileUpload} 
+                        />
+                        
+                        <button 
+                            onClick={() => fileInputRef.current?.click()}
+                            className="w-full py-4 px-8 rounded-xl border-2 border-dashed border-gray-300 font-black uppercase tracking-widest text-gray-500 hover:border-green-500 hover:text-green-600 transition-all flex items-center justify-center gap-3 bg-gray-50/50"
+                        >
+                            <UploadCloud size={20} /> Upload QR E-Card Image
                         </button>
                     </div>
 

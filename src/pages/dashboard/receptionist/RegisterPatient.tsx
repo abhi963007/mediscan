@@ -65,7 +65,7 @@ const RegisterPatient = () => {
                                 <FileCheck2 size={40} />
                             </div>
                             <h4 className="text-3xl font-black italic uppercase text-green-700 tracking-tighter mb-2">QR Generated</h4>
-                            <p className="font-bold text-gray-500 uppercase tracking-widest text-sm mb-6">UHID: {success.username}</p> {/* It would return uhid if configured, we mocked it to return user object */}
+                            <p className="font-bold text-gray-500 uppercase tracking-widest text-sm mb-6">UHID: {success.uhid || success.username}</p>
                             
                             <div className="p-8 bg-white rounded-[32px] border border-gray-100 shadow-sm flex flex-col items-center">
                                 {/* Normally fetch the actual QR image here dynamically. Since it's local, we use a placeholder styling */}

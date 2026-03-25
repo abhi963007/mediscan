@@ -22,18 +22,24 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'password', 'email', 'role', 'full_name', 'phone', 'age', 'gender', 'blood_group')
+        fields = ('username', 'password', 'email', 'role', 'full_name', 'phone', 'age', 'gender', 'blood_group', 'hospital')
 
     def create(self, validated_data):
         role = validated_data.get('role', 'patient')
+        hospital = validated_data.get('hospital', None)
+        
         user = CustomUser.objects.create_user(
             username=validated_data['username'],
             email=validated_data.get('email', ''),
             password=validated_data['password'],
-            role=role
+            role=role,
+            hospital=hospital
         )
 
         if role == 'patient':
+            # Patient profile is created by signals or manually here. 
+            # In our current setup, we do it here.
+            # UHID is generated in Patient.save, but we can ensure it's saved.
             Patient.objects.create(
                 user=user,
                 full_name=validated_data.get('full_name', ''),
