@@ -45,7 +45,7 @@ const Register = () => {
       {/* Back to Home Button */}
       <Link to="/" className="absolute top-8 right-8 flex items-center gap-2 px-6 py-2.5 bg-white shadow-xl rounded-2xl hover:scale-105 transition-all group z-50">
           <Home size={18} className="text-gray-400 group-hover:text-[var(--color-primary)] transition-colors" />
-          <span className="text-xs font-black uppercase tracking-widest text-gray-500 group-hover:text-gray-800 transition-colors">Home</span>
+          <span className="text-xs font-black uppercase tracking-widest text-gray-500 group-hover:text-gray-800 transition-colors font-['Montserrat']">Home</span>
       </Link>
       
       <div className="max-w-5xl w-full flex flex-col md:flex-row gap-0 overflow-hidden rounded-[40px] shadow-2xl bg-white/70 backdrop-blur-xl border border-white">
@@ -66,7 +66,7 @@ const Register = () => {
             <h2 className="text-3xl italic uppercase tracking-tighter" style={{ fontFamily: 'var(--font-display)', fontWeight: 900, color: 'var(--color-primary-dark)', textDecoration: 'underline', textDecorationColor: 'rgba(15,110,86,0.15)', textDecorationThickness: '4px', textUnderlineOffset: '8px' }}>
               Create Account
             </h2>
-            <p className="font-bold mt-2 text-gray-400 text-[10px] uppercase tracking-widest pl-1">Join the MediScan ecosystem.</p>
+            <p className="font-bold mt-2 text-gray-400 text-[10px] uppercase tracking-widest pl-1 font-['Montserrat']">Join the MediScan ecosystem.</p>
           </div>
 
           <div className="flex gap-2 mb-6 bg-gray-50 p-1.5 rounded-2xl">
@@ -96,7 +96,7 @@ const Register = () => {
             <AnimatePresence>
               {role === 'patient' && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-4 pt-4 border-t border-gray-100 overflow-hidden">
-                  <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-1 font-bold">Patient Details</h4>
+                  <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-1 font-['Montserrat']">Patient Details</h4>
                   
                   <div className="grid md:grid-cols-2 gap-4">
                     <input type="text" placeholder="Full Name" required className="input-field py-2" value={formData.full_name} onChange={e => setFormData({ ...formData, full_name: e.target.value })} />
@@ -121,7 +121,7 @@ const Register = () => {
             </button>
           </form>
 
-          <div className="mt-8 text-center text-[10px] font-black uppercase tracking-widest text-gray-400">
+          <div className="mt-8 text-center text-[10px] font-black uppercase tracking-widest text-gray-400 font-['Montserrat']">
             Already have an account? <Link to="/login" style={{ color: 'var(--color-primary)' }} className="font-bold underline underline-offset-4">Sign In</Link>
           </div>
         </motion.div>

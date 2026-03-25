@@ -49,7 +49,7 @@ const PatientOverview = () => {
     return (
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="p-8">
             <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Health Passport</h2>
-            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1">Patient Global ID Overview</p>
+            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Patient Global ID Overview</p>
 
             <div className="grid md:grid-cols-2 gap-8 mb-12">
                 {cards.map((card, i) => (
@@ -63,7 +63,7 @@ const PatientOverview = () => {
                         <div>
                             <h4 className="text-sm font-black uppercase tracking-widest text-gray-400 mb-2">{card.title}</h4>
                             <p className="text-6xl font-black italic tracking-tighter text-gray-900">{card.value}</p>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2">{card.sub}</p>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 font-['Montserrat']">{card.sub}</p>
                         </div>
                         <div className={`${card.color} text-white w-24 h-24 rounded-[32px] flex items-center justify-center shadow-2xl shadow-gray-400/20`}>
                             {card.icon}
@@ -85,11 +85,11 @@ const PatientOverview = () => {
                         </div>
                     </div>
                     <h3 className="text-xl font-black uppercase italic text-gray-900 tracking-tighter">My Global E-Card</h3>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 px-10 leading-relaxed italic">UHID: {user?.uhid || user?.username}</p>
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 px-10 leading-relaxed italic font-['Montserrat']">UHID: {user?.uhid || user?.username}</p>
                     <button onClick={handleDownload} className="w-full mt-6 py-4 bg-gray-900 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-black transition-colors flex items-center justify-center gap-2 shadow-xl shadow-gray-900/10">
                         <Download size={14} /> Download Digital ID
                     </button>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 bg-gray-100 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm leading-relaxed max-w-[180px]">Scan this card at any global verified hospital desk.</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 bg-gray-100 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm leading-relaxed max-w-[180px] font-['Montserrat']">Scan this card at any global verified hospital desk.</p>
                 </div>
 
                 <div className="lg:col-span-8 space-y-8">
@@ -100,7 +100,7 @@ const PatientOverview = () => {
                                     <HeartPulse size={32} />
                                 </div>
                                 <h4 className="text-xl font-black italic uppercase text-gray-900 tracking-tighter">New Consultation</h4>
-                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-2 max-w-[200px] leading-relaxed">Book seats via online booking network.</p>
+                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-2 max-w-[200px] leading-relaxed font-['Montserrat']">Book seats via online booking network.</p>
                             </div>
                         </Link>
 
@@ -110,7 +110,7 @@ const PatientOverview = () => {
                                     <History size={32} />
                                 </div>
                                 <h4 className="text-xl font-black italic uppercase text-gray-900 tracking-tighter">Unified History</h4>
-                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-2 max-w-[200px] leading-relaxed">My global medical journals and visits.</p>
+                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-2 max-w-[200px] leading-relaxed font-['Montserrat']">My global medical journals and visits.</p>
                             </div>
                         </Link>
                     </div>
@@ -119,7 +119,7 @@ const PatientOverview = () => {
                         <Smartphone size={32} className="text-gray-300 shrink-0" />
                         <div>
                             <h4 className="text-sm font-black uppercase text-gray-800 tracking-widest mb-1 italic">Real-Time Sync Operational</h4>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-relaxed">Your data is currently syncing across the global E-Card ledger system. Last update: Just now.</p>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-relaxed font-['Montserrat']">Your data is currently syncing across the global E-Card ledger system. Last update: Just now.</p>
                         </div>
                     </div>
                 </div>

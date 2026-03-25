@@ -31,7 +31,7 @@ const ReceptionistOverview = () => {
     return (
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="p-8">
             <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Visit Desk</h2>
-            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1">Front end registry control</p>
+            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Front end registry control</p>
 
             <div className="grid md:grid-cols-2 gap-6 mb-12">
                 {cards.map((card, i) => (
@@ -45,7 +45,7 @@ const ReceptionistOverview = () => {
                         <div>
                             <h4 className="text-sm font-black uppercase tracking-widest text-gray-400 mb-2">{card.title}</h4>
                             <p className="text-5xl font-black italic tracking-tighter text-gray-900">{card.value}</p>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2">{card.sub}</p>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 font-['Montserrat']">{card.sub}</p>
                         </div>
                         <div className={`${card.color} text-white w-20 h-20 rounded-[28px] flex items-center justify-center shadow-xl shadow-gray-400/20`}>
                             {card.icon}
@@ -63,7 +63,7 @@ const ReceptionistOverview = () => {
                         <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-4 flex items-center gap-3 text-white">
                              Quick Scan Profile <ScanFace className="text-white/40" />
                         </h3>
-                        <p className="text-indigo-200 font-bold uppercase tracking-widest text-xs max-w-sm mb-10 leading-relaxed shadow-sm">Unlock patient identity and global medical history by scanning their encrypted E-Card identifier.</p>
+                        <p className="text-indigo-200 font-bold uppercase tracking-widest text-xs max-w-sm mb-10 leading-relaxed shadow-sm font-['Montserrat']">Unlock patient identity and global medical history by scanning their encrypted E-Card identifier.</p>
                         <div className="bg-white/10 inline-grid grid-cols-2 gap-4 border border-white/20 p-2 rounded-2xl backdrop-blur-md">
                             <div className="flex items-center gap-2 px-4 py-2 bg-indigo-500 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg">Verify ID</div>
                             <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg">Unlock History</div>
@@ -77,7 +77,7 @@ const ReceptionistOverview = () => {
                             <UserPlus size={32} />
                         </div>
                         <h4 className="text-xl font-black italic uppercase text-gray-900 tracking-tighter">New Global Profile</h4>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-2 max-w-[160px] leading-relaxed">Register first-time visits and issue E-Cards.</p>
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-2 max-w-[160px] leading-relaxed font-['Montserrat']">Register first-time visits and issue E-Cards.</p>
                     </div>
                 </Link>
             </div>

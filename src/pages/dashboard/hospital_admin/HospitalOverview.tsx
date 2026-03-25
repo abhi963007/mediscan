@@ -32,7 +32,7 @@ const HospitalOverview = () => {
     return (
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="p-8">
             <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Hospital Command</h2>
-            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1">Facility Control Center</p>
+            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Facility Control Center</p>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 {cards.map((card, i) => (
@@ -51,7 +51,7 @@ const HospitalOverview = () => {
                         </div>
                         <div className="mt-6 border-t pt-4 border-gray-50">
                             <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">{card.title}</h4>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase">{card.sub}</p>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase font-['Montserrat']">{card.sub}</p>
                         </div>
                     </motion.div>
                 ))}
@@ -64,7 +64,7 @@ const HospitalOverview = () => {
                     </div>
                     <div>
                         <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-2 text-white">Facility Security Score</h3>
-                        <p className="text-green-100 font-bold uppercase tracking-widest text-xs leading-relaxed max-w-sm">All medical credentials in this institution are globally verified. Encryption protocols operational.</p>
+                        <p className="text-green-100 font-bold uppercase tracking-widest text-xs leading-relaxed max-w-sm font-['Montserrat']">All medical credentials in this institution are globally verified. Encryption protocols operational.</p>
                         <div className="mt-4 inline-block font-black uppercase text-[10px] bg-white/10 px-4 py-2 rounded-full border border-white/20 backdrop-blur-sm shadow-sm">
                             99.9% Integrity
                         </div>
@@ -83,7 +83,7 @@ const HospitalOverview = () => {
                         <div className="h-4 bg-gray-100 rounded-full overflow-hidden shadow-inner">
                             <div className="h-full bg-[var(--color-primary)] w-[85%] rounded-full shadow-lg"></div>
                         </div>
-                        <p className="text-[10px] font-bold text-gray-400 text-center uppercase tracking-widest mt-4">Calculated based on Online Capacity Seat settings.</p>
+                        <p className="text-[10px] font-bold text-gray-400 text-center uppercase tracking-widest mt-4 font-['Montserrat']">Calculated based on Online Capacity Seat settings.</p>
                     </div>
                 </div>
             </div>

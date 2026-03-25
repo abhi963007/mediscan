@@ -48,7 +48,7 @@ const MyHistory = () => {
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 pb-32 max-w-6xl mx-auto">
             <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">My History</h2>
-            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1">Global Medical Records</p>
+            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Global Medical Records</p>
 
             {loading ? (
                 <div className="text-center p-10 font-bold uppercase tracking-widest text-gray-400">Loading Records...</div>
@@ -65,7 +65,7 @@ const MyHistory = () => {
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
                                             <h4 className="text-lg font-black uppercase tracking-tight text-gray-900">{a.hospital?.name || 'Clinic'}</h4>
-                                            <p className="font-bold text-xs uppercase tracking-widest text-[var(--color-primary)]">Dr. {a.doctor?.username || 'Specialist'}</p>
+                                            <p className="font-bold text-xs uppercase tracking-widest text-[var(--color-primary)] font-['Montserrat']">Dr. {a.doctor?.username || 'Specialist'}</p>
                                         </div>
                                         <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl border shadow-sm ${a.status === 'Booked' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
                                             {a.status}
@@ -105,7 +105,7 @@ const MyHistory = () => {
                                             {new Date(h.date).toLocaleDateString()}
                                         </div>
                                     </div>
-                                    <p className="font-bold text-sm text-gray-500 mb-4">{h.chief_complaint}</p>
+                                    <p className="font-bold text-sm text-gray-500 mb-4 font-['Montserrat']">{h.chief_complaint}</p>
                                     
                                     <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest mb-4">
                                         <span className="bg-white border border-gray-100 px-3 py-1.5 rounded-lg shadow-sm text-gray-400">BP: {h.blood_pressure || 'N/A'}</span>

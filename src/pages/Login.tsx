@@ -41,7 +41,7 @@ const Login = () => {
       {/* Back to Home Button */}
       <Link to="/" className="absolute top-8 right-8 flex items-center gap-2 px-6 py-2.5 bg-white shadow-xl rounded-2xl hover:scale-105 transition-all group z-50">
           <Home size={18} className="text-gray-400 group-hover:text-[var(--color-primary)] transition-colors" />
-          <span className="text-xs font-black uppercase tracking-widest text-gray-500 group-hover:text-gray-800 transition-colors">Home</span>
+          <span className="text-xs font-black uppercase tracking-widest text-gray-500 group-hover:text-gray-800 transition-colors font-['Montserrat']">Home</span>
       </Link>
 
       <div className="max-w-5xl w-full flex flex-col md:flex-row gap-0 overflow-hidden rounded-[32px] shadow-2xl bg-white/70 backdrop-blur-xl border border-white">
@@ -65,7 +65,7 @@ const Login = () => {
             <h2 className="text-3xl italic uppercase tracking-tighter" style={{ fontFamily: 'var(--font-display)', fontWeight: 900, color: 'var(--color-primary-dark)' }}>
               MediScan Login
             </h2>
-            <p className="text-gray-400 mt-2 text-xs font-black uppercase tracking-widest">Global Health Access</p>
+            <p className="text-gray-400 mt-2 text-xs font-black uppercase tracking-widest font-['Montserrat']">Global Health Access</p>
           </div>
 
           {error && <div className="p-3 mb-6 rounded-xl text-xs font-bold text-white bg-red-600/80 text-center uppercase tracking-widest">{error}</div>}
@@ -82,7 +82,7 @@ const Login = () => {
             <button type="submit" className="btn-primary w-full mt-6 py-4 italic uppercase tracking-tighter text-lg">Sign In</button>
           </form>
 
-          <div className="mt-10 text-center text-xs font-black uppercase tracking-widest text-gray-400">
+          <div className="mt-10 text-center text-xs font-black uppercase tracking-widest text-gray-400 font-['Montserrat']">
             Not registered? <Link to="/register" style={{ color: 'var(--color-primary)' }} className="font-bold underline underline-offset-4">Create Account</Link>
           </div>
         </motion.div>
