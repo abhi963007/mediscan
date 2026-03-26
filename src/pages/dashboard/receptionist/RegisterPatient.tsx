@@ -27,23 +27,30 @@ const RegisterPatient = () => {
             
             // In a real app, the registration response should include the profile info.
             // We search for the profile to get the QR code.
+            // The registration response should include the profile info.
+            // Search for the profile to get the QR code.
             const token = localStorage.getItem('access');
             const uhid = res.data.uhid || res.data.username;
             
-            // Wait slightly for background tasks if any
-            setTimeout(async () => {
-                try {
-                    const patientRes = await axios.get(`http://127.0.0.1:8000/api/patients/patients/?search=${uhid}`, {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
-                    if (patientRes.data.results?.length > 0 && patientRes.data.results[0].qr_code_url) {
-                        setQrUrl(patientRes.data.results[0].qr_code_url);
-                    } else if (patientRes.data.length > 0 && patientRes.data[0].qr_code) {
-                        setQrUrl(`http://127.0.0.1:8000${patientRes.data[0].qr_code}`);
+            try {
+                const patientRes = await axios.get(`http://127.0.0.1:8000/api/patients/patients/?search=${uhid}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                const patientData = patientRes.data.results?.[0] || patientRes.data[0];
+                if (patientData && patientData.qr_code) {
+                    const rawQr = patientData.qr_code;
+                    // Only prepend the host if the backend returned a relative path
+                    if (rawQr.startsWith('http')) {
+                        setQrUrl(rawQr);
+                    } else {
+                        setQrUrl(`http://127.0.0.1:8000${rawQr}`);
                     }
-                } catch (e) { console.error('QR fetch error', e); }
-                setLoading(false);
-            }, 1000);
+                }
+            } catch (e) {
+                console.error('QR fetch error', e);
+            }
+            setLoading(false);
 
             setFormData({ 
                 username: '', password: '', email: '', full_name: '', phone: '', age: '', gender: 'Male', blood_group: 'O+', role: 'patient',

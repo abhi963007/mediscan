@@ -139,10 +139,10 @@ const ScanQR = () => {
                 </div>
             </div>
 
-            <div className={patient ? 'grid lg:grid-cols-5 gap-10 items-start' : 'grid lg:grid-cols-2 gap-10 items-start'}>
+            <div className={patient ? 'grid lg:grid-cols-5 gap-10 items-start' : 'flex justify-center'}>
 
                 {/* LEFT: Camera Scanner Card */}
-                <div className={patient ? 'lg:col-span-2' : 'lg:col-span-1'}>
+                <div className={patient ? 'lg:col-span-2' : 'w-full max-w-lg'}>
                     <div className="card-premium bg-white border border-gray-100 shadow-2xl shadow-gray-200/60 overflow-hidden relative">
                         {/* Green top accent */}
                         <div className="h-1.5 bg-gradient-to-r from-green-400 via-[var(--color-primary)] to-green-400"></div>
