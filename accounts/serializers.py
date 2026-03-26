@@ -5,10 +5,14 @@ from .models import CustomUser
 from patients.models import Patient
 
 class UserSerializer(serializers.ModelSerializer):
+    hospital_name = serializers.SerializerMethodField()
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'role', 'is_approved')
+        fields = ('id', 'username', 'email', 'role', 'is_approved', 'hospital', 'hospital_name')
         read_only_fields = ('is_approved',)
+
+    def get_hospital_name(self, obj):
+        return obj.hospital.name if obj.hospital else None
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -24,8 +28,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ('username', 'password', 'email', 'role', 'full_name', 'phone', 'age', 'gender', 'blood_group', 'hospital')
 
+    def validate_role(self, value):
+        if value != 'patient':
+            raise serializers.ValidationError("Only patients can self-register. Other roles must be added by a hospital administrator.")
+        return value
+
     def create(self, validated_data):
-        role = validated_data.get('role', 'patient')
+        role = 'patient' # Force role to patient
         hospital = validated_data.get('hospital', None)
         
         user = CustomUser.objects.create_user(
@@ -64,6 +73,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         
         data['role'] = self.user.role
         data['username'] = self.user.username
+        if self.user.hospital:
+            data['hospital_name'] = self.user.hospital.name
         if self.user.role == 'patient' and hasattr(self.user, 'patient_profile'):
             data['uhid'] = self.user.patient_profile.uhid
         return data

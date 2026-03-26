@@ -39,8 +39,7 @@ const Appointments = () => {
     };
 
     const filteredAppts = appointments.filter(a => 
-        a.patient?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        a.patient?.uhid?.toLowerCase().includes(searchTerm.toLowerCase())
+        a.patient_username?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const totalPages = Math.ceil(filteredAppts.length / itemsPerPage);
@@ -129,11 +128,11 @@ const Appointments = () => {
                                     </div>
                                     <div className="text-center md:text-left">
                                         <h5 className="text-xl font-black italic uppercase tracking-tighter text-gray-900 group-hover:text-blue-600 transition-colors mb-1">
-                                            {a.patient?.full_name || 'Anonymous Patient'}
+                                            {a.patient_username || 'Anonymous Patient'}
                                         </h5>
                                         <div className="flex items-center justify-center md:justify-start gap-2">
                                             <span className="text-[10px] font-black tracking-widest text-blue-500 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 uppercase">
-                                                {a.patient?.uhid || a.patient?.user?.username || 'GUEST'}
+                                                {a.patient_username || 'GUEST'}
                                             </span>
                                             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Global Patient System</span>
                                         </div>

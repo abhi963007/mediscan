@@ -1,12 +1,15 @@
 from rest_framework import serializers
-from .models import Hospital, HospitalSettings, DoctorSlot, MedicineMaster
+from .models import (
+    Hospital, HospitalSettings, DoctorSlot,
+    Medicine, MedicineStock, DoctorSchedule, DoctorLeave
+)
 
 
 class HospitalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hospital
         fields = '__all__'
-        read_only_fields = ('is_verified', 'created_at')
+        read_only_fields = ('is_verified', 'created_at', 'updated_at')
 
 
 class HospitalSettingsSerializer(serializers.ModelSerializer):
@@ -23,7 +26,40 @@ class DoctorSlotSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class MedicineMasterSerializer(serializers.ModelSerializer):
+class DoctorScheduleSerializer(serializers.ModelSerializer):
+    doctor_username = serializers.CharField(source='doctor.username', read_only=True)
+    hospital_name = serializers.CharField(source='hospital.name', read_only=True)
+
     class Meta:
-        model = MedicineMaster
+        model = DoctorSchedule
+        fields = '__all__'
+
+
+class DoctorLeaveSerializer(serializers.ModelSerializer):
+    doctor_username = serializers.CharField(source='doctor.username', read_only=True)
+    approved_by_username = serializers.CharField(source='approved_by.username', read_only=True)
+
+    class Meta:
+        model = DoctorLeave
+        fields = '__all__'
+        read_only_fields = ('is_approved', 'approved_by')
+
+
+class MedicineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Medicine
+        fields = '__all__'
+        read_only_fields = ('added_at', 'updated_at')
+
+
+# Alias so any code importing MedicineMasterSerializer still works
+MedicineMasterSerializer = MedicineSerializer
+
+
+class MedicineStockSerializer(serializers.ModelSerializer):
+    medicine_name = serializers.CharField(source='medicine.name', read_only=True)
+    hospital_name = serializers.CharField(source='hospital.name', read_only=True)
+
+    class Meta:
+        model = MedicineStock
         fields = '__all__'

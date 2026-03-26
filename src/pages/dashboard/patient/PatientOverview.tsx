@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { QrCode, CalendarDays, History, Download, Smartphone, ShieldCheck, HeartPulse } from 'lucide-react';
+import { QrCode, CalendarDays, History, Download, Smartphone, ShieldCheck, HeartPulse, Activity, User, ShieldAlert, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 
@@ -39,91 +39,141 @@ const PatientOverview = () => {
         }
     };
 
-    if (loading) return <div className="p-8 font-black uppercase tracking-widest text-gray-400">Syncing Health Profile...</div>;
+    if (loading) return (
+        <div className="p-8 flex items-center justify-center min-h-[60vh]">
+            <div className="w-12 h-12 border-4 border-emerald-100 border-t-emerald-600 rounded-full animate-spin"></div>
+        </div>
+    );
 
     const cards = [
-        { title: 'My Appointments', value: stats?.my_appointments || 0, icon: <CalendarDays />, color: 'bg-[var(--color-primary)]', sub: 'Future consultations' },
-        { title: 'UHID Verified', value: '1', icon: <ShieldCheck />, color: 'bg-indigo-600', sub: 'Global E-Card active' },
+        { 
+            title: 'Admission History', 
+            value: stats?.my_appointments || 0, 
+            icon: <CalendarDays size={32} />, 
+            color: 'from-emerald-600 to-emerald-700', 
+            sub: 'Clinical Sessions Tracked' 
+        },
+        { 
+            title: 'Global UHID Verification', 
+            value: 'Verified', 
+            icon: <ShieldCheck size={32} />, 
+            color: 'from-gray-800 to-gray-900 text-sm', 
+            sub: 'Immutable Identity Active' 
+        },
     ];
 
     return (
-        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="p-8">
-            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Health Passport</h2>
-            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Patient Global ID Overview</p>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 max-w-7xl mx-auto pb-32">
+            <div className="mb-12">
+                <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Health Passport</h2>
+                <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Global Identity & Record Hub</p>
+            </div>
 
-            <div className="grid md:grid-cols-2 gap-8 mb-12">
+            <div className="grid md:grid-cols-2 gap-10 mb-12">
                 {cards.map((card, i) => (
                     <motion.div 
                         key={i}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: i * 0.1 }}
-                        className="card-premium p-10 border-2 border-gray-50 flex items-center justify-between shadow-2xl shadow-gray-200/40"
+                        className="card-premium p-10 relative overflow-hidden group shadow-3xl shadow-emerald-900/5 bg-white border border-gray-50 h-full"
                     >
-                        <div>
-                            <h4 className="text-sm font-black uppercase tracking-widest text-gray-400 mb-2">{card.title}</h4>
-                            <p className="text-6xl font-black italic tracking-tighter text-gray-900">{card.value}</p>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 font-['Montserrat']">{card.sub}</p>
+                        <div className="flex justify-between items-start mb-10 relative z-10">
+                            <div>
+                                <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 mb-4 font-['Montserrat']">{card.title}</h4>
+                                <p className={`font-black italic tracking-tighter text-gray-900 ${card.value === 'Verified' ? 'text-4xl' : 'text-7xl'}`}>{card.value}</p>
+                            </div>
+                            <div className={`w-20 h-20 rounded-[30px] bg-gradient-to-br ${card.color} text-white flex items-center justify-center shadow-2xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6`}>
+                                {card.icon}
+                            </div>
                         </div>
-                        <div className={`${card.color} text-white w-24 h-24 rounded-[32px] flex items-center justify-center shadow-2xl shadow-gray-400/20`}>
-                            {card.icon}
+                        <div className="flex items-center justify-between relative z-10">
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-['Montserrat'] group-hover:text-emerald-600 transition-colors">{card.sub}</p>
                         </div>
                     </motion.div>
                 ))}
             </div>
 
             <div className="grid lg:grid-cols-12 gap-10">
-                <div className="lg:col-span-4 card-premium p-10 border-2 border-[var(--color-primary)] bg-gradient-to-b from-green-50/50 to-white flex flex-col items-center justify-center text-center shadow-2xl shadow-green-900/5">
-                    <div className="p-8 bg-white rounded-[40px] shadow-sm border border-gray-100 flex flex-col items-center mb-6">
-                        <div className="w-32 h-32 bg-gray-50 rounded-2xl flex items-center justify-center shadow-inner relative overflow-hidden">
-                            {stats?.qr_code_url ? (
-                                <img src={`http://127.0.0.1:8000${stats.qr_code_url}`} alt="QR Code" className="w-full h-full object-cover" />
-                            ) : (
-                                <QrCode size={80} className="text-gray-300" />
-                            )}
-                            <div className="absolute inset-0 bg-gradient-to-tr from-green-500/10 to-transparent pointer-events-none"></div>
+                <div className="lg:col-span-4 flex flex-col gap-8">
+                    <div className="card-premium p-10 bg-[#064E3B] text-white flex flex-col items-center justify-center text-center shadow-4xl shadow-emerald-900/40 border-0 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+                        <div className="p-8 bg-white/5 rounded-[48px] backdrop-blur-3xl border border-white/10 flex flex-col items-center mb-8 shadow-inner relative z-10 group-hover:scale-105 transition-transform duration-700">
+                            <div className="w-48 h-48 bg-white rounded-[40px] flex items-center justify-center shadow-2xl relative overflow-hidden p-4">
+                                {stats?.qr_code_url ? (
+                                    <img src={`http://127.0.0.1:8000${stats.qr_code_url}`} alt="QR Code" className="w-full h-full object-cover rounded-3xl" />
+                                ) : (
+                                    <QrCode size={100} className="text-gray-100" />
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent pointer-events-none"></div>
+                            </div>
+                        </div>
+                        <h3 className="text-2xl font-black uppercase italic text-white tracking-tighter relative z-10 mb-2 font-['Montserrat']">Global Digital ID</h3>
+                        <p className="text-[8px] font-black text-emerald-300/60 uppercase tracking-[0.4em] relative z-10 font-['Montserrat'] mb-8">UHID: {user?.uhid || user?.username}</p>
+                        
+                        <button onClick={handleDownload} className="w-full py-5 bg-white text-[#064E3B] rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl shadow-black/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 relative z-10 group/btn font-['Montserrat']">
+                            <Download size={18} className="group-hover/btn:-translate-y-1 transition-transform" /> EXPAND GLOBAL PASS
+                        </button>
+                    </div>
+
+                    <div className="card-premium p-8 bg-white border border-gray-100 flex items-center gap-6 shadow-xl shadow-gray-200/50">
+                        <div className="p-4 bg-emerald-50 rounded-2xl text-emerald-600"><Smartphone size={24} /></div>
+                        <div>
+                            <h5 className="font-black uppercase text-[10px] tracking-widest text-gray-900 mb-1">Real-Time Ledger</h5>
+                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest font-['Montserrat']">Last identity sync: Global node 09-A</p>
                         </div>
                     </div>
-                    <h3 className="text-xl font-black uppercase italic text-gray-900 tracking-tighter">My Global E-Card</h3>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 px-10 leading-relaxed italic font-['Montserrat']">UHID: {user?.uhid || user?.username}</p>
-                    <button onClick={handleDownload} className="w-full mt-6 py-4 bg-gray-900 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-black transition-colors flex items-center justify-center gap-2 shadow-xl shadow-gray-900/10">
-                        <Download size={14} /> Download Digital ID
-                    </button>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 bg-gray-100 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm leading-relaxed max-w-[180px] font-['Montserrat']">Scan this card at any global verified hospital desk.</p>
                 </div>
 
-                <div className="lg:col-span-8 space-y-8">
-                    <div className="grid md:grid-cols-2 gap-8">
-                        <Link to="/dashboard/patient/book" className="group">
-                            <div className="card-premium p-10 h-full border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-center hover:bg-white hover:border-green-300 transition-all hover:shadow-2xl hover:shadow-green-900/5">
-                                <div className="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 transition-transform">
-                                    <HeartPulse size={32} />
+                <div className="lg:col-span-8 flex flex-col gap-10">
+                    <div className="grid md:grid-cols-2 gap-10 h-full">
+                        <Link to="/dashboard/patient/book" className="group h-full">
+                            <div className="card-premium h-full p-12 bg-white border-2 border-emerald-50 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:border-emerald-500 group-hover:shadow-4xl group-hover:shadow-emerald-900/10 hover:-translate-y-1 relative overflow-hidden">
+                                <div className="absolute -right-10 -top-10 w-32 h-32 bg-emerald-50 rounded-full blur-3xl group-hover:bg-emerald-100 transition-colors"></div>
+                                <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-[32px] flex items-center justify-center mb-8 shadow-inner border border-emerald-100 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500">
+                                    <HeartPulse size={40} />
                                 </div>
-                                <h4 className="text-xl font-black italic uppercase text-gray-900 tracking-tighter">New Consultation</h4>
-                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-2 max-w-[200px] leading-relaxed font-['Montserrat']">Book seats via online booking network.</p>
+                                <h4 className="text-3xl font-black italic uppercase text-gray-900 tracking-tighter mb-4 group-hover:text-emerald-700 transition-colors">Initiate Consult</h4>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] max-w-[220px] leading-relaxed font-['Montserrat']">Access world-class specialists via the MediScan network.</p>
+                                <div className="mt-8 flex items-center gap-2 group-hover:translate-x-2 transition-transform text-emerald-500">
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Reserve Slot</span> <ChevronRight size={16} />
+                                </div>
                             </div>
                         </Link>
 
-                        <Link to="/dashboard/patient/history" className="group">
-                            <div className="card-premium p-10 h-full border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-center hover:bg-white hover:border-blue-300 transition-all hover:shadow-2xl hover:shadow-blue-900/5">
-                                <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 transition-transform">
-                                    <History size={32} />
+                        <Link to="/dashboard/patient/history" className="group h-full">
+                            <div className="card-premium h-full p-12 bg-white border-2 border-gray-50 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:border-gray-900 group-hover:shadow-4xl group-hover:shadow-gray-200/40 hover:-translate-y-1 relative overflow-hidden">
+                                <div className="absolute -right-10 -top-10 w-32 h-32 bg-gray-50 rounded-full blur-3xl group-hover:bg-gray-100 transition-colors"></div>
+                                <div className="w-20 h-20 bg-gray-50 text-gray-500 rounded-[32px] flex items-center justify-center mb-8 shadow-inner border border-gray-100 group-hover:scale-110 group-hover:bg-gray-900 group-hover:text-white transition-all duration-500">
+                                    <History size={40} />
                                 </div>
-                                <h4 className="text-xl font-black italic uppercase text-gray-900 tracking-tighter">Unified History</h4>
-                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-2 max-w-[200px] leading-relaxed font-['Montserrat']">My global medical journals and visits.</p>
+                                <h4 className="text-3xl font-black italic uppercase text-gray-900 tracking-tighter mb-4 group-hover:text-black transition-colors">Unified EMR</h4>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] max-w-[220px] leading-relaxed font-['Montserrat']">View your global clinical journey and prescription trails.</p>
+                                <div className="mt-8 flex items-center gap-2 group-hover:translate-x-2 transition-transform text-gray-900">
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Examine Log</span> <ChevronRight size={16} />
+                                </div>
                             </div>
                         </Link>
                     </div>
 
-                    <div className="card-premium p-8 border border-gray-100 bg-gray-50 flex gap-6 items-center shadow-inner">
-                        <Smartphone size={32} className="text-gray-300 shrink-0" />
-                        <div>
-                            <h4 className="text-sm font-black uppercase text-gray-800 tracking-widest mb-1 italic">Real-Time Sync Operational</h4>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-relaxed font-['Montserrat']">Your data is currently syncing across the global E-Card ledger system. Last update: Just now.</p>
+                    <div className="card-premium p-10 bg-gray-900 text-white shadow-2xl shadow-gray-900/40 relative overflow-hidden flex flex-col md:flex-row items-center gap-10">
+                        <div className="absolute right-0 top-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                        <div className="w-20 h-20 bg-white/10 rounded-3xl backdrop-blur-xl flex items-center justify-center shrink-0 border border-white/20">
+                            <ShieldAlert size={40} className="text-emerald-400" />
+                        </div>
+                        <div className="text-center md:text-left">
+                            <h4 className="text-xl font-black italic uppercase tracking-tighter mb-2">Immutable Safety Net</h4>
+                            <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] leading-loose font-['Montserrat']">Your clinical profile is encrypted and only accessible via terminal lock when your E-Card is scanned by verified practitioners.</p>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <style>{`
+                .card-premium {
+                    border-radius: 48px;
+                }
+            `}</style>
         </motion.div>
     );
 };

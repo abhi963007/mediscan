@@ -1,22 +1,45 @@
 from rest_framework import serializers
-from .models import Patient, Consultation, Prescription
+from .models import Patient, Consultation, Prescription, PatientDocument
+
 
 class PrescriptionSerializer(serializers.ModelSerializer):
+    medicine_display = serializers.SerializerMethodField()
+
     class Meta:
         model = Prescription
         fields = '__all__'
-        read_only_fields = ('consultation',)
+        read_only_fields = ('consultation', 'prescribed_date')
+
+    def get_medicine_display(self, obj):
+        if obj.medicine:
+            return obj.medicine.name
+        return obj.medicine_name
+
+
+class PatientDocumentSerializer(serializers.ModelSerializer):
+    uploaded_by_username = serializers.CharField(source='uploaded_by.username', read_only=True)
+
+    class Meta:
+        model = PatientDocument
+        fields = '__all__'
+        read_only_fields = ('upload_date', 'uploaded_by')
+
+    def create(self, validated_data):
+        validated_data['uploaded_by'] = self.context['request'].user
+        return super().create(validated_data)
+
 
 class ConsultationSerializer(serializers.ModelSerializer):
     prescriptions = PrescriptionSerializer(many=True, read_only=True)
+    documents = PatientDocumentSerializer(many=True, read_only=True)
     doctor_name = serializers.CharField(source='doctor.username', read_only=True)
     hospital_name = serializers.CharField(source='hospital.name', read_only=True)
 
     class Meta:
         model = Consultation
         fields = '__all__'
-        read_only_fields = ('doctor', 'hospital')
-        
+        read_only_fields = ('doctor', 'hospital', 'consultation_date', 'updated_at')
+
     def create(self, validated_data):
         request = self.context.get('request')
         user = request.user
@@ -24,8 +47,10 @@ class ConsultationSerializer(serializers.ModelSerializer):
         validated_data['hospital'] = getattr(user, 'hospital', None)
         return super().create(validated_data)
 
+
 class PatientSerializer(serializers.ModelSerializer):
     consultations = ConsultationSerializer(many=True, read_only=True)
+    documents = PatientDocumentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Patient

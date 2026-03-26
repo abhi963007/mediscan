@@ -136,22 +136,25 @@ class DashboardStatsView(APIView):
             }
         elif role == 'hospital_admin':
             hospital = user.hospital
+            today = get_local_today()
             stats = {
                 'doctor_count': CustomUser.objects.filter(hospital=hospital, role='doctor').count(),
                 'staff_count': CustomUser.objects.filter(hospital=hospital, role='receptionist').count(),
                 'total_appointments': Appointment.objects.filter(hospital=hospital).count(),
-                'today_appointments': Appointment.objects.filter(hospital=hospital, appointment_date__date=from_django_utils_timezone_now().date()).count()
+                'today_appointments': Appointment.objects.filter(hospital=hospital, appointment_date=today).count()
             }
         elif role == 'receptionist':
             hospital = user.hospital
+            today = get_local_today()
             stats = {
-                'today_appointments': Appointment.objects.filter(hospital=hospital, appointment_date__date=from_django_utils_timezone_now().date()).count(),
-                'pending_checkins': Appointment.objects.filter(hospital=hospital, status='Booked', appointment_date__date=from_django_utils_timezone_now().date()).count()
+                'today_appointments': Appointment.objects.filter(hospital=hospital, appointment_date=today).count(),
+                'pending_checkins': Appointment.objects.filter(hospital=hospital, status='pending', appointment_date=today).count()
             }
         elif role == 'doctor':
+            today = get_local_today()
             stats = {
-                'my_appointments_today': Appointment.objects.filter(doctor=user, appointment_date__date=from_django_utils_timezone_now().date()).count(),
-                'patients_treated': Appointment.objects.filter(doctor=user, status='Completed').count() # Assuming status completed exists or we add it
+                'my_appointments_today': Appointment.objects.filter(doctor=user, appointment_date=today).exclude(status='cancelled').count(),
+                'patients_treated': Appointment.objects.filter(doctor=user, status='completed').count()
             }
         elif role == 'patient':
             patient_profile = getattr(user, 'patient_profile', None)
@@ -163,6 +166,9 @@ class DashboardStatsView(APIView):
 
         return Response(stats)
 
-# Helper for timezone now since it's used above
-from django.utils import timezone as from_django_utils_timezone_now
+# Helper for local timezone date
+from django.utils import timezone
+
+def get_local_today():
+    return timezone.localtime(timezone.now()).date()
 

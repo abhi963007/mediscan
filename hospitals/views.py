@@ -2,8 +2,12 @@ from rest_framework import viewsets, generics, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Hospital, HospitalSettings, DoctorSlot, MedicineMaster
-from .serializers import HospitalSerializer, HospitalSettingsSerializer, DoctorSlotSerializer, MedicineMasterSerializer
+from .models import Hospital, HospitalSettings, DoctorSlot, Medicine, MedicineStock, DoctorSchedule, DoctorLeave
+from .serializers import (
+    HospitalSerializer, HospitalSettingsSerializer, DoctorSlotSerializer, 
+    MedicineSerializer, MedicineStockSerializer, DoctorScheduleSerializer, DoctorLeaveSerializer
+)
+from rest_framework.pagination import PageNumberPagination
 
 
 class HospitalViewSet(viewsets.ModelViewSet):
@@ -11,7 +15,7 @@ class HospitalViewSet(viewsets.ModelViewSet):
     serializer_class = HospitalSerializer
 
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action in ['create', 'list', 'retrieve']:
             return [AllowAny()]
         return [IsAuthenticated()]
 
@@ -42,8 +46,8 @@ class HospitalViewSet(viewsets.ModelViewSet):
         serializer = HospitalSettingsSerializer(settings)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['get'], url_path='my-slots')
-    def my_slots(self, request):
+    @action(detail=False, methods=['get'], url_path='my-hospital-staff-slots')
+    def my_hospital_staff_slots(self, request):
         if not request.user.hospital:
             return Response({'error': 'No hospital linked to your account'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -51,8 +55,7 @@ class HospitalViewSet(viewsets.ModelViewSet):
         serializer = DoctorSlotSerializer(slots, many=True)
         return Response(serializer.data)
 
-
-    @action(detail=True, methods=['get'], url_path='hospital-slots', permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=['get'], url_path='hospital-slots', permission_classes=[AllowAny])
     def hospital_slots(self, request, pk=None):
         hospital = self.get_object()
         slots = DoctorSlot.objects.filter(hospital=hospital)
@@ -75,24 +78,83 @@ class DoctorSlotViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        # Override to ensure hospital is set correctly if not provided
-        if not serializer.validated_data.get('hospital') and self.request.user.hospital:
+        # Ensure hospital is set for hospital-staff roles
+        if self.request.user.hospital:
             serializer.save(hospital=self.request.user.hospital)
         else:
             serializer.save()
 
 
-from rest_framework.pagination import PageNumberPagination
+class DoctorScheduleViewSet(viewsets.ModelViewSet):
+    queryset = DoctorSchedule.objects.all()
+    serializer_class = DoctorScheduleSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'doctor':
+            return DoctorSchedule.objects.filter(doctor=user)
+        elif user.role in ['hospital_admin', 'receptionist']:
+            return DoctorSchedule.objects.filter(hospital=user.hospital)
+        return DoctorSchedule.objects.all()
+
+    def perform_create(self, serializer):
+        if self.request.user.role == 'doctor':
+            serializer.save(doctor=self.request.user)
+        else:
+            serializer.save()
+
+
+class DoctorLeaveViewSet(viewsets.ModelViewSet):
+    queryset = DoctorLeave.objects.all()
+    serializer_class = DoctorLeaveSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'doctor':
+            return DoctorLeave.objects.filter(doctor=user)
+        elif user.role in ['hospital_admin', 'admin', 'superuser']:
+            return DoctorLeave.objects.all()
+        return DoctorLeave.objects.none()
+
+    @action(detail=True, methods=['post'], url_path='approve-leave')
+    def approve_leave(self, request, pk=None):
+        if request.user.role not in ['hospital_admin', 'admin'] and not request.user.is_superuser:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+        
+        leave = self.get_object()
+        leave.is_approved = True
+        leave.approved_by = request.user
+        leave.save()
+        return Response({'status': 'Leave request approved successfully'})
+
 
 class MedicinePagination(PageNumberPagination):
-    page_size = 5 # Showing exactly 5 medicines as requested
+    page_size = 5
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-class MedicineMasterViewSet(viewsets.ModelViewSet):
-    queryset = MedicineMaster.objects.all().order_by('id') # ID 1, 2, 3... order as requested
-    serializer_class = MedicineMasterSerializer
+
+class MedicineViewSet(viewsets.ModelViewSet):
+    queryset = Medicine.objects.all().order_by('name')
+    serializer_class = MedicineSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name', 'category']
+    search_fields = ['name', 'category', 'generic_name', 'brand_name']
     pagination_class = MedicinePagination
+
+    def perform_create(self, serializer):
+        serializer.save(added_by=self.request.user)
+
+
+class MedicineStockViewSet(viewsets.ModelViewSet):
+    queryset = MedicineStock.objects.all()
+    serializer_class = MedicineStockSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.hospital:
+            return MedicineStock.objects.filter(hospital=user.hospital)
+        return MedicineStock.objects.all()

@@ -8,6 +8,7 @@ interface User {
   is_approved: boolean;
   uhid?: string;
   hospital?: number;
+  hospital_name?: string;
 }
 
 interface AuthContextType {

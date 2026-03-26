@@ -139,7 +139,7 @@ const DashboardLayout = () => {
                   style={{ fontFamily: 'var(--font-display)', color: 'var(--color-primary-dark)' }}>
                   MediScan
                  </span>
-                 <span className="text-[10px] uppercase font-bold text-green-600 tracking-wider">Global System</span>
+                 <span className="text-[10px] uppercase font-bold text-green-600 tracking-wider">{user.hospital_name || 'Global System'}</span>
               </motion.div>
             )}
           </div>
@@ -206,7 +206,7 @@ const DashboardLayout = () => {
                 </div>
                 <div className="text-[10px] font-bold tracking-widest uppercase leading-none"
                   style={{ color: 'rgba(15,110,86,0.6)' }}>
-                  {user.role} {user.uhid ? `· ${user.uhid}` : ''}
+                  {user.hospital_name ? `${user.hospital_name} · ` : ''}{user.role.replace('_', ' ')} {user.uhid ? `· ${user.uhid}` : ''}
                 </div>
               </div>
               <div className="w-10 h-10 text-white rounded-[12px] flex items-center justify-center font-black text-sm uppercase italic tracking-tighter border-2 border-white"
