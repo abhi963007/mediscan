@@ -104,3 +104,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True # Development only
+
+# Email Settings
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Default to console while development
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'mediscan.hms@gmail.com'
+EMAIL_HOST_PASSWORD = 'your-app-specific-password'
+DEFAULT_FROM_EMAIL = 'MediScan HMS <no-reply@mediscan.com>'

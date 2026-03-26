@@ -221,7 +221,8 @@ const RegisterPatient = () => {
                                 <FileCheck2 size={48} className="text-emerald-300" />
                             </div>
                             <h4 className="text-5xl font-black italic uppercase tracking-tighter mb-4 leading-none">Account Created!</h4>
-                            <p className="font-bold text-emerald-200 uppercase tracking-widest text-sm mb-10">UHID: {success.uhid || success.username}</p>
+                            <p className="font-bold text-emerald-200 uppercase tracking-widest text-sm mb-4">UHID: {success.uhid || success.username}</p>
+                            <p className="text-[10px] font-black text-emerald-300/60 uppercase tracking-[0.2em] mb-10 font-['Montserrat']">The digital Health Card & UHID have been sent to the patient's email.</p>
                             
                             <div className="p-10 bg-white rounded-[40px] shadow-2xl flex flex-col items-center relative group">
                                 <div className="absolute -inset-4 bg-emerald-500 rounded-[56px] opacity-20 blur-2xl group-hover:opacity-40 transition-opacity"></div>

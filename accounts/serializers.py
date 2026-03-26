@@ -3,6 +3,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import AuthenticationFailed
 from .models import CustomUser
 from patients.models import Patient
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 class UserSerializer(serializers.ModelSerializer):
     hospital_name = serializers.SerializerMethodField()
@@ -49,7 +51,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             # Patient profile is created by signals or manually here. 
             # In our current setup, we do it here.
             # UHID is generated in Patient.save, but we can ensure it's saved.
-            Patient.objects.create(
+            patient = Patient.objects.create(
                 user=user,
                 full_name=validated_data.get('full_name', ''),
                 phone=validated_data.get('phone', ''),
@@ -57,6 +59,35 @@ class RegisterSerializer(serializers.ModelSerializer):
                 gender=validated_data.get('gender', 'Male'),
                 blood_group=validated_data.get('blood_group', 'O+'),
             )
+
+            # Send Email Notification with QR Code
+            if user.email:
+                try:
+                    subject = f'Welcome to MediScan - Your Health ID: {patient.uhid}'
+                    message = (
+                        f"Hello {patient.full_name},\n\n"
+                        f"Welcome to MediScan. Your health account has been created successfully.\n\n"
+                        f"YOUR UNIQUE HEALTH ID (UHID): {patient.uhid}\n\n"
+                        f"We have attached your digital QR Health Card to this email. "
+                        f"Please keep this QR code ready whenever you visit an affiliated hospital for instant check-in.\n\n"
+                        f"Regards,\nMediScan Team"
+                    )
+                    
+                    email_msg = EmailMessage(
+                        subject,
+                        message,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [user.email],
+                    )
+                    
+                    if patient.qr_code:
+                        email_msg.attach_file(patient.qr_code.path)
+                    
+                    email_msg.send()
+                except Exception as e:
+                    # Log error in console or logging system
+                    print(f"Failed to send registration email: {e}")
+
         return user
 
     def to_representation(self, instance):
