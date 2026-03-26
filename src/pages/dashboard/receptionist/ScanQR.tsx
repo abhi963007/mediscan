@@ -122,7 +122,7 @@ const ScanQR = () => {
                         Check-in Desk
                       </h2>
                       <p className="font-bold text-gray-400 mt-2 uppercase tracking-[0.3em] text-[10px] font-['Montserrat']">
-                        Scan patient cards and book appointments
+                        Scan patient cards to check them in
                       </p>
                  </div>
                  <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-2xl shadow-sm border border-gray-100">
@@ -250,7 +250,7 @@ const ScanQR = () => {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat']">Clinical Specialist</label>
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat']">Choose Doctor</label>
                                             <div className="relative group">
                                                 <HeartPulse className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[var(--color-primary)] transition-colors" size={18} />
                                                 <select required value={appointment.doctor_id} onChange={e => setAppointment({...appointment, doctor_id: e.target.value})} 
@@ -282,7 +282,7 @@ const ScanQR = () => {
                                         </div>
 
                                         <button type="submit" className="md:col-span-2 group relative overflow-hidden bg-gray-900 text-white py-6 rounded-2xl font-black italic uppercase tracking-[0.1em] text-xs hover:bg-black transition-all shadow-2xl shadow-gray-900/20 active:scale-[0.98] font-['Montserrat']">
-                                            <span className="relative z-10">Confirm and Book Appointment</span>
+                                            <span className="relative z-10">Confirm & Book Appointment</span>
                                             <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-400 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500 opacity-20"></div>
                                         </button>
                                     </form>

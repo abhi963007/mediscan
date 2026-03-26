@@ -52,7 +52,7 @@ const Appointments = () => {
             await axios.post(`http://127.0.0.1:8000/api/appointments/${id}/check-in/`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert('Admission Confirmed: Patient added to Doctor Queue.');
+            alert('Patient Checked In: Added to doctor queue.');
             fetchAppts();
         } catch (err) {
             alert('Check-in failed. Patient might already be in queue.');
@@ -68,12 +68,12 @@ const Appointments = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 max-w-7xl mx-auto pb-32">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8">
                 <div>
-                    <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter mb-2 font-['Montserrat']">Admission Hub</h2>
-                    <p className="font-bold tracking-[0.3em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Real-time Clinical Access Control</p>
+                    <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter mb-2 font-['Montserrat']">Appointments</h2>
+                    <p className="font-bold tracking-[0.3em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Manage patient appointments and check-ins</p>
                 </div>
                 <div className="relative w-full md:w-96">
                     <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" />
-                    <input type="text" placeholder="SEARCH IDENTITY / RESERVATION..." 
+                    <input type="text" placeholder="SEARCH PATIENT NAME OR ID..." 
                         className="w-full bg-white border-2 border-gray-100 py-5 pl-14 pr-6 rounded-3xl font-black uppercase text-[10px] tracking-widest focus:border-green-500 focus:outline-none transition-all shadow-sm"
                         value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
                 </div>
@@ -83,7 +83,7 @@ const Appointments = () => {
                 <div className="card-premium p-8 flex justify-between items-center bg-gray-900 text-white shadow-2xl shadow-gray-900/20 border-0 relative overflow-hidden group">
                     <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform"><Clock size={100} /></div>
                     <div className="relative z-10">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Pending Triage</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">To Confirm</h4>
                         <p className="text-5xl font-black italic tracking-tighter">{appointments.filter(a => a.status === 'pending').length}</p>
                     </div>
                     <div className="w-16 h-16 bg-white/10 rounded-[24px] flex items-center justify-center backdrop-blur-md border border-white/10 relative z-10">
@@ -94,7 +94,7 @@ const Appointments = () => {
                 <div className="card-premium p-8 flex justify-between items-center bg-white border border-gray-100 shadow-xl shadow-gray-200/50 relative overflow-hidden group">
                     <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform"><Check size={100} /></div>
                     <div className="relative z-10">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Confirmed Admissions</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Confirmed</h4>
                         <p className="text-5xl font-black italic tracking-tighter text-gray-900">{appointments.filter(a => a.status === 'confirmed').length}</p>
                     </div>
                     <div className="w-16 h-16 bg-green-50 rounded-[24px] flex items-center justify-center text-green-600 border border-green-100 relative z-10">
@@ -106,7 +106,7 @@ const Appointments = () => {
             {loading ? (
                 <div className="text-center p-32">
                     <div className="w-12 h-12 border-4 border-gray-200 border-t-green-600 rounded-full animate-spin mx-auto mb-6"></div>
-                    <p className="font-black uppercase tracking-[0.4em] text-gray-300 text-[10px] animate-pulse">Syncing Secure Registers...</p>
+                    <p className="font-black uppercase tracking-[0.4em] text-gray-300 text-[10px] animate-pulse">Loading Appointments...</p>
                 </div>
             ) : (
                 <div className="bg-white rounded-[40px] shadow-3xl shadow-gray-200/50 border border-gray-100 overflow-hidden relative group/table">
@@ -114,11 +114,11 @@ const Appointments = () => {
                     <table className="w-full text-left relative z-10">
                         <thead>
                             <tr className="bg-[#F8FAFC] border-b border-gray-100 uppercase text-[9px] font-black tracking-[0.2em] text-gray-400 font-['Montserrat']">
-                                <th className="p-8">ID & Identity</th>
-                                <th className="p-8">Assigned Clinician</th>
-                                <th className="p-8 text-center">Triage Stage</th>
-                                <th className="p-8">Financials</th>
-                                <th className="p-8 text-right pr-12">Clinical Action</th>
+                                <th className="p-8">Patient Info</th>
+                                <th className="p-8">Doctor</th>
+                                <th className="p-8 text-center">Status</th>
+                                <th className="p-8">Fees</th>
+                                <th className="p-8 text-right pr-12">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
@@ -134,7 +134,7 @@ const Appointments = () => {
                                                     {a.patient_username}
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-1.5 font-['Montserrat']">
-                                                    <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">{a.appointment_id || 'RESERVATION-NA'}</span>
+                                                    <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">{a.appointment_id || 'RESERVATION'}</span>
                                                     <span className="w-1 h-1 rounded-full bg-gray-200"></span>
                                                     <span className="text-[9px] font-bold text-gray-400 uppercase">UHID: {a.patient_username}</span>
                                                 </div>
@@ -196,7 +196,7 @@ const Appointments = () => {
                                                     onClick={() => handleCheckIn(a.id)}
                                                     className="flex items-center gap-3 bg-emerald-600 text-white px-6 py-4 rounded-[22px] font-black uppercase text-[10px] tracking-widest hover:bg-emerald-700 hover:scale-105 transition-all shadow-xl shadow-emerald-600/30 group/checkin"
                                                 >
-                                                    <LogIn size={18} className="group-hover/checkin:translate-x-1 transition-transform" /> START CLINICAL ADMISSION
+                                                    <LogIn size={18} className="group-hover/checkin:translate-x-1 transition-transform" /> CHECK IN PATIENT
                                                 </button>
                                             )}
                                         </div>
@@ -221,8 +221,8 @@ const Appointments = () => {
                             <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600"></div>
                             <div className="flex justify-between items-center mb-10">
                                 <div>
-                                    <h3 className="text-4xl font-black italic uppercase tracking-tighter text-gray-900">Alternative Log</h3>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">Strategic Rescheduling Console</p>
+                                    <h3 className="text-4xl font-black italic uppercase tracking-tighter text-gray-900">Suggest New Time</h3>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">Choose a different time for the patient</p>
                                 </div>
                                 <button onClick={() => setShowModal(false)} className="p-3 hover:bg-gray-100 rounded-2xl transition-all">
                                     <X size={28} className="text-gray-300" />
@@ -241,13 +241,13 @@ const Appointments = () => {
                                     onClick={() => handleUpdateStatus(selectedAppt.id, 'cancelled', suggestion)}
                                     className="flex-[2] bg-gray-900 text-white py-6 rounded-[24px] font-black uppercase text-[11px] tracking-[0.2em] shadow-2xl shadow-gray-900/30 hover:bg-black hover:scale-[1.02] active:scale-95 transition-all font-['Montserrat']"
                                 >
-                                    LOG DISMISSAL & BROADCAST
+                                    SEND SUGGESTION
                                 </button>
                                 <button 
                                     onClick={() => setShowModal(false)}
                                     className="flex-1 bg-gray-50 text-gray-400 py-6 rounded-[24px] font-black uppercase text-[11px] tracking-[0.2em] hover:bg-gray-200 transition-all font-['Montserrat'] border border-gray-100"
                                 >
-                                    ABORT
+                                    CANCEL
                                 </button>
                             </div>
                         </motion.div>

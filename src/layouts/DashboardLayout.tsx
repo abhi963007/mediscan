@@ -86,26 +86,26 @@ const DashboardLayout = () => {
       case 'receptionist':
         return (
           <>
-            <SidebarLink to="/dashboard/staff" icon={<Building2 size={20} />} label="Reception Desk" collapsed={collapsed} />
-            <SidebarLink to="/dashboard/staff/register" icon={<UserPlus size={20} />} label="Patient Register" collapsed={collapsed} />
-            <SidebarLink to="/dashboard/staff/scan" icon={<Scan size={20} />} label="QR Scanner" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/staff" icon={<Building2 size={20} />} label="Overview" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/staff/register" icon={<UserPlus size={20} />} label="Register Patient" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/staff/scan" icon={<Scan size={20} />} label="Scan Patient Card" collapsed={collapsed} />
             <SidebarLink to="/dashboard/staff/appointments" icon={<Calendar size={20} />} label="Appointments" collapsed={collapsed} />
           </>
         );
       case 'doctor':
         return (
           <>
-            <SidebarLink to="/dashboard/doctor" icon={<Stethoscope size={20} />} label="Doctor Desk" collapsed={collapsed} />
-            <SidebarLink to="/dashboard/doctor/appointments" icon={<Calendar size={20} />} label="My Appointments" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/doctor" icon={<Stethoscope size={20} />} label="Overview" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/doctor/appointments" icon={<Calendar size={20} />} label="Check-ups" collapsed={collapsed} />
             <SidebarLink to="/dashboard/doctor/treatment" icon={<HeartPulse size={20} />} label="Treatment Desk" collapsed={collapsed} />
           </>
         );
       case 'patient':
         return (
           <>
-            <SidebarLink to="/dashboard/patient" icon={<Scan size={20} />} label="My E-Card" collapsed={collapsed} />
-            <SidebarLink to="/dashboard/patient/book" icon={<Calendar size={20} />} label="Book Online" collapsed={collapsed} />
-            <SidebarLink to="/dashboard/patient/history" icon={<HeartPulse size={20} />} label="My History" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/patient" icon={<Scan size={20} />} label="Health Card" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/patient/book" icon={<Calendar size={20} />} label="Book Appointment" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/patient/history" icon={<HeartPulse size={20} />} label="Medical History" collapsed={collapsed} />
           </>
         );
       default:
@@ -148,7 +148,7 @@ const DashboardLayout = () => {
             {!collapsed && (
               <span className="text-[10px] font-black tracking-[0.2em] text-gray-400 uppercase select-none"
                 style={{ fontFamily: 'var(--font-display)' }}>
-                {user.role.replace('_', ' ')} Panel
+                {user.role === 'receptionist' ? 'Receptionist' : user.role.replace('_', ' ')}
               </span>
             )}
           </div>

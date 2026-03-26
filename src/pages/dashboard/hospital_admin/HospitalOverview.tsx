@@ -25,14 +25,14 @@ const HospitalOverview = () => {
     const cards = [
         { title: 'Total Doctors', value: stats?.doctor_count || 0, icon: <Stethoscope />, color: 'bg-[var(--color-primary)]', sub: 'Active doctors' },
         { title: 'Total Staff', value: stats?.staff_count || 0, icon: <Users />, color: 'bg-blue-600', sub: 'Hospital employees' },
-        { title: 'Total Visits', value: stats?.total_appointments || 0, icon: <Wallet />, color: 'bg-green-600', sub: 'Lifetime visits' },
-        { title: "Today's Visits", value: stats?.today_appointments || 0, icon: <CalendarDays />, color: 'bg-orange-600', sub: 'Visits today' },
+        { title: 'Total Bookings', value: stats?.total_appointments || 0, icon: <Wallet />, color: 'bg-green-600', sub: 'Lifetime visits' },
+        { title: "Active Today", value: stats?.today_appointments || 0, icon: <CalendarDays />, color: 'bg-orange-600', sub: 'Visits today' },
     ];
 
     return (
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="p-8">
-            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Hospital Dashboard</h2>
-            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Manage your staff and settings</p>
+            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Admin Desk</h2>
+            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Manage staff and settings</p>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 {cards.map((card, i) => (
@@ -63,7 +63,7 @@ const HospitalOverview = () => {
                         <ShieldCheck size={48} />
                     </div>
                     <div>
-                        <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-2 text-white">System Security</h3>
+                        <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-2 text-white">Account Safety</h3>
                         <p className="text-green-100 font-bold uppercase tracking-widest text-xs leading-relaxed max-w-sm font-['Montserrat']">All doctor accounts are verified and your data is protected.</p>
                         <div className="mt-4 inline-block font-black uppercase text-[10px] bg-white/10 px-4 py-2 rounded-full border border-white/20 backdrop-blur-sm shadow-sm">
                             Fully Secure

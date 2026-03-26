@@ -43,16 +43,16 @@ const DoctorOverview = () => {
             value: queueCount, 
             icon: <UserCheck size={32} />, 
             color: 'from-emerald-600 to-emerald-700', 
-            sub: 'Patients waiting to be seen',
-            trend: 'Updating live'
+            sub: 'Patients waiting',
+            trend: 'Live'
         },
         { 
-            title: 'Treated Today', 
+            title: 'Finished', 
             value: stats?.patients_treated || 0, 
             icon: <ClipboardCheck size={32} />, 
             color: 'from-gray-800 to-gray-900', 
-            sub: 'Daily progress',
-            trend: '+12% from yesterday'
+            sub: 'Completed visits',
+            trend: 'Total'
         },
     ];
 
@@ -60,8 +60,8 @@ const DoctorOverview = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 max-w-7xl mx-auto pb-32">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8">
                 <div>
-                    <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Doctor's Area</h2>
-                    <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Manage your patients and visits</p>
+                <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Doctor's Desk</h2>
+                <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Manage your patients and visits</p>
                 </div>
                 <div className="bg-white px-8 py-4 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4">
                     <Activity size={20} className="text-emerald-500 animate-pulse" />
@@ -105,9 +105,9 @@ const DoctorOverview = () => {
                         <div className="flex justify-between items-start mb-12 relative z-10">
                             <div>
                                 <h3 className="text-5xl font-black italic uppercase tracking-tighter mb-6 flex items-center gap-6 leading-tight">
-                                   Start <br/> Check-up <ChevronRight size={48} className="text-emerald-400 group-hover:translate-x-4 transition-transform duration-500" />
+                                   Check In <br/> Patient <ChevronRight size={48} className="text-emerald-400 group-hover:translate-x-4 transition-transform duration-500" />
                                 </h3>
-                                <p className="text-emerald-100/60 font-medium uppercase tracking-[0.3em] text-[10px] max-w-sm leading-loose font-['Montserrat']">Access patient history and add new medical notes.</p>
+                                <p className="text-emerald-100/60 font-medium uppercase tracking-[0.3em] text-[10px] max-w-sm leading-loose font-['Montserrat']">View patient records and start treatment.</p>
                             </div>
                             <div className="bg-white/10 p-10 rounded-[48px] flex items-center justify-center backdrop-blur-xl shrink-0 border border-white/10 shadow-inner group-hover:scale-110 transition-transform duration-700">
                                 <ScanFace size={72} className="text-white" />
@@ -148,8 +148,8 @@ const DoctorOverview = () => {
                     <div className="card-premium p-8 bg-gray-50 border border-gray-100 flex items-center gap-6">
                         <div className="p-3 bg-white rounded-xl shadow-sm"><Clock size={20} className="text-emerald-500" /></div>
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Last Logout Trace</p>
-                            <p className="text-xs font-black italic uppercase text-gray-900">14:22:11 @ Terminal 09-A</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Session Status</p>
+                            <p className="text-xs font-black italic uppercase text-gray-900">Online @ Terminal-09</p>
                         </div>
                     </div>
                 </div>

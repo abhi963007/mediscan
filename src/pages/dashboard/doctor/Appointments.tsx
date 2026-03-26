@@ -50,9 +50,9 @@ const Appointments = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 pb-32 max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                 <div>
-                    <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">My Appointments</h2>
+                    <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Check-ups</h2>
                     <p className="font-bold tracking-widest text-xs text-gray-400 uppercase pl-1 flex items-center gap-2">
-                        <Activity className="text-blue-500" size={14} /> Clinical Queue Management
+                        <Activity className="text-blue-500" size={14} /> Manage waiting list
                     </p>
                 </div>
 
@@ -74,7 +74,7 @@ const Appointments = () => {
                         <Stethoscope size={100} />
                     </div>
                     <div className="z-10">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-200 mb-1">Queue Size</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-200 mb-1">Waiting</h4>
                         <p className="text-5xl font-black italic tracking-tighter">{appointments.filter(a => a.status === 'pending' || a.status === 'confirmed').length}</p>
                     </div>
                     <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-inner border border-white/10">
@@ -84,7 +84,7 @@ const Appointments = () => {
 
                 <div className="card-premium p-6 flex justify-between items-center bg-white border border-gray-100 shadow-xl shadow-gray-200/50">
                     <div>
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Today's Load</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Total Visits</h4>
                         <p className="text-4xl font-black italic tracking-tighter text-gray-800">{appointments.length}</p>
                     </div>
                     <div className="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center">
@@ -132,9 +132,9 @@ const Appointments = () => {
                                         </h5>
                                         <div className="flex items-center justify-center md:justify-start gap-2">
                                             <span className="text-[10px] font-black tracking-widest text-blue-500 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 uppercase">
-                                                {a.patient_username || 'GUEST'}
+                                                ID Verified
                                             </span>
-                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Global Patient System</span>
+                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Safe Identity</span>
                                         </div>
                                     </div>
                                 </div>

@@ -38,7 +38,7 @@ const AdminOverview = () => {
             doc.setFontSize(24);
             doc.setTextColor(255, 255, 255);
             doc.setFont('helvetica', 'bold');
-            doc.text("MEDISCAN: SYSTEM REPORT", 20, 25);
+            doc.text("MEDISCAN: SUMMARY REPORT", 20, 25);
             
             doc.setFontSize(10);
             doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 32);
@@ -46,7 +46,7 @@ const AdminOverview = () => {
             // Stats Snapshot
             doc.setTextColor(0,0,0);
             doc.setFontSize(14);
-            doc.text("SYSTEM STATS SUMMARY", 20, 55);
+            doc.text("OVERALL STATS", 20, 55);
             doc.setFontSize(11);
             doc.setFont('helvetica', 'normal');
             doc.text(`Total Hospitals: ${stats?.total_hospitals || 0}`, 20, 65);
@@ -116,8 +116,8 @@ const AdminOverview = () => {
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8">
-            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Admin Dashboard</h2>
-            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">View system stats across all hospitals</p>
+            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Global Overview</h2>
+            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Check status and stats for all hospitals</p>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 {cards.map((card, i) => (
@@ -150,10 +150,10 @@ const AdminOverview = () => {
                 </div>
                 
                 <div className="card-premium p-8 border border-gray-100 shadow-sm">
-                    <h3 className="text-lg font-black uppercase italic text-gray-800 tracking-tighter mb-4">Quick Actions</h3>
+                    <h3 className="text-lg font-black uppercase italic text-gray-800 tracking-tighter mb-4">Actions</h3>
                     <div className="space-y-4">
-                        <button onClick={handleNetworkAudit} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-black transition-colors shadow-lg active:scale-95">Download System Report</button>
-                        <button onClick={handleExportLedger} className="w-full py-4 border-2 border-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-50 transition-colors active:scale-95">Download Medicine List</button>
+                        <button onClick={handleNetworkAudit} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-black transition-colors shadow-lg active:scale-95">Get Summary Report</button>
+                        <button onClick={handleExportLedger} className="w-full py-4 border-2 border-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-50 transition-colors active:scale-95">Get Medicine List</button>
                     </div>
                 </div>
             </div>

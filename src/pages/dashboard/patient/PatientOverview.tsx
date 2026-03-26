@@ -51,22 +51,22 @@ const PatientOverview = () => {
             value: stats?.my_appointments || 0, 
             icon: <CalendarDays size={32} />, 
             color: 'from-emerald-600 to-emerald-700', 
-            sub: 'Visits tracked in system' 
+            sub: 'Past check-ups' 
         },
         { 
-            title: 'ID Status', 
+            title: 'Status', 
             value: 'Verified', 
             icon: <ShieldCheck size={32} />, 
             color: 'from-gray-800 to-gray-900 text-sm', 
-            sub: 'Your identity is safe' 
+            sub: 'Account Verified' 
         },
     ];
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 max-w-7xl mx-auto pb-32">
             <div className="mb-12">
-                <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">My Health Card</h2>
-                <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">All your medical history in one place</p>
+                <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Health Card</h2>
+                <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Your medical records in one place</p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-10 mb-12">
@@ -112,7 +112,7 @@ const PatientOverview = () => {
                         <p className="text-[8px] font-black text-emerald-300/60 uppercase tracking-[0.4em] relative z-10 font-['Montserrat'] mb-8">Card No: {user?.uhid || user?.username}</p>
                         
                         <button onClick={handleDownload} className="w-full py-5 bg-white text-[#064E3B] rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl shadow-black/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 relative z-10 group/btn font-['Montserrat']">
-                            <Download size={18} className="group-hover/btn:-translate-y-1 transition-transform" /> DOWNLOAD QR CARD
+                            <Download size={18} className="group-hover/btn:-translate-y-1 transition-transform" /> DOWNLOAD CARD
                         </button>
                     </div>
 
@@ -163,7 +163,7 @@ const PatientOverview = () => {
                         </div>
                         <div className="text-center md:text-left">
                             <h4 className="text-xl font-black italic uppercase tracking-tighter mb-2">Your Data is Safe</h4>
-                            <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] leading-loose font-['Montserrat']">Your medical records are private. Doctors can only see them when they scan your QR health card.</p>
+                            <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] leading-loose font-['Montserrat']">Your medical records are private. Doctors can only see them when they scan your card.</p>
                         </div>
                     </div>
                 </div>

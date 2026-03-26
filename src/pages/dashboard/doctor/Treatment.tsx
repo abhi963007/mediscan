@@ -159,7 +159,7 @@ const Treatment = () => {
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 pb-32">
-            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-10">Check-up Room</h2>
+            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-10">Care Room</h2>
             
             {!patient && (
                 <div className="grid lg:grid-cols-12 gap-10">
@@ -168,12 +168,12 @@ const Treatment = () => {
                             <div className="w-32 h-32 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
                                 <ScanFace size={64} />
                             </div>
-                            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-blue-900 mb-6 drop-shadow-sm font-['Montserrat']">Scan Patient Card</h3>
+                            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-blue-900 mb-6 drop-shadow-sm font-['Montserrat']">Find Patient</h3>
                             <div className="flex gap-4 w-full max-w-lg">
                                 <input type="text" placeholder="ENTER PATIENT ID (E.G. GP-6231)" className="flex-1 bg-white border-2 border-blue-200 py-4 px-6 rounded-2xl font-black uppercase tracking-widest text-xs focus:outline-none focus:border-blue-500 transition-colors font-['Montserrat']"
                                     value={uhid} onChange={e => setUhid(e.target.value)} />
                                 <button onClick={handleScan} className="bg-blue-600 hover:bg-blue-700 text-white font-black italic uppercase tracking-tighter px-10 rounded-2xl shadow-xl shadow-blue-600/20">
-                                    Open Profile
+                                    View Patient
                                 </button>
                             </div>
                             {error && <p className="mt-4 text-red-500 font-black uppercase text-[10px] tracking-widest">{error}</p>}
@@ -301,7 +301,7 @@ const Treatment = () => {
                             <form onSubmit={handleSaveConsultation} className="card-premium p-10 border-2 border-emerald-500 bg-emerald-50/5 shadow-3xl shadow-emerald-500/10">
                                 <div className="flex justify-between items-center mb-10 pb-6 border-b border-gray-100">
                                     <h3 className="text-3xl font-black italic uppercase text-emerald-900 tracking-tighter flex items-center gap-4">
-                                        <Stethoscope size={36} className="text-emerald-500" /> Medical Notes
+                                        <Stethoscope size={36} className="text-emerald-500" /> Visit Record
                                     </h3>
                                     <div className="flex items-center gap-3">
                                         <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse shadow-lg shadow-red-500/20"></span>
@@ -352,21 +352,21 @@ const Treatment = () => {
 
                                 <div className="grid md:grid-cols-2 gap-8 mb-10">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 block ml-1">Chief Complaints & History</label>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 block ml-1">Reason for Visit & History</label>
                                         <textarea required rows={4} className="input-field-terminal min-h-[120px] py-6 px-8 leading-relaxed font-medium"
-                                            placeholder="WRITE SYMPTOMS AND DURATION..."
+                                            placeholder="DESCRIBE THE ISSUE..."
                                             value={consultation.chief_complaint} onChange={e => setConsultation({...consultation, chief_complaint: e.target.value})}></textarea>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 block ml-1">Clinical Physical Examination</label>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 block ml-1">Check-up Notes</label>
                                         <textarea rows={4} className="input-field-terminal min-h-[120px] py-6 px-8 leading-relaxed font-medium"
-                                            placeholder="PHYSICAL EXAM NOTES..."
+                                            placeholder="WHAT DID YOU NOTICE?..."
                                             value={consultation.physical_examination} onChange={e => setConsultation({...consultation, physical_examination: e.target.value})}></textarea>
                                     </div>
                                     <div className="col-span-2 space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 block ml-1">Provisional / Differential Diagnosis</label>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 block ml-1">Doctor's Finding / Diagnosis</label>
                                         <input required type="text" className="input-field-terminal py-6 px-8 font-black text-lg text-emerald-900 placeholder:opacity-30 uppercase tracking-tighter italic"
-                                            placeholder="WHAT IS THE PROBLEM? (DIAGNOSIS)"
+                                            placeholder="WHAT IS THE ISSUE?"
                                             value={consultation.diagnosis} onChange={e => setConsultation({...consultation, diagnosis: e.target.value})} />
                                     </div>
                                 </div>
@@ -376,10 +376,10 @@ const Treatment = () => {
                                     <div className="absolute right-0 top-0 w-32 h-32 bg-emerald-50/50 rounded-bl-[100px] -z-0"></div>
                                     <div className="flex justify-between items-center mb-10 relative z-10">
                                         <h4 className="text-xl font-black italic uppercase tracking-tighter text-gray-800 flex items-center gap-3">
-                                            <Pill size={28} className="text-emerald-500" /> Prescriptions
+                                            <Pill size={28} className="text-emerald-500" /> Medicines
                                         </h4>
                                         <button type="button" onClick={handleAddPrescriptionRow} className="group flex items-center gap-3 bg-emerald-600 text-white px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-emerald-700 hover:scale-105 transition-all shadow-lg shadow-emerald-600/20 active:scale-95">
-                                            <Plus size={16} className="group-hover:rotate-90 transition-transform" /> Add Medication
+                                            <Plus size={16} className="group-hover:rotate-90 transition-transform" /> Add Medicine
                                         </button>
                                     </div>
 
@@ -446,7 +446,7 @@ const Treatment = () => {
                                                     </div>
 
                                                     <div className="flex-[2] flex gap-3">
-                                                        <input type="text" placeholder="FREQUENCE (1-0-1)" className="w-full bg-white border border-gray-200 py-3 px-5 rounded-xl font-black uppercase text-[10px] tracking-widest outline-none focus:border-emerald-500 transition-all font-['Montserrat'] shadow-sm"
+                                                        <input type="text" placeholder="TIMES PER DAY (1-0-1)" className="w-full bg-white border border-gray-200 py-3 px-5 rounded-xl font-black uppercase text-[10px] tracking-widest outline-none focus:border-emerald-500 transition-all font-['Montserrat'] shadow-sm"
                                                             value={p.frequency} onChange={e => { const np = [...prescriptions]; np[idx].frequency = e.target.value; setPrescriptions(np); }} />
                                                         <div className="flex gap-1 bg-white border border-gray-200 rounded-xl p-1 shadow-sm">
                                                             <input type="text" placeholder="5" className="w-12 bg-transparent text-center font-black text-gray-800 outline-none"

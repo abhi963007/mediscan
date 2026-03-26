@@ -66,12 +66,12 @@ const StaffManagement = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 max-w-7xl mx-auto pb-32">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8">
                 <div>
-                     <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Staff Registry</h2>
-                     <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Manage Specialists & Clinical Desks</p>
+                     <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Staff List</h2>
+                     <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Manage doctors and receptionists</p>
                 </div>
                 <button onClick={() => setIsAdding(!isAdding)} className="bg-gray-900 text-white px-10 py-5 rounded-2xl font-black italic uppercase text-[10px] tracking-widest shadow-2xl shadow-gray-900/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-4">
                     <UserPlus size={18} /> 
-                    <span>Deploy New Node</span>
+                    <span>Add New Staff</span>
                 </button>
             </div>
             
@@ -81,8 +81,8 @@ const StaffManagement = () => {
                         <form onSubmit={handleCreateStaff} className="card-premium p-10 grid md:grid-cols-2 gap-8 bg-white border-2 border-emerald-500/10 shadow-4xl shadow-emerald-900/5 relative">
                             <button type="button" onClick={() => setIsAdding(false)} className="absolute top-8 right-8 text-gray-300 hover:text-red-500 transition-colors"><X size={24}/></button>
                             <div className="col-span-full mb-4">
-                                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-gray-900">Institutional Credentials</h3>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 font-['Montserrat']">Authorize a new specialist or receptionist node onto the network.</p>
+                                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-gray-900">Staff Login Details</h3>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 font-['Montserrat']">Create a new account for a doctor or receptionist.</p>
                             </div>
                             
                             <div className="space-y-6">
@@ -104,23 +104,23 @@ const StaffManagement = () => {
                             
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Access Token (Password)</label>
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Password</label>
                                     <div className="relative">
                                         <Lock size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-300" />
                                         <input type="password" placeholder="Passphrase" required className="input-field-staff pl-14" value={newStaff.password} onChange={e => setNewStaff({...newStaff, password: e.target.value})} />
                                     </div>
                                 </div>
                                 
-                                <div className="space-y-2">
-                                     <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Functional Designation</label>
+                                 <div className="space-y-2">
+                                     <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Job Title</label>
                                      <div className="flex gap-4 p-2 bg-gray-50 rounded-2xl border border-gray-100 shadow-inner">
                                         <button type="button" onClick={() => setNewStaff({...newStaff, role: 'doctor'})} 
                                             className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-black text-[10px] tracking-[0.2em] uppercase transition-all ${newStaff.role === 'doctor' ? 'bg-[#064E3B] text-white shadow-xl' : 'text-gray-400 hover:bg-white'}`}>
-                                            <Stethoscope size={16} /> Specialist
+                                            <Stethoscope size={16} /> Doctor
                                         </button>
                                         <button type="button" onClick={() => setNewStaff({...newStaff, role: 'receptionist'})} 
                                             className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-black text-[10px] tracking-[0.2em] uppercase transition-all ${newStaff.role === 'receptionist' ? 'bg-[#064E3B] text-white shadow-xl' : 'text-gray-400 hover:bg-white'}`}>
-                                            <Briefcase size={16} /> Clinical Desk
+                                            <Briefcase size={16} /> Receptionist
                                         </button>
                                     </div>
                                 </div>
@@ -128,7 +128,7 @@ const StaffManagement = () => {
                             
                             <div className="col-span-full pt-6">
                                 <button type="submit" className="w-full py-6 bg-emerald-900 text-white rounded-[32px] font-black italic uppercase tracking-tighter text-xl shadow-4xl shadow-emerald-900/40 hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-4">
-                                    <ShieldCheck size={28} /> Finalize Authorization
+                                    <ShieldCheck size={28} /> Create Account
                                 </button>
                             </div>
                         </form>
@@ -141,8 +141,8 @@ const StaffManagement = () => {
                     <div className="w-32 h-32 rounded-[48px] flex items-center justify-center bg-emerald-50 text-emerald-200 mb-8 border border-emerald-50">
                         <Users size={56} />
                     </div>
-                    <h3 className="text-4xl font-black italic uppercase text-gray-900 tracking-tighter">Registry Empty</h3>
-                    <p className="text-gray-400 font-bold uppercase text-[10px] tracking-[0.4em] max-w-sm mt-4 leading-loose font-['Montserrat']">No medical or administrative nodes have been deployed yet.</p>
+                    <h3 className="text-4xl font-black italic uppercase text-gray-900 tracking-tighter">No Staff Yet</h3>
+                    <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest max-w-sm mt-4 leading-loose font-['Montserrat']">No doctors or receptionists have been added yet.</p>
                 </div>
             ) : (
                 <div className="bg-white rounded-[48px] shadow-4xl shadow-emerald-900/5 border border-gray-100 overflow-hidden">
@@ -172,16 +172,16 @@ const StaffManagement = () => {
                                     <td className="p-8">
                                         <div className="flex items-center gap-4">
                                             {s.role === 'doctor' ? (
-                                                <div className="px-4 py-2 rounded-xl bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-2"><Stethoscope size={14} /> Specialist</div>
+                                                <div className="px-4 py-2 rounded-xl bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-2"><Stethoscope size={14} /> Doctor</div>
                                             ) : (
-                                                <div className="px-4 py-2 rounded-xl bg-orange-50 text-orange-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-2"><Briefcase size={14} /> Desk Staff</div>
+                                                <div className="px-4 py-2 rounded-xl bg-orange-50 text-orange-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-2"><Briefcase size={14} /> Receptionist</div>
                                             )}
                                         </div>
                                     </td>
                                     <td className="p-8">
                                         <div className="flex items-center gap-3">
                                             <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(34,197,94,0.6)]"></div>
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 italic">Operational</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 italic">Active</span>
                                         </div>
                                     </td>
                                     <td className="p-8 text-right pr-12">

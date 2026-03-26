@@ -48,7 +48,7 @@ const MyHistory = () => {
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 pb-32 max-w-6xl mx-auto">
             <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Medical History</h2>
-            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Your health records across all hospitals</p>
+            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Your visit history and check-up records</p>
 
             {loading ? (
                 <div className="text-center p-10 font-bold uppercase tracking-widest text-gray-400">Loading Records...</div>
@@ -85,7 +85,7 @@ const MyHistory = () => {
                             ))}
                             {appointments.length === 0 && (
                                 <div className="card-premium p-10 text-center font-bold text-gray-400 uppercase tracking-widest italic border-dashed border-2">
-                                    No appointments found.
+                                    No upcoming visits.
                                 </div>
                             )}
                         </div>
@@ -105,11 +105,11 @@ const MyHistory = () => {
                                             {new Date(h.date).toLocaleDateString()}
                                         </div>
                                     </div>
-                                    <p className="font-bold text-sm text-gray-500 mb-4 font-['Montserrat']">{h.chief_complaint}</p>
+                                    <p className="font-bold text-sm text-gray-500 mb-4 font-['Montserrat']">{h.chief_complaint || 'No complaint recorded'}</p>
                                     
                                     <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest mb-4">
                                         <span className="bg-white border border-gray-100 px-3 py-1.5 rounded-lg shadow-sm text-gray-400">BP: {h.blood_pressure || 'N/A'}</span>
-                                        <span className="bg-white border border-gray-100 px-3 py-1.5 rounded-lg shadow-sm text-gray-400">TMP: {h.temperature || 'N/A'}</span>
+                                        <span className="bg-white border border-gray-100 px-3 py-1.5 rounded-lg shadow-sm text-gray-400">Temp: {h.temperature || 'N/A'}</span>
                                     </div>
 
                                     <div className="pt-4 border-t border-blue-100 flex justify-between items-center text-xs font-bold uppercase tracking-widest text-blue-600">
@@ -120,7 +120,7 @@ const MyHistory = () => {
                             ))}
                             {history.length === 0 && (
                                 <div className="card-premium p-10 text-center font-bold text-gray-400 uppercase tracking-widest italic border-dashed border-2 border-blue-100">
-                                    No past check-ups found.
+                                    No records found yet.
                                 </div>
                             )}
                         </div>
