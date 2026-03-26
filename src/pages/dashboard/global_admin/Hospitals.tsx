@@ -99,8 +99,24 @@ const Hospitals = () => {
             });
             setNewAdmin({ username: '', password: '', email: '' });
             fetchAdmins(showAdminModal.id);
+            alert('Admin created successfully');
         } catch (err) {
             alert('Failed to create hospital admin');
+        }
+    };
+
+    const handleRemoveAdmin = async (adminId: number) => {
+        if (!showAdminModal) return;
+        if (!confirm('Are you sure you want to remove this administrator?')) return;
+        
+        try {
+            const token = localStorage.getItem('access');
+            await axios.delete(`http://127.0.0.1:8000/api/auth/hospital-admins/${adminId}/`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            fetchAdmins(showAdminModal.id);
+        } catch (err) {
+            alert('Failed to remove admin');
         }
     };
 
@@ -266,7 +282,10 @@ const Hospitals = () => {
                                                         <p className="text-[10px] font-bold text-gray-400 mt-0.5">{admin.email}</p>
                                                     </div>
                                                 </div>
-                                                <button className="p-2 text-gray-300 hover:text-red-500 transition-colors">
+                                                <button 
+                                                    onClick={() => handleRemoveAdmin(admin.id)}
+                                                    className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                                                >
                                                     <X size={16} />
                                                 </button>
                                             </div>

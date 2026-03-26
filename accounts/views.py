@@ -4,6 +4,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import CustomUser
 from .serializers import RegisterSerializer, UserSerializer, CustomTokenObtainPairSerializer, HospitalStaffSerializer
+from rest_framework import permissions
+
+class IsGlobalAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user and (request.user.role == 'admin' or request.user.is_superuser)
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -83,6 +88,7 @@ class CreateHospitalAdminView(generics.CreateAPIView):
             return Response({'error': 'Permission denied. Only global admins can create hospital admins.'}, status=status.HTTP_403_FORBIDDEN)
         
         request.data['role'] = 'hospital_admin'
+        request.data['is_approved'] = True
         return super().post(request, *args, **kwargs)
 
 class HospitalAdminsListView(generics.ListAPIView):
@@ -96,6 +102,16 @@ class HospitalAdminsListView(generics.ListAPIView):
         if hospital_id:
             return CustomUser.objects.filter(role='hospital_admin', hospital_id=hospital_id)
         return CustomUser.objects.filter(role='hospital_admin')
+
+class DeleteHospitalAdminView(generics.DestroyAPIView):
+    queryset = CustomUser.objects.all()
+    permission_classes = (IsAuthenticated, IsGlobalAdmin)
+
+    def delete(self, request, *args, **kwargs):
+        user_to_delete = self.get_object()
+        if user_to_delete.role != 'hospital_admin':
+            return Response({'error': 'Can only delete hospital admins'}, status=status.HTTP_400_BAD_REQUEST)
+        return super().delete(request, *args, **kwargs)
 from rest_framework.views import APIView
 from django.db.models import Count, Sum
 from hospitals.models import Hospital, MedicineMaster
