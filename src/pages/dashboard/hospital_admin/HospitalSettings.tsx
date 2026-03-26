@@ -61,9 +61,9 @@ const HospitalSettings = () => {
             await axios.patch('http://127.0.0.1:8000/api/hospitals/my-settings/', hospitalInfo, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert('Infrastructure updated successfully.');
+            alert('Details updated successfully.');
             fetchSettings();
-        } catch (err) { alert('Failed to broadcast updates.'); }
+        } catch (err) { alert('Failed to save changes.'); }
     };
 
     const handleCreateSlot = async (e: React.FormEvent) => {
@@ -75,11 +75,11 @@ const HospitalSettings = () => {
             });
             setIsAddingSlot(false);
             fetchSettings();
-        } catch (err) { alert('Failed to create clinical slot.'); }
+        } catch (err) { alert('Failed to add schedule.'); }
     };
 
     const handleDeleteSlot = async (id: number) => {
-        if (!window.confirm('Delete this specialist configuration?')) return;
+        if (!window.confirm("Delete this doctor's schedule?")) return;
         try {
             const token = localStorage.getItem('access');
             await axios.delete(`http://127.0.0.1:8000/api/hospitals/doctor-slots/${id}/`, {
@@ -99,8 +99,8 @@ const HospitalSettings = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 max-w-7xl mx-auto pb-32">
             <div className="flex justify-between items-center mb-12">
                 <div>
-                    <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Infrastructure Hub</h2>
-                    <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Command Center & Resource Management</p>
+                    <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Hospital Management</h2>
+                    <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Update hospital info and doctor schedules</p>
                 </div>
             </div>
             
@@ -113,18 +113,18 @@ const HospitalSettings = () => {
                             <div className="flex items-center gap-6">
                                 <div className="p-6 bg-emerald-50 text-emerald-600 rounded-[32px] shadow-inner group-hover:scale-110 transition-transform"><Building2 size={36} /></div>
                                 <div>
-                                    <h3 className="text-3xl font-black uppercase italic tracking-tighter text-gray-900">Hospital Matrix</h3>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-['Montserrat']">Synchronizing Physical Resources with Global Dashboard</p>
+                                    <h3 className="text-3xl font-black uppercase italic tracking-tighter text-gray-900">Hospital Details</h3>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-['Montserrat']">Keep your hospital details up to date</p>
                                 </div>
                             </div>
                             <button type="submit" className="bg-gray-900 text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-gray-900/30 hover:bg-black transition-all flex items-center gap-3">
-                                <ShieldCheck size={18} /> BROADCAST UPDATES
+                                <ShieldCheck size={18} /> SAVE CHANGES
                             </button>
                         </div>
 
                         <div className="grid md:grid-cols-4 gap-8">
                             <div className="md:col-span-2 space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-[#064E3B] ml-1">Entity Name</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-[#064E3B] ml-1">Hospital Name</label>
                                 <input type="text" className="input-field-infra" value={hospitalInfo.name} onChange={e => setHospitalInfo({...hospitalInfo, name: e.target.value})} />
                             </div>
                             <div className="space-y-2">
@@ -135,7 +135,7 @@ const HospitalSettings = () => {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-[#064E3B] ml-1">Daily Intake Seats</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-[#064E3B] ml-1">Patients per day</label>
                                 <div className="relative">
                                     <Smartphone size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-blue-300" />
                                     <input type="number" className="input-field-infra pl-14" value={hospitalInfo.online_seats} onChange={e => setHospitalInfo({...hospitalInfo, online_seats: parseInt(e.target.value)})} />
@@ -143,7 +143,7 @@ const HospitalSettings = () => {
                             </div>
 
                             <div className="space-y-2 md:col-span-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Facilities Synopsis</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">List of Services</label>
                                 <input type="text" placeholder="E.G. ICU, NICU, BLOOD BANK, PHARMACY 24/7..." className="input-field-infra" value={hospitalInfo.facilities} onChange={e => setHospitalInfo({...hospitalInfo, facilities: e.target.value})} />
                             </div>
                             <div className="space-y-2">
@@ -151,10 +151,10 @@ const HospitalSettings = () => {
                                 <input type="number" className="input-field-infra" value={hospitalInfo.available_beds} onChange={e => setHospitalInfo({...hospitalInfo, available_beds: parseInt(e.target.value)})} />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Unit Response (Ambulance)</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Ambulance Service</label>
                                 <button type="button" onClick={() => setHospitalInfo({...hospitalInfo, has_ambulance: !hospitalInfo.has_ambulance})}
                                      className={`w-full py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest border-2 transition-all flex items-center justify-center gap-3 ${hospitalInfo.has_ambulance ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-gray-50 bg-white text-gray-300'}`}>
-                                    <Truck size={18} /> {hospitalInfo.has_ambulance ? 'Active Fleet' : 'In Service'}
+                                    <Truck size={18} /> {hospitalInfo.has_ambulance ? 'Available' : 'Not Available'}
                                 </button>
                             </div>
                         </div>
@@ -167,9 +167,9 @@ const HospitalSettings = () => {
                         <div className="flex justify-between items-center mb-12">
                             <div>
                                 <h3 className="text-3xl font-black uppercase italic tracking-tighter text-gray-900 flex items-center gap-6">
-                                    <PenSquare size={40} className="text-emerald-600" /> Specialist Logic
+                                    <PenSquare size={40} className="text-emerald-600" /> Manage Doctor Slots
                                 </h3>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2 font-['Montserrat']">Manage consultation thresholds and slot encryption</p>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2 font-['Montserrat']">Set consultation fees and timing for doctors</p>
                             </div>
                             <button onClick={() => setIsAddingSlot(true)} className="group bg-gray-900 text-white p-5 rounded-2xl shadow-xl shadow-gray-900/30 hover:scale-110 active:scale-95 transition-all">
                                 <Plus size={28} className="group-hover:rotate-90 transition-transform duration-500" />
@@ -180,12 +180,12 @@ const HospitalSettings = () => {
                             {isAddingSlot && (
                                 <motion.div initial={{ opacity: 0, scale: 0.98, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 20 }} className="mb-12 p-10 border-2 border-emerald-500/20 bg-emerald-50/5 rounded-[40px] relative">
                                     <div className="flex justify-between items-center mb-8">
-                                        <h4 className="text-xl font-black uppercase italic tracking-tighter text-[#064E3B]">Configure Specialist Node</h4>
+                                        <h4 className="text-xl font-black uppercase italic tracking-tighter text-[#064E3B]">Add Doctor Schedule</h4>
                                         <button onClick={() => setIsAddingSlot(false)} className="p-3 hover:bg-red-50 text-red-400 rounded-xl transition-all"><X size={24} /></button>
                                     </div>
                                     <form onSubmit={handleCreateSlot} className="grid md:grid-cols-4 gap-6">
                                         <div className="space-y-2">
-                                            <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Identity UID</label>
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Doctor Name</label>
                                             <select required className="input-field-infra shadow-sm appearance-none bg-white font-black" value={newSlot.doctor} onChange={e => setNewSlot({...newSlot, doctor: e.target.value})}>
                                                 <option value="">Select Doctor</option>
                                                 {availableDoctors.map(d => (
@@ -194,22 +194,22 @@ const HospitalSettings = () => {
                                             </select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Valuation (₹)</label>
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Fees (₹)</label>
                                             <div className="relative">
                                                 <IndianRupee size={14} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-300" />
                                                 <input type="number" required className="input-field-infra pl-14" value={newSlot.consultation_fee} onChange={e => setNewSlot({...newSlot, consultation_fee: e.target.value})} />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Registry Start</label>
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Start Time</label>
                                             <input type="time" required className="input-field-infra" value={newSlot.start_time} onChange={e => setNewSlot({...newSlot, start_time: e.target.value})} />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Registry End</label>
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">End Time</label>
                                             <input type="time" required className="input-field-infra" value={newSlot.end_time} onChange={e => setNewSlot({...newSlot, end_time: e.target.value})} />
                                         </div>
                                         <div className="col-span-full pt-4">
-                                            <button type="submit" className="w-full py-6 rounded-3xl bg-[#064E3B] text-white font-black uppercase text-xs tracking-[0.3em] shadow-2xl shadow-emerald-900/30 hover:bg-black transition-all">INITIALIZE CLINICAL NODE</button>
+                                            <button type="submit" className="w-full py-6 rounded-3xl bg-[#064E3B] text-white font-black uppercase text-xs tracking-[0.3em] shadow-2xl shadow-emerald-900/30 hover:bg-black transition-all">ADD SCHEDULE</button>
                                         </div>
                                     </form>
                                 </motion.div>

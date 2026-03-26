@@ -41,14 +41,14 @@ const MyHistory = () => {
             });
             setAppointments(appointments.map(a => a.id === id ? { ...a, status: 'cancelled' } : a));
         } catch (err) {
-            alert('Cancel failed');
+            alert('Failed to cancel');
         }
     };
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 pb-32 max-w-6xl mx-auto">
-            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">My History</h2>
-            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Global Medical Records</p>
+            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Medical History</h2>
+            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Your health records across all hospitals</p>
 
             {loading ? (
                 <div className="text-center p-10 font-bold uppercase tracking-widest text-gray-400">Loading Records...</div>
@@ -57,15 +57,15 @@ const MyHistory = () => {
                     {/* Appointments Section */}
                     <div>
                         <h3 className="font-black italic uppercase tracking-tighter text-gray-400 text-2xl flex items-center gap-2 mb-6 ml-2">
-                            <Calendar className="text-[var(--color-primary)]" /> Online Bookings
+                            <Calendar className="text-[var(--color-primary)]" /> My Appointments
                         </h3>
                         <div className="space-y-4">
                             {appointments.map(a => (
                                 <div key={a.id} className="card-premium p-6 border-l-4 border-[var(--color-primary)] hover:translate-x-2 transition-transform">
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
-                                            <h4 className="text-lg font-black uppercase tracking-tight text-gray-900">{a.hospital?.name || 'Clinic'}</h4>
-                                            <p className="font-bold text-xs uppercase tracking-widest text-[var(--color-primary)] font-['Montserrat']">Dr. {a.doctor?.username || 'Specialist'}</p>
+                                            <h4 className="text-lg font-black uppercase tracking-tight text-gray-900">{a.hospital?.name || 'Hospital'}</h4>
+                                            <p className="font-bold text-xs uppercase tracking-widest text-[var(--color-primary)] font-['Montserrat']">Dr. {a.doctor?.username || 'Doctor'}</p>
                                         </div>
                                         <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl border shadow-sm ${a.status === 'Booked' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
                                             {a.status}
@@ -85,7 +85,7 @@ const MyHistory = () => {
                             ))}
                             {appointments.length === 0 && (
                                 <div className="card-premium p-10 text-center font-bold text-gray-400 uppercase tracking-widest italic border-dashed border-2">
-                                    No bookings found.
+                                    No appointments found.
                                 </div>
                             )}
                         </div>
@@ -94,7 +94,7 @@ const MyHistory = () => {
                     {/* Medical History Section */}
                     <div>
                         <h3 className="font-black italic uppercase tracking-tighter text-gray-400 text-2xl flex items-center gap-2 mb-6 ml-2">
-                            <HeartPulse className="text-blue-600" /> Consultations
+                            <HeartPulse className="text-blue-600" /> Past Check-ups
                         </h3>
                         <div className="space-y-4">
                             {history.map(h => (
@@ -113,14 +113,14 @@ const MyHistory = () => {
                                     </div>
 
                                     <div className="pt-4 border-t border-blue-100 flex justify-between items-center text-xs font-bold uppercase tracking-widest text-blue-600">
-                                        <span>Hospital Record</span>
+                                        <span>Official Record</span>
                                         <span className="bg-blue-600 text-white px-3 py-1 rounded-lg">Dr. {h.doctor_name || h.doctor?.username}</span>
                                     </div>
                                 </div>
                             ))}
                             {history.length === 0 && (
                                 <div className="card-premium p-10 text-center font-bold text-gray-400 uppercase tracking-widest italic border-dashed border-2 border-blue-100">
-                                    No EMR consults found.
+                                    No past check-ups found.
                                 </div>
                             )}
                         </div>

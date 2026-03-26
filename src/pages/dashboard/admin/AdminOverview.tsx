@@ -31,22 +31,22 @@ const AdminOverview = () => {
     );
 
     const cards = [
-        { title: 'Verified Nodes', value: stats?.total_hospitals || 0, icon: <Building2 size={32} />, color: 'from-emerald-600 to-emerald-700', sub: 'Hospitals on Network' },
-        { title: 'Identity Registry', value: stats?.total_patients || 0, icon: <Users size={32} />, color: 'from-gray-800 to-gray-900', sub: 'Total Global Patients' },
-        { title: 'Molecular Depth', value: stats?.total_medicines || 0, icon: <Pill size={32} />, color: 'from-emerald-900 to-[#064E3B]', sub: 'Pharmacological Master' },
-        { title: 'Triage Pending', value: stats?.pending_hospitals || 0, icon: <ShieldAlert size={32} />, color: 'from-orange-500 to-red-600', sub: 'Action Required' },
+        { title: 'Total Hospitals', value: stats?.total_hospitals || 0, icon: <Building2 size={32} />, color: 'from-emerald-600 to-emerald-700', sub: 'Hospitals in the system' },
+        { title: 'Total Patients', value: stats?.total_patients || 0, icon: <Users size={32} />, color: 'from-gray-800 to-gray-900', sub: 'All registered patients' },
+        { title: 'Total Medicines', value: stats?.total_medicines || 0, icon: <Pill size={32} />, color: 'from-emerald-900 to-[#064E3B]', sub: 'Medicines in the database' },
+        { title: 'Pending Approval', value: stats?.pending_hospitals || 0, icon: <ShieldAlert size={32} />, color: 'from-orange-500 to-red-600', sub: 'Hospitals waiting for approval' },
     ];
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 max-w-7xl mx-auto pb-32">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8">
                 <div>
-                    <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Network Console</h2>
-                    <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Global Node & Registry Command</p>
+                    <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Admin Dashboard</h2>
+                    <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Manage hospitals, patients and medicines</p>
                 </div>
                 <div className="bg-white px-8 py-4 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4">
                     <Globe size={20} className="text-emerald-500 animate-[spin_10s_linear_infinite]" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-900">Synchronized: Global Mainnet</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-900">System: Online</span>
                 </div>
             </div>
 
@@ -81,24 +81,24 @@ const AdminOverview = () => {
                         
                         <div className="relative z-10 mb-10">
                             <h3 className="text-5xl font-black italic uppercase tracking-tighter leading-tight mb-6">
-                                System Health: <br/> Fully Operational
+                                System Status: <br/> All Good
                             </h3>
                             <div className="flex gap-4">
                                 <div className="flex items-center gap-3 px-6 py-3 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-md">
                                     <CheckCircle size={16} className="text-emerald-400" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-white">Registry Active</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-white">Records: Active</span>
                                 </div>
                                 <div className="flex items-center gap-3 px-6 py-3 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-md">
                                     <Smartphone size={16} className="text-blue-300" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-white">API Sync: 99.8%</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-white">Uptime: 99.8%</span>
                                 </div>
                             </div>
                         </div>
                         <div className="grid md:grid-cols-2 gap-6 relative z-10">
                             <Link to="/dashboard/global_admin/hospitals" className="bg-white text-gray-900 p-8 rounded-[36px] flex items-center justify-between group/btn hover:scale-[1.02] transition-all">
                                 <div>
-                                    <h4 className="text-lg font-black italic uppercase tracking-tighter">Node Manager</h4>
-                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1 font-['Montserrat']">Authorize New Hospitals</p>
+                                    <h4 className="text-lg font-black italic uppercase tracking-tighter">Manage Hospitals</h4>
+                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1 font-['Montserrat']">Approve and view hospitals</p>
                                 </div>
                                 <div className="p-4 bg-gray-50 rounded-2xl group-hover/btn:bg-emerald-600 group-hover/btn:text-white transition-all">
                                     <ChevronRight size={24} />
@@ -107,8 +107,8 @@ const AdminOverview = () => {
 
                             <Link to="/dashboard/global_admin/medicines" className="bg-white text-gray-900 p-8 rounded-[36px] flex items-center justify-between group/btn hover:scale-[1.02] transition-all">
                                 <div>
-                                    <h4 className="text-lg font-black italic uppercase tracking-tighter">Drug Synthesis</h4>
-                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1 font-['Montserrat']">Pharmacological Control</p>
+                                    <h4 className="text-lg font-black italic uppercase tracking-tighter">Manage Medicines</h4>
+                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1 font-['Montserrat']">Add and update medicines</p>
                                 </div>
                                 <div className="p-4 bg-gray-50 rounded-2xl group-hover/btn:bg-emerald-600 group-hover/btn:text-white transition-all">
                                     <ChevronRight size={24} />
@@ -122,16 +122,16 @@ const AdminOverview = () => {
                             <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-[32px] flex items-center justify-center mb-6 shadow-inner group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500">
                                 <Activity size={40} />
                             </div>
-                            <h4 className="text-xl font-black italic uppercase text-gray-900 tracking-tighter">Traffic Logic</h4>
-                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] leading-loose mt-4 px-6 font-['Montserrat']">Aggregated system query logs and transaction tracking operational.</p>
+                            <h4 className="text-xl font-black italic uppercase text-gray-900 tracking-tighter">Activity Monitor</h4>
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] leading-loose mt-4 px-6 font-['Montserrat']">View all recent actions and activity across the system.</p>
                         </div>
 
                         <div className="card-premium p-10 bg-white border border-gray-100 flex flex-col items-center justify-center text-center shadow-xl shadow-gray-200/50 group">
                             <div className="w-20 h-20 bg-gray-900 text-white rounded-[32px] flex items-center justify-center mb-6 shadow-inner group-hover:bg-emerald-600 transition-all duration-500">
                                 <ShieldAlert size={40} />
                             </div>
-                            <h4 className="text-xl font-black italic uppercase text-gray-900 tracking-tighter">Security Trace</h4>
-                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] leading-loose mt-4 px-6 font-['Montserrat']">End-to-end encryption active across all global health nodes.</p>
+                            <h4 className="text-xl font-black italic uppercase text-gray-900 tracking-tighter">Data Security</h4>
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] leading-loose mt-4 px-6 font-['Montserrat']">All patient data is encrypted and kept safe at all times.</p>
                         </div>
                     </div>
                 </div>
@@ -139,14 +139,14 @@ const AdminOverview = () => {
                 <div className="lg:col-span-4 space-y-10">
                     <div className="card-premium p-10 bg-white border border-gray-100 shadow-2xl shadow-gray-200/50 flex flex-col h-full">
                         <h4 className="text-xl font-black italic uppercase text-gray-900 tracking-tighter mb-10 pb-6 border-b border-gray-50 flex items-center gap-4">
-                            <Briefcase size={24} className="text-emerald-600" /> Strategic Actions
+                            <Briefcase size={24} className="text-emerald-600" /> Quick Actions
                         </h4>
                         <div className="space-y-6 flex-1">
                             {[
-                                { text: 'Generate Audit Report', color: 'bg-emerald-600' },
-                                { text: 'Export Global Ledger', color: 'bg-gray-900' },
-                                { text: 'Broadcase System Notice', color: 'bg-orange-500' },
-                                { text: 'Maintenance Mode', color: 'bg-red-600' }
+                                { text: 'Download Audit Report', color: 'bg-emerald-600' },
+                                { text: 'Export Medicine List', color: 'bg-gray-900' },
+                                { text: 'Send System Notice', color: 'bg-orange-500' },
+                                { text: 'Pause System', color: 'bg-red-600' }
                             ].map((action, i) => (
                                 <button key={i} className={`w-full py-5 ${action.color} text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.3em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all font-['Montserrat']`}>
                                     {action.text}

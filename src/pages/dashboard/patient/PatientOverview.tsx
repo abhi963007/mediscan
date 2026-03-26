@@ -47,26 +47,26 @@ const PatientOverview = () => {
 
     const cards = [
         { 
-            title: 'Admission History', 
+            title: 'Past Visits', 
             value: stats?.my_appointments || 0, 
             icon: <CalendarDays size={32} />, 
             color: 'from-emerald-600 to-emerald-700', 
-            sub: 'Clinical Sessions Tracked' 
+            sub: 'Visits tracked in system' 
         },
         { 
-            title: 'Global UHID Verification', 
+            title: 'ID Status', 
             value: 'Verified', 
             icon: <ShieldCheck size={32} />, 
             color: 'from-gray-800 to-gray-900 text-sm', 
-            sub: 'Immutable Identity Active' 
+            sub: 'Your identity is safe' 
         },
     ];
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 max-w-7xl mx-auto pb-32">
             <div className="mb-12">
-                <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Health Passport</h2>
-                <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Global Identity & Record Hub</p>
+                <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">My Health Card</h2>
+                <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">All your medical history in one place</p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-10 mb-12">
@@ -108,19 +108,19 @@ const PatientOverview = () => {
                                 <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent pointer-events-none"></div>
                             </div>
                         </div>
-                        <h3 className="text-2xl font-black uppercase italic text-white tracking-tighter relative z-10 mb-2 font-['Montserrat']">Global Digital ID</h3>
-                        <p className="text-[8px] font-black text-emerald-300/60 uppercase tracking-[0.4em] relative z-10 font-['Montserrat'] mb-8">UHID: {user?.uhid || user?.username}</p>
+                        <h3 className="text-2xl font-black uppercase italic text-white tracking-tighter relative z-10 mb-2 font-['Montserrat']">My Health Card</h3>
+                        <p className="text-[8px] font-black text-emerald-300/60 uppercase tracking-[0.4em] relative z-10 font-['Montserrat'] mb-8">Card No: {user?.uhid || user?.username}</p>
                         
                         <button onClick={handleDownload} className="w-full py-5 bg-white text-[#064E3B] rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl shadow-black/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 relative z-10 group/btn font-['Montserrat']">
-                            <Download size={18} className="group-hover/btn:-translate-y-1 transition-transform" /> EXPAND GLOBAL PASS
+                            <Download size={18} className="group-hover/btn:-translate-y-1 transition-transform" /> DOWNLOAD QR CARD
                         </button>
                     </div>
 
                     <div className="card-premium p-8 bg-white border border-gray-100 flex items-center gap-6 shadow-xl shadow-gray-200/50">
                         <div className="p-4 bg-emerald-50 rounded-2xl text-emerald-600"><Smartphone size={24} /></div>
                         <div>
-                            <h5 className="font-black uppercase text-[10px] tracking-widest text-gray-900 mb-1">Real-Time Ledger</h5>
-                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest font-['Montserrat']">Last identity sync: Global node 09-A</p>
+                            <h5 className="font-black uppercase text-[10px] tracking-widest text-gray-900 mb-1">Live Updates</h5>
+                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest font-['Montserrat']">Last update: Today</p>
                         </div>
                     </div>
                 </div>
@@ -133,10 +133,10 @@ const PatientOverview = () => {
                                 <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-[32px] flex items-center justify-center mb-8 shadow-inner border border-emerald-100 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500">
                                     <HeartPulse size={40} />
                                 </div>
-                                <h4 className="text-3xl font-black italic uppercase text-gray-900 tracking-tighter mb-4 group-hover:text-emerald-700 transition-colors">Initiate Consult</h4>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] max-w-[220px] leading-relaxed font-['Montserrat']">Access world-class specialists via the MediScan network.</p>
+                                <h4 className="text-3xl font-black italic uppercase text-gray-900 tracking-tighter mb-4 group-hover:text-emerald-700 transition-colors">Book Visit</h4>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] max-w-[220px] leading-relaxed font-['Montserrat']">Book an appointment with a doctor at any hospital.</p>
                                 <div className="mt-8 flex items-center gap-2 group-hover:translate-x-2 transition-transform text-emerald-500">
-                                    <span className="text-[10px] font-black uppercase tracking-widest">Reserve Slot</span> <ChevronRight size={16} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Book Now</span> <ChevronRight size={16} />
                                 </div>
                             </div>
                         </Link>
@@ -147,10 +147,10 @@ const PatientOverview = () => {
                                 <div className="w-20 h-20 bg-gray-50 text-gray-500 rounded-[32px] flex items-center justify-center mb-8 shadow-inner border border-gray-100 group-hover:scale-110 group-hover:bg-gray-900 group-hover:text-white transition-all duration-500">
                                     <History size={40} />
                                 </div>
-                                <h4 className="text-3xl font-black italic uppercase text-gray-900 tracking-tighter mb-4 group-hover:text-black transition-colors">Unified EMR</h4>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] max-w-[220px] leading-relaxed font-['Montserrat']">View your global clinical journey and prescription trails.</p>
+                                <h4 className="text-3xl font-black italic uppercase text-gray-900 tracking-tighter mb-4 group-hover:text-black transition-colors">Medical History</h4>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] max-w-[220px] leading-relaxed font-['Montserrat']">Check your past visits and prescriptions.</p>
                                 <div className="mt-8 flex items-center gap-2 group-hover:translate-x-2 transition-transform text-gray-900">
-                                    <span className="text-[10px] font-black uppercase tracking-widest">Examine Log</span> <ChevronRight size={16} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">See Records</span> <ChevronRight size={16} />
                                 </div>
                             </div>
                         </Link>
@@ -162,8 +162,8 @@ const PatientOverview = () => {
                             <ShieldAlert size={40} className="text-emerald-400" />
                         </div>
                         <div className="text-center md:text-left">
-                            <h4 className="text-xl font-black italic uppercase tracking-tighter mb-2">Immutable Safety Net</h4>
-                            <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] leading-loose font-['Montserrat']">Your clinical profile is encrypted and only accessible via terminal lock when your E-Card is scanned by verified practitioners.</p>
+                            <h4 className="text-xl font-black italic uppercase tracking-tighter mb-2">Your Data is Safe</h4>
+                            <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] leading-loose font-['Montserrat']">Your medical records are private. Doctors can only see them when they scan your QR health card.</p>
                         </div>
                     </div>
                 </div>

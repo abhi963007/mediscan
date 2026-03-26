@@ -39,20 +39,20 @@ const DoctorOverview = () => {
 
     const cards = [
         { 
-            title: 'Admission Queue', 
+            title: 'Waiting List', 
             value: queueCount, 
             icon: <UserCheck size={32} />, 
             color: 'from-emerald-600 to-emerald-700', 
-            sub: 'Awaiting Consultation',
-            trend: 'Live updates enabled'
+            sub: 'Patients waiting to be seen',
+            trend: 'Updating live'
         },
         { 
-            title: 'Completed Today', 
+            title: 'Treated Today', 
             value: stats?.patients_treated || 0, 
             icon: <ClipboardCheck size={32} />, 
             color: 'from-gray-800 to-gray-900', 
-            sub: 'Clinical Achievements',
-            trend: '+12% from vs yesterday'
+            sub: 'Daily progress',
+            trend: '+12% from yesterday'
         },
     ];
 
@@ -60,12 +60,12 @@ const DoctorOverview = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 max-w-7xl mx-auto pb-32">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8">
                 <div>
-                    <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Specialist Desk</h2>
-                    <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Consultation Command & Control</p>
+                    <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-3 font-['Montserrat']">Doctor's Area</h2>
+                    <p className="font-bold tracking-[0.4em] text-[10px] text-gray-400 uppercase pl-1 font-['Montserrat']">Manage your patients and visits</p>
                 </div>
                 <div className="bg-white px-8 py-4 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4">
                     <Activity size={20} className="text-emerald-500 animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-900">Network Synced</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-900">Connected</span>
                 </div>
             </div>
 
@@ -105,9 +105,9 @@ const DoctorOverview = () => {
                         <div className="flex justify-between items-start mb-12 relative z-10">
                             <div>
                                 <h3 className="text-5xl font-black italic uppercase tracking-tighter mb-6 flex items-center gap-6 leading-tight">
-                                   Launch Clinical <br/> Terminal <ChevronRight size={48} className="text-emerald-400 group-hover:translate-x-4 transition-transform duration-500" />
+                                   Start <br/> Check-up <ChevronRight size={48} className="text-emerald-400 group-hover:translate-x-4 transition-transform duration-500" />
                                 </h3>
-                                <p className="text-emerald-100/60 font-medium uppercase tracking-[0.3em] text-[10px] max-w-sm leading-loose font-['Montserrat']">Atomic synchronization with the global health ledger. Lock UHID identities and issue smart directives.</p>
+                                <p className="text-emerald-100/60 font-medium uppercase tracking-[0.3em] text-[10px] max-w-sm leading-loose font-['Montserrat']">Access patient history and add new medical notes.</p>
                             </div>
                             <div className="bg-white/10 p-10 rounded-[48px] flex items-center justify-center backdrop-blur-xl shrink-0 border border-white/10 shadow-inner group-hover:scale-110 transition-transform duration-700">
                                 <ScanFace size={72} className="text-white" />
@@ -116,9 +116,9 @@ const DoctorOverview = () => {
                         
                         <div className="flex flex-wrap gap-4 relative z-10">
                             {[
-                                { icon: <CheckCircle size={14}/>, text: 'Identity Lock' },
-                                { icon: <History size={14}/>, text: 'EMR Extraction' },
-                                { icon: <HeartPulse size={14}/>, text: 'Vitals Sync' }
+                                { icon: <CheckCircle size={14}/>, text: 'Confirm Patient' },
+                                { icon: <History size={14}/>, text: 'View History' },
+                                { icon: <HeartPulse size={14}/>, text: 'Check Vitals' }
                             ].map((item, i) => (
                                 <div key={i} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] bg-white/5 border border-white/10 px-6 py-4 rounded-2xl hover:bg-white/10 transition-colors backdrop-blur-md">
                                     <span className="text-emerald-400">{item.icon}</span> {item.text}
@@ -133,8 +133,8 @@ const DoctorOverview = () => {
                         <div className="w-24 h-24 bg-gray-50 text-gray-300 rounded-[36px] flex items-center justify-center mb-8 border border-gray-100 group-hover:bg-emerald-50 group-hover:text-emerald-600 group-hover:scale-110 transition-all duration-500">
                             <Activity size={48} />
                         </div>
-                        <h4 className="text-2xl font-black italic uppercase text-gray-900 tracking-tighter">Diagnostic Analytics</h4>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-loose mt-4 px-6 font-['Montserrat']">Aggregated clinical stats and specialty performance metrics are syncing.</p>
+                        <h4 className="text-2xl font-black italic uppercase text-gray-900 tracking-tighter">Health Analysis</h4>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-loose mt-4 px-6 font-['Montserrat']">Patient health records and reports are being updated.</p>
                         <div className="w-full h-1 bg-gray-50 rounded-full mt-10 overflow-hidden">
                             <motion.div 
                                 initial={{ width: 0 }} 

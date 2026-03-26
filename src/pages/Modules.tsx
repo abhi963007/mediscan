@@ -6,45 +6,45 @@ import { Link } from 'react-router-dom';
 const moduleList = [
     {
         icon: <Building2 size={56} strokeWidth={1.5} />,
-        title: 'Hospital Registration & Verification',
-        desc: 'Seamless onboarding for healthcare institutions with multi-tier verification protocols and global medicine catalogue management.',
-        tag: 'ADMIN INFRA'
+        title: 'Hospital Registration & Setup',
+        desc: 'Easily add a hospital to the system, check its details, and manage the list of available medicines.',
+        tag: 'ADMIN'
     },
     {
         icon: <UserCog size={56} strokeWidth={1.5} />,
-        title: 'Doctor Detail Authentication',
-        desc: 'Automated credential generation and secure RBAC-enabled access for clinical specialists across the network.',
-        tag: 'SPECIALISTS'
+        title: 'Doctor Account Setup',
+        desc: 'Create doctor accounts and give them the right access to see their patients and manage appointments.',
+        tag: 'DOCTORS'
     },
     {
         icon: <Users size={56} strokeWidth={1.5} />,
-        title: 'Employee Detail Authentication',
-        desc: 'Full-spectrum staff management from receptionists to lab staff, with unique encrypted login environments.',
-        tag: 'PERSONNEL'
+        title: 'Staff Account Setup',
+        desc: 'Manage all hospital staff including receptionists, each with their own secure login.',
+        tag: 'STAFF'
     },
     {
         icon: <Settings size={56} strokeWidth={1.5} />,
-        title: 'Hospital Settings & Capacity',
-        desc: 'Granular control over consultation fees, operating hours, and online seat allocation for optimized patient inflow.',
-        tag: 'FACILITY CONTROL'
+        title: 'Hospital Settings',
+        desc: 'Set consultation fees, working hours, and how many patients can book online each day.',
+        tag: 'SETTINGS'
     },
     {
         icon: <Calendar size={56} strokeWidth={1.5} />,
-        title: 'Universal Online Booking',
-        desc: 'Advanced search engine for patients to discover hospitals, view real-time slots, and book verified consultations.',
-        tag: 'PATIENT ACCESS'
+        title: 'Book an Appointment',
+        desc: 'Patients can search for hospitals, see available time slots, and book a doctor visit online.',
+        tag: 'PATIENTS'
     },
     {
         icon: <Scan size={56} strokeWidth={1.5} />,
-        title: 'QR-Code Patient Visit',
-        desc: 'Proprietary biometric-grade QR card system for instant patient check-ins and automated queue population.',
+        title: 'QR Code Check-in',
+        desc: 'Patients scan their QR card at the hospital to check in quickly without any paperwork.',
         tag: 'FRONT DESK'
     },
     {
         icon: <Stethoscope size={56} strokeWidth={1.5} />,
-        title: 'Clinical Treatment Terminal',
-        desc: 'High-performance dashboard for doctors to view longitudinal treatment history, prescriptions, and vital statistics.',
-        tag: 'CLINICAL CARE'
+        title: 'Doctor Treatment Room',
+        desc: 'Doctors can view a patient\'s full visit history, prescriptions, and health notes all in one screen.',
+        tag: 'DOCTORS'
     },
 ];
 
@@ -63,13 +63,13 @@ const Modules = () => {
                 <div className="mb-24 flex flex-col items-center text-center">
                     <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 mb-6 bg-gray-50 px-5 py-2 rounded-full border border-gray-100 shadow-sm">
                         <Activity className="text-[var(--color-primary)]" size={14} />
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 font-['Montserrat']">System Architecture</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 font-['Montserrat']">How It Works</span>
                     </motion.div>
                     <motion.h1 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-6xl md:text-[5.5rem] font-black italic uppercase tracking-tighter text-gray-900 leading-[0.85] mb-8">
                         Core <span className="text-[var(--color-primary)]">Modules</span>
                     </motion.h1>
                     <p className="text-xl font-medium text-gray-500 max-w-2xl leading-relaxed font-['Montserrat']">
-                        Explore the 7 high-performance engines driving the Global Patient ecosystem — engineered for speed, security, and medical integrity.
+                        Explore the 7 main tools that make MediScan work — designed to be fast, safe, and easy to use.
                     </p>
                 </div>
 

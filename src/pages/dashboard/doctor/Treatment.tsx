@@ -85,11 +85,11 @@ const Treatment = () => {
             if (res.data.length > 0) {
                 handlePatientSelect(res.data[0]);
             } else {
-                setError('No Global Patient found.');
+                setError('No patient found.');
                 setPatient(null);
             }
         } catch (err) {
-            setError('Error processing E-Card.');
+            setError('Could not read the card.');
             setPatient(null);
         }
     };
@@ -146,7 +146,7 @@ const Treatment = () => {
                 await axios.post(`http://127.0.0.1:8000/api/appointments/queue/${queueEntry.id}/complete/`, {}, { headers });
             }
 
-            alert('Consultation Saved & Identity Synced Successfully!');
+            alert('Check-up saved and patient records updated!');
             setPatient(null);
             setUhid('');
             fetchData();
@@ -159,7 +159,7 @@ const Treatment = () => {
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 pb-32">
-            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-10">Clinical Terminal</h2>
+            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-10">Check-up Room</h2>
             
             {!patient && (
                 <div className="grid lg:grid-cols-12 gap-10">
@@ -168,12 +168,12 @@ const Treatment = () => {
                             <div className="w-32 h-32 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
                                 <ScanFace size={64} />
                             </div>
-                            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-blue-900 mb-6 drop-shadow-sm font-['Montserrat']">Unlock Global E-Card</h3>
+                            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-blue-900 mb-6 drop-shadow-sm font-['Montserrat']">Scan Patient Card</h3>
                             <div className="flex gap-4 w-full max-w-lg">
-                                <input type="text" placeholder="PATIENT UHID (E.G. GP-6231)" className="flex-1 bg-white border-2 border-blue-200 py-4 px-6 rounded-2xl font-black uppercase tracking-widest text-xs focus:outline-none focus:border-blue-500 transition-colors font-['Montserrat']"
+                                <input type="text" placeholder="ENTER PATIENT ID (E.G. GP-6231)" className="flex-1 bg-white border-2 border-blue-200 py-4 px-6 rounded-2xl font-black uppercase tracking-widest text-xs focus:outline-none focus:border-blue-500 transition-colors font-['Montserrat']"
                                     value={uhid} onChange={e => setUhid(e.target.value)} />
                                 <button onClick={handleScan} className="bg-blue-600 hover:bg-blue-700 text-white font-black italic uppercase tracking-tighter px-10 rounded-2xl shadow-xl shadow-blue-600/20">
-                                    Unlock
+                                    Open Profile
                                 </button>
                             </div>
                             {error && <p className="mt-4 text-red-500 font-black uppercase text-[10px] tracking-widest">{error}</p>}
@@ -183,7 +183,7 @@ const Treatment = () => {
                     <div className="lg:col-span-4">
                         <div className="card-premium p-8 h-full bg-white border-2 border-gray-100 flex flex-col">
                             <h3 className="text-xl font-black italic uppercase text-gray-800 tracking-tighter mb-6 flex items-center gap-3">
-                                <Activity className="text-green-600" size={24} /> Live Admission Queue
+                                <Activity className="text-green-600" size={24} /> Patients Waiting
                             </h3>
                             <div className="flex-1 overflow-y-auto space-y-4 pr-2">
                                 {loadingQueue ? (
@@ -213,7 +213,7 @@ const Treatment = () => {
                                 ) : (
                                     <div className="h-full flex flex-col items-center justify-center opacity-30 text-center">
                                         <Activity size={48} className="text-gray-300 mb-4" />
-                                        <p className="font-black uppercase text-[9px] tracking-widest">No active admissions</p>
+                                        <p className="font-black uppercase text-[9px] tracking-widest">No patients waiting</p>
                                     </div>
                                 )}
                             </div>
@@ -259,7 +259,7 @@ const Treatment = () => {
 
                             <div className="card-premium p-8 border-2 border-gray-100 relative overflow-hidden h-[700px] flex flex-col bg-white">
                                 <h3 className="text-xl font-black italic uppercase text-gray-800 tracking-tighter mb-6 flex items-center gap-3">
-                                    <FileText className="text-emerald-600" size={24} /> Global EHR Link
+                                    <FileText className="text-emerald-600" size={24} /> Medical History
                                 </h3>
                                 
                                 <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar">
@@ -289,7 +289,7 @@ const Treatment = () => {
                                     {history.length === 0 && (
                                         <div className="h-full flex flex-col items-center justify-center opacity-30 text-center space-y-4">
                                             <FileText size={56} className="text-gray-300" />
-                                            <p className="font-black uppercase text-[10px] tracking-[0.2em] text-gray-400 px-8">Identity found, but Global history is clear.</p>
+                                            <p className="font-black uppercase text-[10px] tracking-[0.2em] text-gray-400 px-8">Patient found, but no past history yet.</p>
                                         </div>
                                     )}
                                 </div>
@@ -301,11 +301,11 @@ const Treatment = () => {
                             <form onSubmit={handleSaveConsultation} className="card-premium p-10 border-2 border-emerald-500 bg-emerald-50/5 shadow-3xl shadow-emerald-500/10">
                                 <div className="flex justify-between items-center mb-10 pb-6 border-b border-gray-100">
                                     <h3 className="text-3xl font-black italic uppercase text-emerald-900 tracking-tighter flex items-center gap-4">
-                                        <Stethoscope size={36} className="text-emerald-500" /> Diagnostic Command
+                                        <Stethoscope size={36} className="text-emerald-500" /> Medical Notes
                                     </h3>
                                     <div className="flex items-center gap-3">
                                         <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse shadow-lg shadow-red-500/20"></span>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Terminal Encrypted</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Secure Connection</span>
                                     </div>
                                 </div>
 
@@ -354,19 +354,19 @@ const Treatment = () => {
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 block ml-1">Chief Complaints & History</label>
                                         <textarea required rows={4} className="input-field-terminal min-h-[120px] py-6 px-8 leading-relaxed font-medium"
-                                            placeholder="DESCRIBE ONSET, DURATION, AND CHARACTER OF SYMPTOMS..."
+                                            placeholder="WRITE SYMPTOMS AND DURATION..."
                                             value={consultation.chief_complaint} onChange={e => setConsultation({...consultation, chief_complaint: e.target.value})}></textarea>
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 block ml-1">Clinical Physical Examination</label>
                                         <textarea rows={4} className="input-field-terminal min-h-[120px] py-6 px-8 leading-relaxed font-medium"
-                                            placeholder="PALLOR, ICTERUS, CLUBBING, LYMPHADENOPATHY, EDEMA, SYSTEMIC EXAM..."
+                                            placeholder="PHYSICAL EXAM NOTES..."
                                             value={consultation.physical_examination} onChange={e => setConsultation({...consultation, physical_examination: e.target.value})}></textarea>
                                     </div>
                                     <div className="col-span-2 space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 block ml-1">Provisional / Differential Diagnosis</label>
                                         <input required type="text" className="input-field-terminal py-6 px-8 font-black text-lg text-emerald-900 placeholder:opacity-30 uppercase tracking-tighter italic"
-                                            placeholder="E.G. ACUTE UPPER RESPIRATORY INFECTION"
+                                            placeholder="WHAT IS THE PROBLEM? (DIAGNOSIS)"
                                             value={consultation.diagnosis} onChange={e => setConsultation({...consultation, diagnosis: e.target.value})} />
                                     </div>
                                 </div>
@@ -376,7 +376,7 @@ const Treatment = () => {
                                     <div className="absolute right-0 top-0 w-32 h-32 bg-emerald-50/50 rounded-bl-[100px] -z-0"></div>
                                     <div className="flex justify-between items-center mb-10 relative z-10">
                                         <h4 className="text-xl font-black italic uppercase tracking-tighter text-gray-800 flex items-center gap-3">
-                                            <Pill size={28} className="text-emerald-500" /> Clinical Directives
+                                            <Pill size={28} className="text-emerald-500" /> Prescriptions
                                         </h4>
                                         <button type="button" onClick={handleAddPrescriptionRow} className="group flex items-center gap-3 bg-emerald-600 text-white px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-emerald-700 hover:scale-105 transition-all shadow-lg shadow-emerald-600/20 active:scale-95">
                                             <Plus size={16} className="group-hover:rotate-90 transition-transform" /> Add Medication
@@ -393,7 +393,7 @@ const Treatment = () => {
                                                     <div className="flex-[3] min-w-[200px] relative">
                                                         <input 
                                                             type="text" 
-                                                            placeholder="SEARCH MOLECULE..."
+                                                            placeholder="SEARCH MEDICINE..."
                                                             className="w-full bg-transparent font-black text-gray-800 uppercase text-[11px] tracking-[0.1em] outline-none placeholder:text-gray-300"
                                                             value={medicines.find(m => m.id.toString() === p.medicine)?.name || p.temp_search || ''}
                                                             onChange={e => {
@@ -474,10 +474,10 @@ const Treatment = () => {
 
                                 <div className="grid grid-cols-2 gap-6">
                                     <button type="submit" className="py-6 rounded-[32px] bg-emerald-600 text-white font-black italic uppercase tracking-[0.1em] text-xl shadow-2xl shadow-emerald-900/40 hover:bg-emerald-700 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-4 group">
-                                        <Plus size={28} className="group-hover:rotate-180 transition-transform duration-500" /> Save & Broadcast Identity
+                                        <Plus size={28} className="group-hover:rotate-180 transition-transform duration-500" /> Save & Finish Visit
                                     </button>
                                     <button type="button" onClick={() => {setPatient(null); setUhid('');}} className="py-6 rounded-[32px] bg-gray-100 text-gray-400 font-black uppercase text-xs tracking-[0.2em] hover:bg-gray-200 transition-all font-['Montserrat']">
-                                        Abort Session
+                                        Cancel Visit
                                     </button>
                                 </div>
                             </form>

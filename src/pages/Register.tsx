@@ -23,7 +23,7 @@ const Register = () => {
     try {
       const payload = { ...formData, role: 'patient' };
       await axios.post('http://127.0.0.1:8000/api/auth/register/', payload);
-      setSuccess('Patient E-Card registered successfully! Redirecting...');
+      setSuccess('Your account was created! Taking you to login...');
       setTimeout(() => navigate('/login'), 2000);
     } catch (err: any) {
       if (err.response?.data) {
@@ -46,8 +46,8 @@ const Register = () => {
         {/* Left Side: Animation */}
         <div className="hidden md:flex flex-1 flex-col items-center justify-center p-12 bg-emerald-50/50 border-r border-emerald-100">
             <div className="text-center mb-8">
-                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-emerald-900 mb-2">Patient Hub</h3>
-                <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-[0.3em] font-['Montserrat']">Secure Global Health Passport</p>
+                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-emerald-900 mb-2">Patient Area</h3>
+                <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-[0.3em] font-['Montserrat']">Your Personal Health Card</p>
             </div>
            <div className="w-full h-[380px] pointer-events-none">
               <DotLottieReact
@@ -59,10 +59,10 @@ const Register = () => {
            <div className="mt-8 p-6 bg-white/60 backdrop-blur-md rounded-3xl border border-white max-w-sm text-center shadow-xl shadow-emerald-900/5">
                 <div className="flex items-center justify-center gap-2 mb-2 text-emerald-600">
                     <Info size={16} /> 
-                    <span className="text-[10px] font-black uppercase tracking-widest">Institutional Notice</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Please Note</span>
                 </div>
                 <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest leading-relaxed font-['Montserrat']">
-                    Clinical staff, Doctors, and Receptionists cannot self-register. Please contact your Hospital Administrator for institutional credentials.
+                    Doctors and Receptionists cannot sign up here. Please ask your Hospital Admin to create your staff account.
                 </p>
            </div>
         </div>
@@ -71,9 +71,9 @@ const Register = () => {
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex-1 p-8 md:p-14 overflow-y-auto max-h-[95vh]">
           <div className="mb-10 text-center md:text-left">
             <h2 className="text-4xl font-black italic uppercase tracking-tighter text-gray-900 mb-3 font-['Montserrat']" style={{ textDecoration: 'underline', textDecorationColor: 'rgba(16,185,129,0.15)', textDecorationThickness: '4px', textUnderlineOffset: '8px' }}>
-              Patient E-Card
+              Create Your Account
             </h2>
-            <p className="font-bold text-gray-400 text-[10px] uppercase tracking-[0.4em] pl-1 font-['Montserrat']">Identity Genesis Registry</p>
+            <p className="font-bold text-gray-400 text-[10px] uppercase tracking-[0.4em] pl-1 font-['Montserrat']">Register as a Patient</p>
           </div>
 
           <AnimatePresence>
@@ -83,19 +83,19 @@ const Register = () => {
 
           <form onSubmit={handleRegister} className="space-y-6">
             <div className="space-y-4">
-                <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-1 font-['Montserrat']">Account Security</h4>
+                <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-1 font-['Montserrat']">Login Details</h4>
                 <div className="grid md:grid-cols-2 gap-4">
                   <input type="text" placeholder="Username" required className="input-field-patient" value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} />
                   <input type="email" placeholder="Email Address" required className="input-field-patient" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
                 </div>
-                <input type="password" placeholder="Registry Password" required className="input-field-patient" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+                <input type="password" placeholder="Password" required className="input-field-patient" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} />
             </div>
 
             <div className="space-y-4 pt-6 border-t border-gray-100">
-                <h4 className="text-[10px] font-black uppercase text-emerald-600 tracking-widest pl-1 font-['Montserrat']">Clinical Matrix</h4>
+                <h4 className="text-[10px] font-black uppercase text-emerald-600 tracking-widest pl-1 font-['Montserrat']">Personal Details</h4>
                 
                 <div className="grid md:grid-cols-2 gap-4">
-                <input type="text" placeholder="Legal Full Name" required className="input-field-patient" value={formData.full_name} onChange={e => setFormData({ ...formData, full_name: e.target.value })} />
+                <input type="text" placeholder="Full Name" required className="input-field-patient" value={formData.full_name} onChange={e => setFormData({ ...formData, full_name: e.target.value })} />
                 <input type="tel" placeholder="Phone Number" required className="input-field-patient" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
                 </div>
                 
@@ -120,12 +120,12 @@ const Register = () => {
             </div>
 
             <button type="submit" className="w-full mt-6 py-5 bg-emerald-900 text-white rounded-3xl font-black italic uppercase tracking-tighter text-xl shadow-2xl shadow-emerald-900/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4">
-              Initialize E-Card <ArrowRight size={24} />
+              Create Account <ArrowRight size={24} />
             </button>
           </form>
 
           <div className="mt-10 text-center text-[10px] font-black uppercase tracking-widest text-gray-400 font-['Montserrat']">
-            Existing UHID? <Link to="/login" className="text-emerald-600 font-bold underline underline-offset-4 ml-1">Access Terminal</Link>
+            Already have an account? <Link to="/login" className="text-emerald-600 font-bold underline underline-offset-4 ml-1">Sign In</Link>
           </div>
         </motion.div>
       </div>

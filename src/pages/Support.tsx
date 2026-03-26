@@ -21,26 +21,26 @@ const Support = () => {
                             <span className="text-[var(--color-primary)]">Support</span>
                         </h1>
                         <p className="text-xl font-medium text-gray-500 max-w-lg mb-12 leading-relaxed font-['Montserrat']">
-                            Encountering a bug or need architecture assistance for your hospital? We are here to help scale your digital transformation.
+                            Found a problem or need help setting up MediScan at your hospital? We are here for you.
                         </p>
 
                         <div className="flex flex-wrap gap-4">
                             <div className="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
                                 <ShieldCheck className="text-blue-500" size={20} />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 font-['Montserrat']">Secure Protocol</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 font-['Montserrat']">Safe & Secure</span>
                             </div>
                             <div className="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
                                 <Globe className="text-green-500" size={20} />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 font-['Montserrat']">24/7 Global Response</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 font-['Montserrat']">Available All Day</span>
                             </div>
                         </div>
                     </motion.div>
 
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
                         {[
-                            { icon: <Mail />, label: 'Email Support', val: 'support@mediscan.hms', sub: 'Average response: 2 Hours' },
-                            { icon: <Phone />, label: 'Toll-Free Architecture', val: '1-800-442-QRMD', sub: 'Available 10AM - 6PM' },
-                            { icon: <MessageSquare />, label: 'In-App Live Chat', val: 'Launch Dashboard Chat', sub: 'Instant connection to dev team' }
+                            { icon: <Mail />, label: 'Email Us', val: 'support@mediscan.hms', sub: 'We reply within 2 hours' },
+                            { icon: <Phone />, label: 'Call Us Free', val: '1-800-442-QRMD', sub: 'Available 10AM - 6PM' },
+                            { icon: <MessageSquare />, label: 'Live Chat', val: 'Open Dashboard Chat', sub: 'Talk to our team now' }
                         ].map((item, i) => (
                             <div key={i} className="group p-8 bg-white rounded-[40px] border border-gray-100 shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-[var(--color-primary)]/10 transition-all hover:-translate-y-1 flex items-center gap-8">
                                 <div className="w-16 h-16 bg-gray-50 rounded-[24px] flex items-center justify-center text-[var(--color-primary)] group-hover:bg-[var(--color-primary)] group-hover:text-white transition-all shadow-inner">

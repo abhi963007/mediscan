@@ -20,19 +20,19 @@ const HospitalOverview = () => {
         fetchStats();
     }, []);
 
-    if (loading) return <div className="p-8 font-black uppercase tracking-widest text-gray-400">Syncing Institution Data...</div>;
+    if (loading) return <div className="p-8 font-black uppercase tracking-widest text-gray-400">Loading Hospital Data...</div>;
 
     const cards = [
-        { title: 'Total Specialists', value: stats?.doctor_count || 0, icon: <Stethoscope />, color: 'bg-[var(--color-primary)]', sub: 'Clinical Roster' },
-        { title: 'Staff Admissions', value: stats?.staff_count || 0, icon: <Users />, color: 'bg-blue-600', sub: 'Active Personnel' },
-        { title: 'Total Ledger', value: stats?.total_appointments || 0, icon: <Wallet />, color: 'bg-green-600', sub: 'Lifetime Consultations' },
-        { title: 'Today Admissions', value: stats?.today_appointments || 0, icon: <CalendarDays />, color: 'bg-orange-600', sub: 'Daily Admissions' },
+        { title: 'Total Doctors', value: stats?.doctor_count || 0, icon: <Stethoscope />, color: 'bg-[var(--color-primary)]', sub: 'Active doctors' },
+        { title: 'Total Staff', value: stats?.staff_count || 0, icon: <Users />, color: 'bg-blue-600', sub: 'Hospital employees' },
+        { title: 'Total Visits', value: stats?.total_appointments || 0, icon: <Wallet />, color: 'bg-green-600', sub: 'Lifetime visits' },
+        { title: "Today's Visits", value: stats?.today_appointments || 0, icon: <CalendarDays />, color: 'bg-orange-600', sub: 'Visits today' },
     ];
 
     return (
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="p-8">
-            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Hospital Command</h2>
-            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Facility Control Center</p>
+            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Hospital Dashboard</h2>
+            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Manage your staff and settings</p>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 {cards.map((card, i) => (
@@ -63,27 +63,27 @@ const HospitalOverview = () => {
                         <ShieldCheck size={48} />
                     </div>
                     <div>
-                        <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-2 text-white">Facility Security Score</h3>
-                        <p className="text-green-100 font-bold uppercase tracking-widest text-xs leading-relaxed max-w-sm font-['Montserrat']">All medical credentials in this institution are globally verified. Encryption protocols operational.</p>
+                        <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-2 text-white">System Security</h3>
+                        <p className="text-green-100 font-bold uppercase tracking-widest text-xs leading-relaxed max-w-sm font-['Montserrat']">All doctor accounts are verified and your data is protected.</p>
                         <div className="mt-4 inline-block font-black uppercase text-[10px] bg-white/10 px-4 py-2 rounded-full border border-white/20 backdrop-blur-sm shadow-sm">
-                            99.9% Integrity
+                            Fully Secure
                         </div>
                     </div>
                 </div>
                 
                 <div className="lg:col-span-4 card-premium p-8 border border-gray-100 flex flex-col justify-center">
                     <h4 className="text-sm font-black uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
-                        <Smartphone size={16} /> Online Booking Reach
+                        <Smartphone size={16} /> Online Bookings
                     </h4>
                     <div className="space-y-4">
                         <div className="flex justify-between font-bold text-[10px] uppercase text-gray-500 mb-1">
-                            <span>Network Exposure</span>
+                            <span>Visibility</span>
                             <span>High</span>
                         </div>
                         <div className="h-4 bg-gray-100 rounded-full overflow-hidden shadow-inner">
                             <div className="h-full bg-[var(--color-primary)] w-[85%] rounded-full shadow-lg"></div>
                         </div>
-                        <p className="text-[10px] font-bold text-gray-400 text-center uppercase tracking-widest mt-4 font-['Montserrat']">Calculated based on Online Capacity Seat settings.</p>
+                        <p className="text-[10px] font-bold text-gray-400 text-center uppercase tracking-widest mt-4 font-['Montserrat']">Based on your online booking settings.</p>
                     </div>
                 </div>
             </div>

@@ -102,11 +102,11 @@ const ScanQR = () => {
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert('Appointment Scheduled Successfully!');
+            alert('Appointment Booked!');
             setPatient(null);
             setUhid('');
         } catch (err) {
-            alert('Failed to schedule appointment.');
+            alert('Could not book the appointment.');
         }
     };
 
@@ -119,15 +119,15 @@ const ScanQR = () => {
             <div className="flex justify-between items-center mb-12">
                  <div>
                       <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none font-['Montserrat']">
-                        Scan Hub
+                        Check-in Desk
                       </h2>
                       <p className="font-bold text-gray-400 mt-2 uppercase tracking-[0.3em] text-[10px] font-['Montserrat']">
-                        Strategic Verification Terminal
+                        Scan patient cards and book appointments
                       </p>
                  </div>
                  <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-2xl shadow-sm border border-gray-100">
                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 font-['Montserrat']">Terminal Online</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 font-['Montserrat']">System Online</span>
                  </div>
             </div>
 
@@ -155,8 +155,8 @@ const ScanQR = () => {
                         </div>
 
                         <div className="text-center mb-8">
-                            <h3 className="text-xl font-black uppercase text-gray-900 tracking-tighter font-['Montserrat']">Device Emulation</h3>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 font-['Montserrat']">Global Patient ID Detection</p>
+                            <h3 className="text-xl font-black uppercase text-gray-900 tracking-tighter font-['Montserrat']">Scan Card</h3>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 font-['Montserrat']">Find patient using their QR card</p>
                         </div>
                         
                         <div className="space-y-6 w-full">
@@ -165,7 +165,7 @@ const ScanQR = () => {
                                     <Key className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within/input:text-[var(--color-primary)] transition-colors" size={18} />
                                     <input 
                                         type="text" 
-                                        placeholder="ENTER UHID (E.G. GP-6231)" 
+                                        placeholder="ENTER PATIENT ID (E.G. GP-6231)" 
                                         className="w-full bg-gray-50 border-2 border-transparent py-5 pl-14 pr-6 rounded-2xl font-black tracking-[0.1em] uppercase outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-['Montserrat']"
                                         value={uhid} onChange={e => setUhid(e.target.value)} 
                                     />
@@ -174,13 +174,13 @@ const ScanQR = () => {
                                     onClick={handleSimulatedScan} 
                                     className="w-full bg-gray-900 text-white py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-gray-900/10 hover:bg-black hover:scale-[1.02] active:scale-95 transition-all font-['Montserrat']"
                                 >
-                                    Initialize Scan
+                                    Search Patient
                                 </button>
                             </div>
 
                             <div className="flex items-center gap-4 py-2">
                                 <div className="h-px bg-gray-100 flex-1"></div>
-                                <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.3em] font-['Montserrat']">Digital Cloud Intake</span>
+                                <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.3em] font-['Montserrat']">Or upload a card</span>
                                 <div className="h-px bg-gray-100 flex-1"></div>
                             </div>
 
@@ -190,7 +190,7 @@ const ScanQR = () => {
                                 onClick={() => fileInputRef.current?.click()}
                                 className="w-full py-5 px-6 rounded-2xl border-2 border-dashed border-gray-200 font-black uppercase text-[9px] tracking-[0.2em] text-gray-400 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-green-50/30 transition-all flex items-center justify-center gap-3 font-['Montserrat']"
                             >
-                                <UploadCloud size={16} /> Upload Patient E-Card
+                                <UploadCloud size={16} /> Upload Health Card Image
                             </button>
                         </div>
 
@@ -227,7 +227,7 @@ const ScanQR = () => {
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-3 mb-2">
-                                                    <span className="bg-[var(--color-primary)] text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full animate-pulse">Identity Verified</span>
+                                                    <span className="bg-[var(--color-primary)] text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full animate-pulse">Patient Verified</span>
                                                     <span className="text-gray-300 font-black text-[10px] tracking-widest uppercase">UHID: {patient.uhid}</span>
                                                 </div>
                                                 <h3 className="text-4xl font-black italic uppercase tracking-tighter text-gray-900 font-['Montserrat'] leading-none">
@@ -245,7 +245,7 @@ const ScanQR = () => {
                                     <form onSubmit={handleBook} className="grid md:grid-cols-2 gap-8">
                                         <div className="space-y-6 md:col-span-2">
                                             <h4 className="text-xs font-black uppercase tracking-[0.3em] text-gray-900 flex items-center gap-3 font-['Montserrat'] mb-2">
-                                                <CalendarDays size={16} className="text-[var(--color-primary)]" /> Command Consultation Booking
+                                                <CalendarDays size={16} className="text-[var(--color-primary)]" /> Book Appointment
                                             </h4>
                                         </div>
 
@@ -255,7 +255,7 @@ const ScanQR = () => {
                                                 <HeartPulse className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[var(--color-primary)] transition-colors" size={18} />
                                                 <select required value={appointment.doctor_id} onChange={e => setAppointment({...appointment, doctor_id: e.target.value})} 
                                                     className="w-full bg-gray-50 border-2 border-transparent py-4 pl-12 pr-4 rounded-xl font-black uppercase text-[10px] tracking-widest text-gray-700 appearance-none shadow-sm hover:bg-gray-100 transition-all focus:bg-white focus:border-[var(--color-primary)] outline-none font-['Montserrat']">
-                                                    <option value="">-- ASSIGN SPECIALIST --</option>
+                                                    <option value="">-- CHOOSE A DOCTOR --</option>
                                                     {doctors.map(d => <option key={d.id} value={d.doctor?.id}>{d.doctor?.username || 'Doctor'}</option>)}
                                                 </select>
                                             </div>
@@ -282,7 +282,7 @@ const ScanQR = () => {
                                         </div>
 
                                         <button type="submit" className="md:col-span-2 group relative overflow-hidden bg-gray-900 text-white py-6 rounded-2xl font-black italic uppercase tracking-[0.1em] text-xs hover:bg-black transition-all shadow-2xl shadow-gray-900/20 active:scale-[0.98] font-['Montserrat']">
-                                            <span className="relative z-10">Confirm Allocation & Process Checkout</span>
+                                            <span className="relative z-10">Confirm and Book Appointment</span>
                                             <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-400 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500 opacity-20"></div>
                                         </button>
                                     </form>
@@ -298,8 +298,8 @@ const ScanQR = () => {
                                 <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-gray-100 mb-8 shadow-sm">
                                     <ScanFace size={64} />
                                 </div>
-                                <h4 className="text-xl font-black uppercase text-gray-300 tracking-[0.2em] italic font-['Montserrat']">Waiting for Data Intake</h4>
-                                <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest mt-4 max-w-xs font-['Montserrat']">Scan a patient physical QR or Digital card to initialize the verified consultation workflow.</p>
+                                <h4 className="text-xl font-black uppercase text-gray-300 tracking-[0.2em] italic font-['Montserrat']">Waiting for Scan</h4>
+                                <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest mt-4 max-w-xs font-['Montserrat']">Scan a patient's QR card to start the check-in process.</p>
                             </motion.div>
                         )}
                     </AnimatePresence>

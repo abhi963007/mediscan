@@ -38,7 +38,7 @@ const AdminOverview = () => {
             doc.setFontSize(24);
             doc.setTextColor(255, 255, 255);
             doc.setFont('helvetica', 'bold');
-            doc.text("MEDISCAN: GLOBAL NETWORK AUDIT", 20, 25);
+            doc.text("MEDISCAN: SYSTEM REPORT", 20, 25);
             
             doc.setFontSize(10);
             doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 32);
@@ -46,18 +46,18 @@ const AdminOverview = () => {
             // Stats Snapshot
             doc.setTextColor(0,0,0);
             doc.setFontSize(14);
-            doc.text("NETWORK STATS SUMMARY", 20, 55);
+            doc.text("SYSTEM STATS SUMMARY", 20, 55);
             doc.setFontSize(11);
             doc.setFont('helvetica', 'normal');
-            doc.text(`Total Registered Hospitals: ${stats?.total_hospitals || 0}`, 20, 65);
-            doc.text(`Global Patient Base: ${stats?.total_patients || 0}`, 20, 72);
-            doc.text(`Medicine Master Size: ${stats?.total_medicines || 0}`, 20, 79);
-            doc.text(`Operational Health: 100% (All Nodes Syncing)`, 20, 86);
+            doc.text(`Total Hospitals: ${stats?.total_hospitals || 0}`, 20, 65);
+            doc.text(`Total Patients: ${stats?.total_patients || 0}`, 20, 72);
+            doc.text(`Total Medicines: ${stats?.total_medicines || 0}`, 20, 79);
+            doc.text(`System Status: 100% (Working Fine)`, 20, 86);
             
             // Hospital List Table
             doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
-            doc.text("HOSPITAL REGISTERY LEDGER", 20, 105);
+            doc.text("REGISTERED HOSPITALS LIST", 20, 105);
             
             autoTable(doc, {
                 startY: 110,
@@ -73,7 +73,7 @@ const AdminOverview = () => {
                 alternateRowStyles: { fillColor: [249, 250, 251] }
             });
 
-            doc.save("Mediscan_Network_Audit.pdf");
+            doc.save("Mediscan_System_Report.pdf");
         } catch (err) {
             alert('Audit Generation Failed. Database offline.');
         }
@@ -105,19 +105,19 @@ const AdminOverview = () => {
         }
     };
 
-    if (loading) return <div className="p-8 font-black uppercase tracking-widest text-gray-400">Syncing Global Data...</div>;
+    if (loading) return <div className="p-8 font-black uppercase tracking-widest text-gray-400">Loading Data...</div>;
 
     const cards = [
-        { title: 'Total Hospitals', value: stats?.total_hospitals || 0, icon: <Building2 />, color: 'bg-blue-500', sub: 'Verified across network' },
+        { title: 'Total Hospitals', value: stats?.total_hospitals || 0, icon: <Building2 />, color: 'bg-blue-500', sub: 'Verified in system' },
         { title: 'Pending Approval', value: stats?.pending_hospitals || 0, icon: <ShieldAlert />, color: 'bg-orange-500', sub: 'Action required' },
-        { title: 'Global Patients', value: stats?.total_patients || 0, icon: <Users />, color: 'bg-green-500', sub: 'Registered UHIDs' },
-        { title: 'Medicine Master', value: stats?.total_medicines || 0, icon: <Pill />, color: 'bg-purple-500', sub: 'Drug database size' },
+        { title: 'Total Patients', value: stats?.total_patients || 0, icon: <Users />, color: 'bg-green-500', sub: 'All registered patients' },
+        { title: 'Total Medicines', value: stats?.total_medicines || 0, icon: <Pill />, color: 'bg-purple-500', sub: 'Medicines in database' },
     ];
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8">
-            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Global Overview</h2>
-            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">Network-wide analytics</p>
+            <h2 className="text-4xl font-black italic uppercase text-gray-800 tracking-tighter mb-2">Admin Dashboard</h2>
+            <p className="font-bold tracking-widest text-xs text-gray-400 uppercase mb-10 pl-1 font-['Montserrat']">View system stats across all hospitals</p>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 {cards.map((card, i) => (
@@ -145,15 +145,15 @@ const AdminOverview = () => {
             <div className="grid lg:grid-cols-2 gap-10">
                 <div className="card-premium p-8 bg-gray-50 border-dashed border-2 border-gray-200 flex flex-col items-center justify-center text-center">
                     <Activity size={48} className="text-gray-300 mb-4" />
-                    <h3 className="text-xl font-black uppercase italic text-gray-400 tracking-tighter">System Health</h3>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest max-w-xs mt-2 font-['Montserrat']">All global servers are operational. Real-time monitoring enabled.</p>
+                    <h3 className="text-xl font-black uppercase italic text-gray-400 tracking-tighter">System Status</h3>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest max-w-xs mt-2 font-['Montserrat']">All servers are working fine. Real-time monitoring is on.</p>
                 </div>
                 
                 <div className="card-premium p-8 border border-gray-100 shadow-sm">
                     <h3 className="text-lg font-black uppercase italic text-gray-800 tracking-tighter mb-4">Quick Actions</h3>
                     <div className="space-y-4">
-                        <button onClick={handleNetworkAudit} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-black transition-colors shadow-lg active:scale-95">Generate Network Audit</button>
-                        <button onClick={handleExportLedger} className="w-full py-4 border-2 border-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-50 transition-colors active:scale-95">Export Global Ledger</button>
+                        <button onClick={handleNetworkAudit} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-black transition-colors shadow-lg active:scale-95">Download System Report</button>
+                        <button onClick={handleExportLedger} className="w-full py-4 border-2 border-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-50 transition-colors active:scale-95">Download Medicine List</button>
                     </div>
                 </div>
             </div>

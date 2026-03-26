@@ -31,7 +31,7 @@ const Login = () => {
       if (err.response?.data?.detail) {
         setError(err.response.data.detail);
       } else {
-        setError('Login failed. Check your credentials.');
+        setError('Login failed. Please check your username and password.');
       }
     }
   };
@@ -65,7 +65,7 @@ const Login = () => {
             <h2 className="text-3xl italic uppercase tracking-tighter" style={{ fontFamily: 'var(--font-display)', fontWeight: 900, color: 'var(--color-primary-dark)' }}>
               MediScan Login
             </h2>
-            <p className="text-gray-400 mt-2 text-xs font-black uppercase tracking-widest font-['Montserrat']">Global Health Access</p>
+            <p className="text-gray-400 mt-2 text-xs font-black uppercase tracking-widest font-['Montserrat']">Sign In to Your Account</p>
           </div>
 
           {error && <div className="p-3 mb-6 rounded-xl text-xs font-bold text-white bg-red-600/80 text-center uppercase tracking-widest">{error}</div>}
@@ -83,7 +83,7 @@ const Login = () => {
           </form>
 
           <div className="mt-10 text-center text-xs font-black uppercase tracking-widest text-gray-400 font-['Montserrat']">
-            Not registered? <Link to="/register" style={{ color: 'var(--color-primary)' }} className="font-bold underline underline-offset-4">Create Account</Link>
+            Don't have an account? <Link to="/register" style={{ color: 'var(--color-primary)' }} className="font-bold underline underline-offset-4">Register Here</Link>
           </div>
         </motion.div>
       </div>
