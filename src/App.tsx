@@ -25,6 +25,7 @@ import HospitalSettings from './pages/dashboard/hospital_admin/HospitalSettings'
 import ReceptionistOverview from './pages/dashboard/receptionist/ReceptionistOverview';
 import RegisterPatient from './pages/dashboard/receptionist/RegisterPatient';
 import ScanQR from './pages/dashboard/receptionist/ScanQR';
+import Patients from './pages/dashboard/receptionist/Patients';
 import ReceptionistAppointments from './pages/dashboard/receptionist/Appointments';
 
 // Doctor Pages
@@ -110,6 +111,7 @@ function App() {
         <Route path="staff">
            <Route index element={<ProtectedRoute allowedRoles={['receptionist']}><ReceptionistOverview /></ProtectedRoute>} />
            <Route path="register" element={<ProtectedRoute allowedRoles={['receptionist']}><RegisterPatient /></ProtectedRoute>} />
+           <Route path="patients" element={<ProtectedRoute allowedRoles={['receptionist']}><Patients /></ProtectedRoute>} />
            <Route path="scan" element={<ProtectedRoute allowedRoles={['receptionist']}><ScanQR /></ProtectedRoute>} />
            <Route path="appointments" element={<ProtectedRoute allowedRoles={['receptionist']}><ReceptionistAppointments /></ProtectedRoute>} />
         </Route>

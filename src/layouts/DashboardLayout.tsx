@@ -88,6 +88,7 @@ const DashboardLayout = () => {
           <>
             <SidebarLink to="/dashboard/staff" icon={<Building2 size={20} />} label="Overview" collapsed={collapsed} />
             <SidebarLink to="/dashboard/staff/register" icon={<UserPlus size={20} />} label="Register Patient" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/staff/patients" icon={<Users size={20} />} label="Patients" collapsed={collapsed} />
             <SidebarLink to="/dashboard/staff/scan" icon={<Scan size={20} />} label="Scan Patient Card" collapsed={collapsed} />
             <SidebarLink to="/dashboard/staff/appointments" icon={<Calendar size={20} />} label="Appointments" collapsed={collapsed} />
           </>
