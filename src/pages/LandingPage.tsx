@@ -88,9 +88,6 @@ const LandingPage = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link to="/dashboard" className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors mr-4 font-['Montserrat']">
-                Hospital Login
-            </Link>
             <Link to="/dashboard" className="bg-gray-900 text-white px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[var(--color-primary)] hover:scale-105 transition-all shadow-xl shadow-gray-200 font-['Montserrat']">
               Launch Console
             </Link>
