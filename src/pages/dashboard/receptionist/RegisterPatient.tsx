@@ -53,7 +53,7 @@ const RegisterPatient = () => {
             });
         } catch (err: any) {
             setLoading(false);
-            alert('Registration Failed: ' + JSON.stringify(err.response?.data || 'Server Error'));
+            alert('Failed to register: ' + JSON.stringify(err.response?.data || 'Server Error'));
         }
     };
 
@@ -61,12 +61,12 @@ const RegisterPatient = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-8 max-w-7xl mx-auto pb-32">
             <div className="flex justify-between items-center mb-12">
                 <div>
-                    <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-2 font-['Montserrat']">Enrollment Engine</h2>
-                    <p className="font-bold text-gray-300 uppercase tracking-[0.4em] text-[10px] pl-1 font-['Montserrat']">Global Identity Genesis</p>
+                    <h2 className="text-5xl font-black italic uppercase text-gray-900 tracking-tighter leading-none mb-2 font-['Montserrat']">Register New Patient</h2>
+                    <p className="font-bold text-gray-300 uppercase tracking-[0.4em] text-[10px] pl-1 font-['Montserrat']">Add a patient to the system</p>
                 </div>
                 <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-2xl shadow-sm border border-gray-100">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 font-['Montserrat']">Secure Intake Active</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 font-['Montserrat']">Secure Registration</span>
                 </div>
             </div>
             
@@ -80,8 +80,8 @@ const RegisterPatient = () => {
                                 <UserPlus size={40} />
                             </div>
                             <div>
-                                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-gray-900 leading-none mb-2">Patient Genesis</h3>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-['Montserrat']">Create an Immutable Global Health Identity</p>
+                                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-gray-900 leading-none mb-2">Register Patient</h3>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-['Montserrat']">Create a new health record and digital card</p>
                             </div>
                         </div>
 
@@ -89,25 +89,25 @@ const RegisterPatient = () => {
                             {/* Section: Auth & Basic */}
                             <div className="space-y-6">
                                 <h4 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-600 flex items-center gap-3 font-['Montserrat'] pb-4 border-b border-gray-50">
-                                    <ShieldCheck size={16} /> 01. Authentication Credentials
+                                    <ShieldCheck size={16} /> 01. Account Details
                                 </h4>
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="space-y-2 group/field">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat'] group-focus-within/field:text-emerald-500 transition-colors">Strategic Username</label>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat'] group-focus-within/field:text-emerald-500 transition-colors">Username</label>
                                         <div className="relative">
                                             <User size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" />
                                             <input type="text" placeholder="E.G. ABHI_MEDISCAN" required className="input-field-auth pl-14" value={formData.username} onChange={e => setFormData({...formData, username: e.target.value})} />
                                         </div>
                                     </div>
                                     <div className="space-y-2 group/field">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat'] group-focus-within/field:text-emerald-500 transition-colors">Access Pin (Password)</label>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat'] group-focus-within/field:text-emerald-500 transition-colors">Password</label>
                                         <div className="relative">
                                             <Shield size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" />
                                             <input type="password" placeholder="••••••••" required className="input-field-auth pl-14" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
                                         </div>
                                     </div>
                                     <div className="col-span-full space-y-2 group/field">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat'] group-focus-within/field:text-emerald-500 transition-colors">Full Legal Nomenclature</label>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat'] group-focus-within/field:text-emerald-500 transition-colors">Full Name (As per ID)</label>
                                         <input type="text" placeholder="ENTER FULL NAME AS PER LEGAL IDENTIFICATION" required className="input-field-auth font-black italic text-lg tracking-tight uppercase" value={formData.full_name} onChange={e => setFormData({...formData, full_name: e.target.value})} />
                                     </div>
                                 </div>
@@ -116,25 +116,25 @@ const RegisterPatient = () => {
                             {/* Section: Contact & Origin */}
                             <div className="space-y-6">
                                 <h4 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-600 flex items-center gap-3 font-['Montserrat'] pb-4 border-b border-gray-50">
-                                    <MapPin size={16} /> 02. Contact & Origin
+                                    <MapPin size={16} /> 02. Contact Information
                                 </h4>
                                 <div className="grid md:grid-cols-3 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat']">Communication Line</label>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat']">Phone Number</label>
                                         <div className="relative">
                                             <Phone size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" />
                                             <input type="tel" placeholder="+91 00000 00000" required className="input-field-auth pl-12" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
                                         </div>
                                     </div>
                                     <div className="space-y-2 md:col-span-2">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat']">Digital Address (Email)</label>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat']">Email Address</label>
                                         <div className="relative">
                                             <Mail size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" />
                                             <input type="email" placeholder="IDENTITY@MEDISCAN.GLOBAL" className="input-field-auth pl-12 font-bold" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                                         </div>
                                     </div>
                                     <div className="col-span-full space-y-2">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat']">Strategic Address</label>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1 font-['Montserrat']">Address</label>
                                         <input type="text" placeholder="STREET, BUILDING, AREA..." className="input-field-auth" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
                                     </div>
                                     <div className="grid grid-cols-3 col-span-full gap-4">
@@ -148,7 +148,7 @@ const RegisterPatient = () => {
                             {/* Section: Clinical & Insurance */}
                             <div className="space-y-6">
                                 <h4 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-600 flex items-center gap-3 font-['Montserrat'] pb-4 border-b border-gray-50">
-                                    <Heart size={16} /> 03. Clinical & Insurance Matrix
+                                    <Heart size={16} /> 03. Medical & Insurance Information
                                 </h4>
                                 <div className="grid md:grid-cols-4 gap-4">
                                     <div className="space-y-2">
@@ -168,7 +168,7 @@ const RegisterPatient = () => {
                                         </select>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Smoking</label>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Smoking Habits</label>
                                         <select className="input-field-auth px-6 appearance-none font-black" value={formData.smoking_status} onChange={e => setFormData({...formData, smoking_status: e.target.value})}>
                                             {['Never', 'Occasional', 'Regular', 'Frequent'].map(s => <option key={s}>{s}</option>)}
                                         </select>
@@ -195,7 +195,7 @@ const RegisterPatient = () => {
                                     <div className="w-8 h-8 border-4 border-emerald-500 border-t-white rounded-full animate-spin"></div>
                                 ) : (
                                     <>
-                                        <QrCode size={32} className="text-emerald-500" /> INITIALIZE GLOBAL IDENTITY
+                                        <QrCode size={32} className="text-emerald-500" /> CREATE ACCOUNT
                                     </>
                                 )}
                             </button>
@@ -215,7 +215,7 @@ const RegisterPatient = () => {
                                         <div className="w-24 h-24 bg-white/10 rounded-[40px] flex items-center justify-center mb-8 backdrop-blur-xl border border-white/20 shadow-inner">
                                             <FileCheck2 size={48} className="text-emerald-300" />
                                         </div>
-                                        <h4 className="text-4xl font-black italic uppercase tracking-tighter mb-4 leading-none">Identity Generated</h4>
+                                        <h4 className="text-4xl font-black italic uppercase tracking-tighter mb-4 leading-none">Account Created!</h4>
                                         <p className="font-bold text-emerald-200 uppercase tracking-widest text-xs mb-10">UHID: {success.uhid || success.username}</p>
                                         
                                         <div className="p-8 bg-white rounded-[40px] shadow-2xl flex flex-col items-center relative group">
@@ -234,7 +234,7 @@ const RegisterPatient = () => {
                                         
                                         <button onClick={() => { setSuccess(null); setQrUrl(null); }}
                                             className="mt-12 bg-white/10 hover:bg-white/20 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-white/10 transition-all flex items-center gap-3">
-                                            <UserPlus size={16} /> Enroll New Subject
+                                            <UserPlus size={16} /> Register Another Patient
                                         </button>
                                     </motion.div>
                                 ) : (
@@ -242,8 +242,8 @@ const RegisterPatient = () => {
                                         <div className="w-32 h-32 border-2 border-dashed border-emerald-400/50 rounded-full flex items-center justify-center mb-10 animate-[spin_10s_linear_infinite]">
                                             <QrCode size={80} className="text-emerald-400" />
                                         </div>
-                                        <h4 className="text-2xl font-black italic uppercase tracking-tighter mb-4">Awaiting Signal</h4>
-                                        <p className="text-[10px] font-bold text-emerald-200 uppercase tracking-[0.2em] max-w-xs leading-relaxed font-['Montserrat']">Initialize the intake engine to synthesize the immutable global identifier.</p>
+                                        <h4 className="text-2xl font-black italic uppercase tracking-tighter mb-4">Ready to Register</h4>
+                                        <p className="text-[10px] font-bold text-emerald-200 uppercase tracking-[0.2em] max-w-xs leading-relaxed font-['Montserrat']">Fill out the form to create a new patient account.</p>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -255,8 +255,8 @@ const RegisterPatient = () => {
                                 <Activity size={24} />
                             </div>
                             <div>
-                                <h5 className="font-black uppercase text-xs tracking-widest text-gray-900 mb-2">Clinical Protocol</h5>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed font-['Montserrat']">Ensure the patient's full legal nomenclature and chronic history are accurately logged for cross-clinical analysis.</p>
+                                <h5 className="font-black uppercase text-xs tracking-widest text-gray-900 mb-2">Important Note</h5>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed font-['Montserrat']">Please ensure all patient details are entered correctly as they will be used for medical records.</p>
                             </div>
                         </div>
                     </div>
