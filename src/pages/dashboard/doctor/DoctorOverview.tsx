@@ -9,26 +9,29 @@ const DoctorOverview = () => {
     const [queueCount, setQueueCount] = useState(0);
     const [loading, setLoading] = useState(true);
 
+    const fetchData = async () => {
+        try {
+            const token = localStorage.getItem('access');
+            const [statsRes, queueRes] = await Promise.all([
+                axios.get('http://127.0.0.1:8000/api/auth/dashboard-stats/', {
+                    headers: { Authorization: `Bearer ${token}` }
+                }),
+                axios.get('http://127.0.0.1:8000/api/appointments/queue/', {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+            ]);
+            setStats(statsRes.data);
+            setQueueCount(queueRes.data.count || (queueRes.data.results || queueRes.data).length || 0);
+            setLoading(false);
+        } catch (err) {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = localStorage.getItem('access');
-                const [statsRes, queueRes] = await Promise.all([
-                    axios.get('http://127.0.0.1:8000/api/auth/dashboard-stats/', {
-                        headers: { Authorization: `Bearer ${token}` }
-                    }),
-                    axios.get('http://127.0.0.1:8000/api/appointments/queue/', {
-                        headers: { Authorization: `Bearer ${token}` }
-                    })
-                ]);
-                setStats(statsRes.data);
-                setQueueCount((queueRes.data.results || queueRes.data).length);
-                setLoading(false);
-            } catch (err) {
-                setLoading(false);
-            }
-        };
         fetchData();
+        const interval = setInterval(fetchData, 30000); // 30s auto-sync
+        return () => clearInterval(interval);
     }, []);
 
     if (loading) return (

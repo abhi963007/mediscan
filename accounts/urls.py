@@ -4,7 +4,7 @@ from .views import (
     RegisterView, ProfileView, UnapprovedUsersView, ApproveUserView, 
     CustomTokenObtainPairView, CreateHospitalStaffView, DashboardStatsView,
     HospitalAdminsListView, CreateHospitalAdminView, HospitalStaffListView,
-    DeleteHospitalAdminView
+    DeleteHospitalAdminView, UpdateStaffView, DeleteStaffView
 )
 
 urlpatterns = [
@@ -20,4 +20,6 @@ urlpatterns = [
     path('hospital-admins/<int:pk>/', DeleteHospitalAdminView.as_view(), name='delete_hospital_admin'),
     path('create-staff/', CreateHospitalStaffView.as_view(), name='create_staff'),
     path('staff/', HospitalStaffListView.as_view(), name='hospital_staff_list'),
+    path('staff/<int:pk>/', UpdateStaffView.as_view(), name='update_staff'),
+    path('staff/delete/<int:pk>/', DeleteStaffView.as_view(), name='delete_staff'),
 ]

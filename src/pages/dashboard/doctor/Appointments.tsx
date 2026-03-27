@@ -14,6 +14,8 @@ const Appointments = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [refreshing, setRefreshing] = useState(false);
+    const [totalAppointments, setTotalAppointments] = useState(0);
+    const [totalWaiting, setTotalWaiting] = useState(0);
     const itemsPerPage = 6;
 
     const fetchData = async () => {
@@ -28,8 +30,14 @@ const Appointments = () => {
                     headers: { Authorization: `Bearer ${token}` }
                 })
             ]);
-            setAppointments(apptsRes.data.results || apptsRes.data);
-            setQueue(queueRes.data.results || queueRes.data);
+            const apptsData = apptsRes.data.results || apptsRes.data;
+            const queueData = queueRes.data.results || queueRes.data;
+            
+            setAppointments(apptsData);
+            setQueue(queueData);
+            setTotalAppointments(apptsRes.data.count || apptsData.length);
+            setTotalWaiting(queueRes.data.count || queueData.filter((q: any) => q.appointment_status === 'checked_in').length);
+            
             setLoading(false);
             setRefreshing(false);
         } catch (err) {
@@ -107,7 +115,7 @@ const Appointments = () => {
                         <div className="absolute -right-6 -bottom-6 opacity-10 scale-150 rotate-12 transition-transform group-hover:rotate-0"><Stethoscope size={140} /></div>
                         <div className="relative z-10">
                             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-200 mb-3 font-['Montserrat']">Waiting Node</h4>
-                            <p className="text-7xl font-black italic tracking-tighter leading-none">{waitingPatients.length}</p>
+                            <p className="text-7xl font-black italic tracking-tighter leading-none">{totalWaiting}</p>
                         </div>
                         <div className="w-20 h-20 bg-white/10 rounded-[32px] flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-inner group-hover/btn:scale-110 transition-transform">
                             <UserCheck size={40} className="text-white" />
@@ -120,7 +128,7 @@ const Appointments = () => {
                         </div>
                         <div>
                             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-3 font-['Montserrat']">Total Visits</h4>
-                            <p className="text-6xl font-black italic tracking-tighter text-gray-900 leading-none">{appointments.length}</p>
+                            <p className="text-6xl font-black italic tracking-tighter text-gray-900 leading-none">{totalAppointments}</p>
                         </div>
                         <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-3xl flex items-center justify-center border border-emerald-100">
                             <Calendar size={32} />

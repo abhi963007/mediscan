@@ -78,6 +78,35 @@ class HospitalStaffListView(generics.ListAPIView):
             
         return CustomUser.objects.filter(hospital=user.hospital).exclude(id=user.id)
 
+class UpdateStaffView(generics.UpdateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = HospitalStaffSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def update(self, request, *args, **kwargs):
+        if request.user.role != 'hospital_admin':
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+        
+        staff_user = self.get_object()
+        if staff_user.hospital != request.user.hospital:
+             return Response({'error': 'Permission denied. Not your hospital staff.'}, status=status.HTTP_403_FORBIDDEN)
+             
+        return super().update(request, *args, **kwargs)
+
+class DeleteStaffView(generics.DestroyAPIView):
+    queryset = CustomUser.objects.all()
+    permission_classes = (IsAuthenticated,)
+
+    def delete(self, request, *args, **kwargs):
+        if request.user.role != 'hospital_admin':
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+        
+        staff_user = self.get_object()
+        if staff_user.hospital != request.user.hospital:
+             return Response({'error': 'Permission denied. Not your hospital staff.'}, status=status.HTTP_403_FORBIDDEN)
+             
+        return super().delete(request, *args, **kwargs)
+
 class CreateHospitalAdminView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     permission_classes = (IsAuthenticated,)

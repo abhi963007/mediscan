@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useLocation, Navigate } from 'react-router-dom';
+import axios from 'axios';
 import { 
   Building2, Pill, Users, Settings, UserPlus, Scan, 
   Calendar, Stethoscope, Search, LogOut, ChevronRight, Bell, HeartPulse, Clock
@@ -13,9 +14,10 @@ interface SidebarLinkProps {
   icon: React.ReactNode;
   label: string;
   collapsed: boolean;
+  badge?: number;
 }
 
-const SidebarLink = ({ to, icon, label, collapsed }: SidebarLinkProps) => {
+const SidebarLink = ({ to, icon, label, collapsed, badge }: SidebarLinkProps) => {
   return (
     <NavLink
       to={to}
@@ -43,6 +45,11 @@ const SidebarLink = ({ to, icon, label, collapsed }: SidebarLinkProps) => {
           {label}
         </motion.span>
       )}
+      {badge ? (
+        <div className={`absolute ${collapsed ? 'top-2 right-2' : 'right-4'} bg-red-500 text-white text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-lg shadow-red-500/20 border-2 border-white`}>
+          {badge}
+        </div>
+      ) : null}
       {collapsed && (
         <div className="absolute left-full ml-4 px-3 py-1 text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-[100] whitespace-nowrap uppercase tracking-widest"
           style={{ backgroundColor: 'var(--color-primary)', boxShadow: 'var(--shadow-subtle)' }}>
@@ -60,6 +67,26 @@ const DashboardLayout = () => {
 
   const segment = location.pathname.split('/').filter(Boolean).pop() ?? 'dashboard';
   const pageTitle = segment.charAt(0).toUpperCase() + segment.slice(1);
+  const [waitingCount, setWaitingCount] = useState(0);
+
+  const fetchGlobalStats = async () => {
+     if (user?.role === 'doctor') {
+        try {
+           const token = localStorage.getItem('access');
+           const res = await axios.get('http://127.0.0.1:8000/api/appointment-queue/', {
+              headers: { Authorization: `Bearer ${token}` }
+           });
+           const count = res.data.count || res.data.length || 0;
+           setWaitingCount(count);
+        } catch (e) {}
+     }
+  };
+
+  useEffect(() => {
+     fetchGlobalStats();
+     const interval = setInterval(fetchGlobalStats, 30000);
+     return () => clearInterval(interval);
+  }, [user]);
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -99,7 +126,7 @@ const DashboardLayout = () => {
         return (
           <>
             <SidebarLink to="/dashboard/doctor" icon={<Stethoscope size={20} />} label="Overview" collapsed={collapsed} />
-            <SidebarLink to="/dashboard/doctor/appointments" icon={<Calendar size={20} />} label="Check-ups" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/doctor/appointments" icon={<Calendar size={20} />} label="Check-ups" collapsed={collapsed} badge={waitingCount} />
             <SidebarLink to="/dashboard/doctor/treatment" icon={<HeartPulse size={20} />} label="Treatment Desk" collapsed={collapsed} />
           </>
         );

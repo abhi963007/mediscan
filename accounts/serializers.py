@@ -10,9 +10,11 @@ from django.utils.html import strip_tags
 
 class UserSerializer(serializers.ModelSerializer):
     hospital_name = serializers.SerializerMethodField()
+    full_name = serializers.CharField(source='get_full_name', read_only=True)
+
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'role', 'is_approved', 'hospital', 'hospital_name')
+        fields = ('id', 'username', 'first_name', 'last_name', 'full_name', 'email', 'role', 'is_approved', 'hospital', 'hospital_name')
         read_only_fields = ('is_approved',)
 
     def get_hospital_name(self, obj):
@@ -137,6 +139,7 @@ from hospitals.models import Hospital, DoctorProfile, StaffProfile
 
 class HospitalStaffSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    full_name = serializers.CharField(source='get_full_name', read_only=True)
     
     # Custom fields for profiles
     specialization = serializers.CharField(required=False, write_only=True)
@@ -149,7 +152,7 @@ class HospitalStaffSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'password', 'email', 'role', 'is_approved', 'hospital',
+        fields = ('id', 'username', 'password', 'first_name', 'last_name', 'full_name', 'email', 'role', 'is_approved', 'hospital',
                   'specialization', 'qualification', 'experience_years', 'registration_number', 
                   'consultation_fee', 'bio', 'department')
         read_only_fields = ('is_approved', 'hospital')
