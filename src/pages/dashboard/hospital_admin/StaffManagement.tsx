@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { Users, UserPlus, Stethoscope, Briefcase, Plus, ShieldCheck, Mail, Lock, User, ChevronRight, X } from 'lucide-react';
+import { Users, UserPlus, Stethoscope, Briefcase, Plus, ShieldCheck, Mail, Lock, User, ChevronRight, X, Award, MapPin, DollarSign, FileText, Medal, Milestone } from 'lucide-react';
 
 interface Staff {
   id: number;
@@ -20,7 +20,14 @@ const StaffManagement = () => {
         username: '',
         email: '',
         password: '',
-        role: 'doctor' // default
+        role: 'doctor',
+        specialization: 'other',
+        qualification: '',
+        experience_years: '',
+        registration_number: '',
+        consultation_fee: '',
+        bio: '',
+        department: ''
     });
 
     const fetchStaff = async () => {
@@ -49,7 +56,11 @@ const StaffManagement = () => {
             });
             alert(`Successfully added ${newStaff.role} ${newStaff.username}`);
             setIsAdding(false);
-            setNewStaff({ username: '', email: '', password: '', role: 'doctor' });
+            setNewStaff({ 
+                username: '', email: '', password: '', role: 'doctor', specialization: 'other', 
+                qualification: '', experience_years: '', registration_number: '', 
+                consultation_fee: '', bio: '', department: '' 
+            });
             fetchStaff();
         } catch (err: any) {
             alert(err.response?.data?.error || 'Failed to create institutional account.');
@@ -111,7 +122,7 @@ const StaffManagement = () => {
                                     </div>
                                 </div>
                                 
-                                 <div className="space-y-2">
+                                <div className="space-y-2">
                                      <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Job Title</label>
                                      <div className="flex gap-4 p-2 bg-gray-50 rounded-2xl border border-gray-100 shadow-inner">
                                         <button type="button" onClick={() => setNewStaff({...newStaff, role: 'doctor'})} 
@@ -125,6 +136,122 @@ const StaffManagement = () => {
                                     </div>
                                 </div>
                             </div>
+                            
+                            {/* Role Specific Fields */}
+                            <AnimatePresence mode="wait">
+                                {newStaff.role === 'doctor' && (
+                                    <motion.div 
+                                        key="doctor-fields"
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="col-span-full border-t border-gray-100 pt-8 grid md:grid-cols-2 gap-8"
+                                    >
+                                        <div className="col-span-full">
+                                            <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-600 mb-6">Doctor Professional Profile</h4>
+                                        </div>
+                                        
+                                        <div className="space-y-6">
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Specialization</label>
+                                                <div className="relative">
+                                                    <Award size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-300" />
+                                                    <select 
+                                                        className="input-field-staff pl-14 appearance-none" 
+                                                        value={newStaff.specialization}
+                                                        onChange={e => setNewStaff({...newStaff, specialization: e.target.value})}
+                                                    >
+                                                        <option value="cardiology">Cardiology</option>
+                                                        <option value="dermatology">Dermatology</option>
+                                                        <option value="neurology">Neurology</option>
+                                                        <option value="pediatrics">Pediatrics</option>
+                                                        <option value="orthopedics">Orthopedics</option>
+                                                        <option value="gynecology">Gynecology</option>
+                                                        <option value="ent">ENT Specialist</option>
+                                                        <option value="dentistry">Dentistry</option>
+                                                        <option value="radiology">Radiology</option>
+                                                        <option value="surgery">General Surgery</option>
+                                                        <option value="internal_medicine">Internal Medicine</option>
+                                                        <option value="other">Other</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Medical Qualification</label>
+                                                <div className="relative">
+                                                    <Medal size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-300" />
+                                                    <input type="text" placeholder="e.g., MBBS, MD" required={newStaff.role === 'doctor'} className="input-field-staff pl-14" value={newStaff.qualification} onChange={e => setNewStaff({...newStaff, qualification: e.target.value})} />
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Reg. Number (MCI/State)</label>
+                                                <div className="relative">
+                                                    <Milestone size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-300" />
+                                                    <input type="text" placeholder="Reg ID" required={newStaff.role === 'doctor'} className="input-field-staff pl-14" value={newStaff.registration_number} onChange={e => setNewStaff({...newStaff, registration_number: e.target.value})} />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-6">
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Consultation Fee (INR)</label>
+                                                <div className="relative">
+                                                    <DollarSign size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-300" />
+                                                    <input type="number" placeholder="Fee" className="input-field-staff pl-14" value={newStaff.consultation_fee} onChange={e => setNewStaff({...newStaff, consultation_fee: e.target.value})} />
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Experience (Years)</label>
+                                                <div className="relative">
+                                                    <Briefcase size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-300" />
+                                                    <input type="number" placeholder="Yrs" className="input-field-staff pl-14" value={newStaff.experience_years} onChange={e => setNewStaff({...newStaff, experience_years: e.target.value})} />
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Professional Bio</label>
+                                                <div className="relative">
+                                                    <FileText size={16} className="absolute left-6 top-10 -translate-y-1/2 text-emerald-300" />
+                                                    <textarea placeholder="Brief Bio" className="input-field-staff pl-14 h-32 py-4 resize-none" value={newStaff.bio} onChange={e => setNewStaff({...newStaff, bio: e.target.value})} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {newStaff.role === 'receptionist' && (
+                                    <motion.div 
+                                        key="receptionist-fields"
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="col-span-full border-t border-gray-100 pt-8 grid md:grid-cols-2 gap-8"
+                                    >
+                                        <div className="col-span-full">
+                                            <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-600 mb-6">Staff Profile Details</h4>
+                                        </div>
+                                        
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Department Node</label>
+                                            <div className="relative">
+                                                <Milestone size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-300" />
+                                                <input type="text" placeholder="e.g., Records, Reception" required={newStaff.role === 'receptionist'} className="input-field-staff pl-14" value={newStaff.department} onChange={e => setNewStaff({...newStaff, department: e.target.value})} />
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Education Background</label>
+                                            <div className="relative">
+                                                <Award size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-300" />
+                                                <input type="text" placeholder="Highest Qualification" className="input-field-staff pl-14" value={newStaff.qualification} onChange={e => setNewStaff({...newStaff, qualification: e.target.value})} />
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                             
                             <div className="col-span-full pt-6">
                                 <button type="submit" className="w-full py-6 bg-emerald-900 text-white rounded-[32px] font-black italic uppercase tracking-tighter text-xl shadow-4xl shadow-emerald-900/40 hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-4">
