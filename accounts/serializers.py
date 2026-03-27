@@ -3,8 +3,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import AuthenticationFailed
 from .models import CustomUser
 from patients.models import Patient
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 class UserSerializer(serializers.ModelSerializer):
     hospital_name = serializers.SerializerMethodField()
@@ -55,6 +57,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                 user=user,
                 full_name=validated_data.get('full_name', ''),
                 phone=validated_data.get('phone', ''),
+                email=validated_data.get('email', ''),
                 age=validated_data.get('age', 0),
                 gender=validated_data.get('gender', 'Male'),
                 blood_group=validated_data.get('blood_group', 'O+'),
@@ -63,30 +66,50 @@ class RegisterSerializer(serializers.ModelSerializer):
             # Send Email Notification with QR Code
             if user.email:
                 try:
-                    subject = f'Welcome to MediScan - Your Health ID: {patient.uhid}'
-                    message = (
-                        f"Hello {patient.full_name},\n\n"
-                        f"Welcome to MediScan. Your health account has been created successfully.\n\n"
-                        f"YOUR UNIQUE HEALTH ID (UHID): {patient.uhid}\n\n"
-                        f"We have attached your digital QR Health Card to this email. "
-                        f"Please keep this QR code ready whenever you visit an affiliated hospital for instant check-in.\n\n"
-                        f"Regards,\nMediScan Team"
-                    )
+                    subject = f"🏥 MediScan Health ID - {patient.full_name} ({patient.uhid})"
                     
-                    email_msg = EmailMessage(
+                    # HTML Content for better deliverability
+                    html_content = f"""
+                    <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                        <h2 style="color: #064E3B; text-align: center;">Welcome to MediScan</h2>
+                        <p>Hello <strong>{patient.full_name}</strong>,</p>
+                        <p>Your digital health account has been created successfully. Below is your unique identifier for all clinical visits:</p>
+                        
+                        <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0; border: 1px solid #dcfce7;">
+                            <span style="font-size: 12px; color: #166534; text-transform: uppercase; letter-spacing: 1px;">Universal Health ID</span><br/>
+                            <strong style="font-size: 24px; color: #064E3B; letter-spacing: 2px;">{patient.uhid}</strong>
+                        </div>
+                        
+                        <p><strong>Next Steps:</strong></p>
+                        <ul>
+                            <li>We have attached your <strong>Digital QR Health Card</strong> to this email.</li>
+                            <li>Please present this QR code at any affiliated hospital front desk for instant check-in.</li>
+                            <li>Your medical history and prescriptions will be safely linked to this ID.</li>
+                        </ul>
+                        
+                        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+                        <p style="font-size: 12px; color: #666; text-align: center;">
+                            This is an automated message from MediScan HMS. Please do not reply to this email.
+                        </p>
+                    </div>
+                    """
+                    
+                    text_content = strip_tags(html_content)
+                    
+                    email_msg = EmailMultiAlternatives(
                         subject,
-                        message,
+                        text_content,
                         settings.DEFAULT_FROM_EMAIL,
                         [user.email],
                     )
+                    email_msg.attach_alternative(html_content, "text/html")
                     
                     if patient.qr_code:
                         email_msg.attach_file(patient.qr_code.path)
                     
                     email_msg.send()
                 except Exception as e:
-                    # Log error in console or logging system
-                    print(f"Failed to send registration email: {e}")
+                    print(f"Failed to send email: {e}")
 
         return user
 

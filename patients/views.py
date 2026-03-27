@@ -17,6 +17,12 @@ class PatientViewSet(viewsets.ModelViewSet):
             return Patient.objects.filter(uhid=user.patient_profile.uhid)
         return Patient.objects.all()
 
+    def perform_destroy(self, instance):
+        user = instance.user
+        instance.delete()
+        if user:
+            user.delete()
+
 
 class ConsultationViewSet(viewsets.ModelViewSet):
     serializer_class = ConsultationSerializer

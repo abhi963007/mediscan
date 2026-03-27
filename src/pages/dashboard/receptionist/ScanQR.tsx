@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { UserCheck, CalendarDays, HeartPulse, Clock, XCircle, RefreshCw } from 'lucide-react';
@@ -12,87 +12,159 @@ const ScanQR = () => {
     const [doctors, setDoctors] = useState<any[]>([]);
     const [appointment, setAppointment] = useState({ date: '', time: '', doctor_id: '' });
     const [error, setError] = useState('');
-    const [cameraReady, setCameraReady] = useState(true); // Start camera on mount
+    const [scanning, setScanning] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const scannerRef = useRef<Html5Qrcode | null>(null);
+    const mountedRef = useRef(true);
+    const scanProcessedRef = useRef(false);
 
-    const processScan = async (scannedUhid: string) => {
-        try {
-            setError('');
-            const token = localStorage.getItem('access');
-            const res = await axios.get(`http://127.0.0.1:8000/api/patients/?search=${scannedUhid}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.data.length > 0) {
-                setPatient(res.data[0]);
-                fetchHospitalDoctors();
-                // Stop camera once patient found
-                setCameraReady(false);
-            } else {
-                setError('No patient found with this ID.');
-                setPatient(null);
-            }
-        } catch {
-            setError('Could not process scan. Try again.');
-            setPatient(null);
-        }
-    };
-
-    // Auto-start camera directly — no file upload UI
-    useEffect(() => {
-        if (!cameraReady) return;
-
-        const html5Qr = new Html5Qrcode('qr-reader');
-        scannerRef.current = html5Qr;
-
-        html5Qr.start(
-            { facingMode: 'environment' },
-            { fps: 10, qrbox: { width: 260, height: 260 } },
-            (decodedText) => {
-                setUhid(decodedText);
-                processScan(decodedText);
-                html5Qr.stop().then(() => html5Qr.clear()).catch(() => {});
-                scannerRef.current = null;
-                setCameraReady(false);
-            },
-            () => { /* per-frame scan errors — normal */ }
-        ).catch((err) => {
-            setError('Camera access denied. Please allow camera permissions.');
-            console.error('Camera start error:', err);
-            setCameraReady(false);
-        });
-
-        return () => {
-            html5Qr.stop().then(() => html5Qr.clear()).catch(() => {});
-            scannerRef.current = null;
-        };
-    }, [cameraReady]);
-
-    // Cleanup on unmount
-    useEffect(() => {
-        return () => {
-            if (scannerRef.current) {
-                scannerRef.current.stop().then(() => scannerRef.current?.clear()).catch(() => {});
-            }
-        };
-    }, []);
-
-    const fetchHospitalDoctors = async () => {
+    // Fetch doctor slots for booking form
+    const fetchDoctorSlots = useCallback(async () => {
         try {
             const token = localStorage.getItem('access');
             if (!user?.hospital) return;
-            const res = await axios.get(`http://127.0.0.1:8000/api/hospitals/${user.hospital}/hospital-slots/`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setDoctors(res.data);
-        } catch { /* silently fail */ }
-    };
+            // The endpoint is a detail action: /api/hospitals/{id}/hospital-slots/
+            const res = await axios.get(
+                `http://127.0.0.1:8000/api/hospitals/${user.hospital}/hospital-slots/`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            if (mountedRef.current) {
+                setDoctors(Array.isArray(res.data) ? res.data : (res.data.results || []));
+            }
+        } catch (err) {
+            console.warn('[ScanQR] Could not fetch doctor slots:', err);
+            if (mountedRef.current) setDoctors([]);
+        }
+    }, [user?.hospital]);
+
+    // Process scanned QR code
+    const processScan = useCallback(async (scannedUhid: string) => {
+        if (scanProcessedRef.current) return; // prevent double processing
+        scanProcessedRef.current = true;
+
+        try {
+            setError('');
+            setLoading(true);
+            const cleanUhid = scannedUhid.trim().split('\n')[0].trim();
+            console.log('[ScanQR] Processing UHID:', cleanUhid);
+
+            const token = localStorage.getItem('access');
+            const res = await axios.get(
+                `http://127.0.0.1:8000/api/patients/patients/?search=${encodeURIComponent(cleanUhid)}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            console.log('[ScanQR] API Response:', res.data);
+            const data = res.data.results ?? res.data;
+            let foundPatient = null;
+
+            if (Array.isArray(data) && data.length > 0) {
+                foundPatient = data.find((p: any) => p.uhid === cleanUhid) || data[0];
+            } else if (data && !Array.isArray(data) && data.uhid) {
+                foundPatient = data;
+            }
+
+            if (foundPatient && mountedRef.current) {
+                console.log('[ScanQR] Found Patient:', foundPatient.full_name, foundPatient.uhid);
+                setPatient(foundPatient);
+                setUhid(cleanUhid);
+                // Fetch doctors in background — don't block patient display
+                fetchDoctorSlots();
+            } else if (mountedRef.current) {
+                setError(`No patient record found for UHID: ${cleanUhid}`);
+                setPatient(null);
+            }
+        } catch (err: any) {
+            console.error('[ScanQR] Error:', err);
+            if (mountedRef.current) {
+                setError(err?.response?.data?.detail || 'Could not look up patient. Please try again.');
+                setPatient(null);
+            }
+        } finally {
+            if (mountedRef.current) setLoading(false);
+        }
+    }, [fetchDoctorSlots]);
+
+    // Stop the scanner safely
+    const stopScanner = useCallback(async () => {
+        const scanner = scannerRef.current;
+        if (!scanner) return;
+        try {
+            const state = scanner.getState();
+            // State 2 = SCANNING, State 3 = PAUSED
+            if (state === 2 || state === 3) {
+                await scanner.stop();
+            }
+            scanner.clear();
+        } catch {
+            // Already stopped or cleared
+        }
+        scannerRef.current = null;
+        if (mountedRef.current) setScanning(false);
+    }, []);
+
+    // Start the camera scanner
+    const startScanner = useCallback(async () => {
+        // Ensure there's no existing scanner running
+        await stopScanner();
+        scanProcessedRef.current = false;
+
+        const readerId = 'qr-reader';
+        const readerEl = document.getElementById(readerId);
+        if (!readerEl) {
+            console.warn('[ScanQR] #qr-reader element not found');
+            return;
+        }
+
+        const html5Qr = new Html5Qrcode(readerId);
+        scannerRef.current = html5Qr;
+
+        try {
+            await html5Qr.start(
+                { facingMode: 'environment' },
+                { fps: 10, qrbox: { width: 260, height: 260 } },
+                (decodedText) => {
+                    // On successful scan
+                    console.log('[ScanQR] Scanned:', decodedText);
+                    processScan(decodedText);
+                    // Stop scanner after successful read
+                    stopScanner();
+                },
+                () => { /* ignore per-frame failures */ }
+            );
+            if (mountedRef.current) setScanning(true);
+        } catch (err) {
+            console.error('[ScanQR] Camera start error:', err);
+            if (mountedRef.current) {
+                setError('Camera access was denied. Please allow camera permissions and try again.');
+                setScanning(false);
+            }
+        }
+    }, [stopScanner, processScan]);
+
+    // Auto-start scanner on mount
+    useEffect(() => {
+        mountedRef.current = true;
+        // Small delay to ensure DOM is ready
+        const timer = setTimeout(() => {
+            if (mountedRef.current && !patient) {
+                startScanner();
+            }
+        }, 300);
+
+        return () => {
+            mountedRef.current = false;
+            clearTimeout(timer);
+            stopScanner();
+        };
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleBook = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('access');
-            const selectedSlot = doctors.find(d => d.doctor === parseInt(appointment.doctor_id));
+            const selectedSlot = doctors.find(d => String(d.doctor) === appointment.doctor_id || String(d.doctor?.id) === appointment.doctor_id);
             await axios.post('http://127.0.0.1:8000/api/appointments/', {
                 patient: patient.user,
                 doctor: appointment.doctor_id,
@@ -101,11 +173,12 @@ const ScanQR = () => {
                 time_slot: appointment.time,
                 fee: selectedSlot?.consultation_fee || 0,
                 payment_status: 'paid'
-            }, { headers: { Authorization: `Bearer ${localStorage.getItem('access')}` } });
-            alert('Appointment Booked!');
+            }, { headers: { Authorization: `Bearer ${token}` } });
+            alert('Appointment Booked Successfully!');
             handleReset();
-        } catch {
-            alert('Could not book. Please try again.');
+        } catch (err: any) {
+            console.error('[ScanQR] Booking error:', err);
+            alert('Could not book appointment. Please try again.');
         }
     };
 
@@ -113,8 +186,10 @@ const ScanQR = () => {
         setPatient(null);
         setUhid('');
         setError('');
+        setLoading(false);
         setAppointment({ date: '', time: '', doctor_id: '' });
-        setCameraReady(true); // Restart camera
+        // Restart scanner
+        setTimeout(() => startScanner(), 300);
     };
 
     return (
@@ -130,12 +205,14 @@ const ScanQR = () => {
                         Check-in Desk
                     </h2>
                     <p className="font-bold text-gray-400 mt-2 uppercase tracking-[0.3em] text-[10px] font-['Montserrat']">
-                        Camera is ready — hold the patient's QR card up to scan
+                        {patient ? 'Patient verified — ready to book' : 'Camera is ready — hold the patient\'s QR card up to scan'}
                     </p>
                 </div>
                 <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-2xl shadow-sm border border-gray-100">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 font-['Montserrat']">Scanner Active</span>
+                    <div className={`w-2 h-2 rounded-full ${scanning ? 'bg-green-500 animate-pulse' : patient ? 'bg-blue-500' : 'bg-gray-300'}`}></div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 font-['Montserrat']">
+                        {scanning ? 'Scanner Active' : patient ? 'Patient Found' : 'Scanner Ready'}
+                    </span>
                 </div>
             </div>
 
@@ -163,24 +240,31 @@ const ScanQR = () => {
                                 )}
                             </div>
 
-                            {/* Camera View — always mounted, hidden when patient found */}
-                            <div className={patient ? 'hidden' : 'block'}>
-                                {cameraReady && (
-                                    <div
-                                        id="qr-reader"
-                                        className="w-full overflow-hidden rounded-3xl"
-                                        style={{ minHeight: '300px' }}
-                                    ></div>
-                                )}
-                            </div>
+                            {/* Camera View */}
+                            {!patient && !loading && (
+                                <div
+                                    id="qr-reader"
+                                    className="w-full overflow-hidden rounded-3xl"
+                                    style={{ minHeight: '300px' }}
+                                ></div>
+                            )}
 
-                            {patient && (
+                            {/* Loading State */}
+                            {loading && (
+                                <div className="flex flex-col items-center justify-center py-16 text-center">
+                                    <RefreshCw className="text-emerald-500 animate-spin mb-4" size={40} />
+                                    <p className="font-black uppercase tracking-widest text-gray-400 text-[10px]">Retrieving Medical Record...</p>
+                                </div>
+                            )}
+
+                            {/* Success State */}
+                            {patient && !loading && (
                                 <div className="flex flex-col items-center justify-center py-10 text-center">
                                     <div className="w-20 h-20 rounded-[28px] bg-green-50 text-green-600 flex items-center justify-center mb-4 shadow-inner border border-green-100">
                                         <UserCheck size={40} />
                                     </div>
                                     <span className="bg-green-600 text-white text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-2 animate-pulse">Patient Verified</span>
-                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest font-['Montserrat']">QR Card Scanned</p>
+                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest font-['Montserrat']">UHID: {uhid}</p>
                                 </div>
                             )}
                         </div>
@@ -212,32 +296,36 @@ const ScanQR = () => {
                         >
                             <div className="card-premium p-10 bg-white border border-gray-100 shadow-2xl shadow-gray-200/50 relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-40 h-40 bg-green-50 rounded-bl-[120px] -z-0 opacity-60"></div>
-
                                 <div className="relative z-10">
                                     {/* Patient Identity */}
                                     <div className="flex items-start gap-6 mb-10 pb-10 border-b border-gray-50">
                                         <div className="w-24 h-24 rounded-[32px] bg-gradient-to-br from-green-50 to-green-100 text-[var(--color-primary)] flex items-center justify-center shadow-inner border border-green-100 shrink-0">
-                                            <UserCheck size={44} />
+                                            <span className="text-3xl font-black italic">{patient.full_name?.charAt(0) || '?'}</span>
                                         </div>
-                                        <div>
+                                        <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-3 mb-3">
-                                                <span className="bg-[var(--color-primary)] text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full">✓ Verified</span>
-                                                <span className="text-gray-300 font-black text-[10px] tracking-widest uppercase">UHID: {patient.uhid}</span>
+                                                <span className="bg-[var(--color-primary)] text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap">✓ Verified Profile</span>
+                                                <span className="text-gray-300 font-black text-[10px] tracking-widest uppercase truncate">UHID: {patient.uhid}</span>
                                             </div>
-                                            <h3 className="text-4xl font-black italic uppercase tracking-tighter text-gray-900 font-['Montserrat'] leading-none mb-4">
-                                                {patient.full_name}
+                                            <h3 className="text-4xl font-black italic uppercase tracking-tighter text-gray-900 font-['Montserrat'] leading-none mb-4 truncate" title={patient.full_name}>
+                                                {patient.full_name || 'Anonymous Patient'}
                                             </h3>
                                             <div className="flex flex-wrap items-center gap-2">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">{patient.age} Years</span>
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">{patient.gender}</span>
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-red-500 bg-red-50 px-4 py-2 rounded-xl border border-red-100">{patient.blood_group} Blood</span>
+                                                {patient.age && <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">{patient.age} Years</span>}
+                                                {patient.gender && <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">{patient.gender}</span>}
+                                                {patient.blood_group && (
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-red-500 bg-red-50 px-4 py-2 rounded-xl border border-red-100">{patient.blood_group} Blood</span>
+                                                )}
                                                 {patient.phone && (
                                                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">{patient.phone}</span>
                                                 )}
+                                                {patient.email && (
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">{patient.email}</span>
+                                                )}
                                             </div>
                                             {patient.known_allergies && (
-                                                <div className="mt-4 px-4 py-3 bg-orange-50 border border-orange-100 rounded-2xl">
-                                                    <p className="text-[9px] font-black text-orange-500 uppercase tracking-widest">⚠ Allergy Alert: {patient.known_allergies}</p>
+                                                <div className="mt-4 px-4 py-3 bg-rose-50 border border-rose-100 rounded-2xl">
+                                                    <p className="text-[9px] font-black text-rose-500 uppercase tracking-widest">⚠ Critical Allergy Alert: {patient.known_allergies}</p>
                                                 </div>
                                             )}
                                         </div>
@@ -260,7 +348,11 @@ const ScanQR = () => {
                                                     className="w-full bg-gray-50 border-2 border-transparent py-4 pl-12 pr-4 rounded-xl font-black uppercase text-[10px] tracking-widest text-gray-700 appearance-none shadow-sm focus:bg-white focus:border-[var(--color-primary)] outline-none font-['Montserrat'] transition-all"
                                                 >
                                                     <option value="">-- Choose a Doctor --</option>
-                                                    {doctors.map(d => <option key={d.id} value={d.doctor?.id}>{d.doctor?.username || 'Doctor'}</option>)}
+                                                    {doctors.map(d => (
+                                                        <option key={d.id} value={d.doctor}>
+                                                            Dr. {d.doctor_username || `Doctor #${d.doctor}`} — ₹{d.consultation_fee || 0}
+                                                        </option>
+                                                    ))}
                                                 </select>
                                             </div>
                                         </div>
