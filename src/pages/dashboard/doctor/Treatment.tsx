@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { ScanFace, UserCheck, Stethoscope, FileText, Pill, Plus, Activity, Wind, Thermometer, Droplets, Trash2, ChevronRight, Clock } from 'lucide-react';
+import { ScanFace, UserCheck, Stethoscope, FileText, Pill, Plus, Activity, Wind, Thermometer, Droplets, Trash2, ChevronRight, Clock, RefreshCw, XCircle } from 'lucide-react';
+import { Html5Qrcode } from 'html5-qrcode';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const Treatment = () => {
     const { user } = useAuth();
-    const [uhid, setUhid] = useState('');
+    const [uhid, setUhid] = useState(''); // Kept for internal matching if needed
     const [patient, setPatient] = useState<any>(null);
     const [history, setHistory] = useState<any[]>([]);
     const [medicines, setMedicines] = useState<any[]>([]);
@@ -34,6 +35,10 @@ const Treatment = () => {
     const [prescriptions, setPrescriptions] = useState<any[]>([
         { medicine: '', dosage: '', duration_value: '', duration_unit: 'Days', frequency: '1-0-1', instructions: '', temp_search: '', show_list: false }
     ]);
+    const [scanning, setScanning] = useState(false);
+    const scannerRef = useRef<Html5Qrcode | null>(null);
+    const mountedRef = useRef(true);
+    const scanProcessedRef = useRef(false);
 
     const fetchData = async () => {
         try {
@@ -51,8 +56,6 @@ const Treatment = () => {
         }
     };
 
-    useEffect(() => { fetchData(); }, []);
-
     const handleCallPatient = async (qId: number) => {
         try {
             const token = localStorage.getItem('access');
@@ -61,37 +64,6 @@ const Treatment = () => {
             });
             fetchData();
         } catch (err) { alert('Failed to call patient'); }
-    };
-
-    const handlePatientSelect = (p: any) => {
-        setPatient(p);
-        fetchHistory(p.id);
-        // Pre-fill some patient metrics if available
-        setConsultation(prev => ({
-            ...prev,
-            weight: p.weight || '',
-            height: p.height || '',
-            bmi: p.bmi || ''
-        }));
-    };
-
-    const handleScan = async () => {
-        try {
-            setError('');
-            const token = localStorage.getItem('access');
-            const res = await axios.get(`http://127.0.0.1:8000/api/patients/?search=${uhid}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.data.length > 0) {
-                handlePatientSelect(res.data[0]);
-            } else {
-                setError('No patient found.');
-                setPatient(null);
-            }
-        } catch (err) {
-            setError('Could not read the card.');
-            setPatient(null);
-        }
     };
 
     const fetchHistory = async (id: number) => {
@@ -103,6 +75,107 @@ const Treatment = () => {
             setHistory(res.data.results || res.data);
         } catch (err) { }
     };
+
+    const stopScanner = useCallback(async () => {
+        if (!scannerRef.current) return;
+        try {
+            const state = scannerRef.current.getState();
+            if (state === 2 || state === 3) {
+                await scannerRef.current.stop();
+            }
+            scannerRef.current.clear();
+        } catch (e) {}
+        scannerRef.current = null;
+        if (mountedRef.current) setScanning(false);
+    }, []);
+
+    const handlePatientSelect = useCallback((p: any) => {
+        setPatient(p);
+        fetchHistory(p.id);
+        stopScanner();
+        setConsultation(prev => ({
+            ...prev,
+            weight: p.weight || '',
+            height: p.height || '',
+            bmi: p.bmi || ''
+        }));
+    }, [stopScanner]);
+
+    const handleScan = useCallback(async (searchId: string) => {
+        if (!searchId) return;
+        const cleanId = searchId.trim().split('\n')[0].trim();
+        console.log('[Treatment] Processing UHID:', cleanId);
+
+        try {
+            setError('');
+            const token = localStorage.getItem('access');
+            const res = await axios.get(`http://127.0.0.1:8000/api/patients/patients/?search=${encodeURIComponent(cleanId)}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = res.data.results || res.data;
+            if (data.length > 0) {
+                // Find exact match if multiple returned
+                const foundPatient = data.find((p: any) => p.uhid === cleanId) || data[0];
+                handlePatientSelect(foundPatient);
+            } else {
+                setError(`No patient record found for UHID: ${cleanId}`);
+                setPatient(null);
+                setTimeout(() => { scanProcessedRef.current = false; }, 2000);
+            }
+        } catch (err: any) {
+            setError(err?.response?.data?.detail || 'Could not lookup patient.');
+            setPatient(null);
+            setTimeout(() => { scanProcessedRef.current = false; }, 2000);
+        }
+    }, [handlePatientSelect]);
+
+    const startScanner = useCallback(async () => {
+        await stopScanner();
+        scanProcessedRef.current = false;
+        
+        const readerId = 'qr-reader';
+        const readerEl = document.getElementById(readerId);
+        if (!readerEl) return;
+
+        const html5Qr = new Html5Qrcode(readerId);
+        scannerRef.current = html5Qr;
+
+        try {
+            await html5Qr.start(
+                { facingMode: 'environment' },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    if (!scanProcessedRef.current) {
+                        scanProcessedRef.current = true;
+                        handleScan(decodedText);
+                        stopScanner();
+                    }
+                },
+                () => {}
+            );
+            if (mountedRef.current) setScanning(true);
+        } catch (err) {
+            if (mountedRef.current) setScanning(false);
+        }
+    }, [stopScanner, handleScan]);
+
+    useEffect(() => { 
+        mountedRef.current = true;
+        fetchData(); 
+        
+        // Start scanner after a short delay to ensure DOM is ready
+        const timer = setTimeout(() => {
+            if (mountedRef.current && !patient) {
+                startScanner();
+            }
+        }, 500);
+
+        return () => {
+            mountedRef.current = false;
+            clearTimeout(timer);
+            stopScanner();
+        };
+    }, [startScanner, stopScanner]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleAddPrescriptionRow = () => {
         setPrescriptions([...prescriptions, { medicine: '', dosage: '', duration_value: '', duration_unit: 'Days', frequency: '1-0-1', instructions: '', temp_search: '', show_list: false }]);
@@ -164,19 +237,42 @@ const Treatment = () => {
             {!patient && (
                 <div className="grid lg:grid-cols-12 gap-10">
                     <div className="lg:col-span-8">
-                        <div className="card-premium p-10 flex flex-col items-center justify-center bg-gray-50 border-2 border-gray-100 shadow-2xl">
-                            <div className="w-32 h-32 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
-                                <ScanFace size={64} />
+                        <div className="card-premium p-10 flex flex-col items-center justify-center bg-white border border-gray-100 shadow-2xl relative overflow-hidden h-full">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-[80px] -z-0"></div>
+                            
+                            <div className="w-full max-w-sm mb-8 relative z-10">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-xl font-black uppercase italic tracking-tighter text-gray-900 font-['Montserrat']">Patient Scanner</h3>
+                                    <button onClick={startScanner} className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700 transition-colors">
+                                        <RefreshCw size={14} className={scanning ? 'animate-spin' : ''} /> {scanning ? 'Scanning...' : 'Restart Camera'}
+                                    </button>
+                                </div>
+                                {/* Wrapper: position relative so placeholder can overlay before scanner starts */}
+                                <div className="relative w-full overflow-hidden rounded-[32px] border-2 border-dashed border-gray-200 min-h-[300px] bg-gray-50">
+                                    {/* IMPORTANT: #qr-reader must be empty — html5-qrcode mutates its DOM directly */}
+                                    <div id="qr-reader" className="w-full"></div>
+                                    {/* Placeholder shown only when scanner not yet active */}
+                                    {!scanning && (
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 pointer-events-none">
+                                            <ScanFace size={64} className="mb-4" />
+                                            <p className="font-black uppercase text-[10px] tracking-widest">Camera Ready</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-blue-900 mb-6 drop-shadow-sm font-['Montserrat']">Find Patient</h3>
-                            <div className="flex gap-4 w-full max-w-lg">
-                                <input type="text" placeholder="ENTER PATIENT ID (E.G. GP-6231)" className="flex-1 bg-white border-2 border-blue-200 py-4 px-6 rounded-2xl font-black uppercase tracking-widest text-xs focus:outline-none focus:border-blue-500 transition-colors font-['Montserrat']"
-                                    value={uhid} onChange={e => setUhid(e.target.value)} />
-                                <button onClick={handleScan} className="bg-blue-600 hover:bg-blue-700 text-white font-black italic uppercase tracking-tighter px-10 rounded-2xl shadow-xl shadow-blue-600/20">
-                                    View Patient
-                                </button>
+
+                            <div className="w-full max-w-lg relative z-10 mt-4">
+                                {error && (
+                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 flex items-center gap-3 bg-red-50 border border-red-100 rounded-2xl p-4">
+                                        <XCircle size={16} className="text-red-400 shrink-0" />
+                                        <p className="font-black text-red-500 uppercase tracking-widest text-[9px] font-['Montserrat']">{error}</p>
+                                    </motion.div>
+                                )}
+                                <div className="mt-10 flex flex-col items-center gap-4 text-center opacity-40">
+                                    <Activity size={24} className="text-emerald-500" />
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Scan health card to proceed</p>
+                                </div>
                             </div>
-                            {error && <p className="mt-4 text-red-500 font-black uppercase text-[10px] tracking-widest">{error}</p>}
                         </div>
                     </div>
 
@@ -516,6 +612,26 @@ const Treatment = () => {
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: #CBD5E1;
+                }
+                #qr-reader { border: none !important; }
+                #qr-reader video { border-radius: 28px !important; width: 100% !important; object-fit: cover !important; }
+                #qr-reader__scan_region { background: transparent !important; }
+                #qr-reader__dashboard { padding: 12px 0 0 !important; }
+                #qr-reader__dashboard_section_swaplink { display: none !important; }
+                #qr-reader__status_span { font-family: 'Montserrat', sans-serif !important; font-size: 10px !important; font-weight: 900 !important; text-transform: uppercase !important; letter-spacing: 0.1em !important; color: #6B7280 !important; }
+                #qr-reader__camera_permission_button {
+                    background: #10B981 !important;
+                    color: white !important;
+                    border: none !important;
+                    padding: 14px 28px !important;
+                    border-radius: 16px !important;
+                    font-family: 'Montserrat', sans-serif !important;
+                    font-weight: 900 !important;
+                    font-size: 10px !important;
+                    text-transform: uppercase !important;
+                    letter-spacing: 0.15em !important;
+                    cursor: pointer !important;
+                    width: 100% !important;
                 }
             `}</style>
         </motion.div>

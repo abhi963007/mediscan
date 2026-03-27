@@ -98,19 +98,19 @@ const DoctorOverview = () => {
 
             <div className="grid lg:grid-cols-12 gap-10">
                 <Link to="/dashboard/doctor/treatment" className="lg:col-span-8 group relative overflow-hidden h-full">
-                    <div className="card-premium h-full p-12 bg-[#064E3B] text-white shadow-4xl shadow-emerald-900/40 transition-all duration-500 group-hover:-translate-y-1 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none"></div>
-                        <div className="absolute right-0 top-0 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-400/20 transition-colors duration-700"></div>
+                    <div className="card-premium h-full p-12 bg-white text-gray-900 border border-gray-100 shadow-xl shadow-gray-200/50 transition-all duration-500 group-hover:-translate-y-1 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-tr from-gray-50 to-transparent pointer-events-none"></div>
+                        <div className="absolute right-0 top-0 w-96 h-96 bg-emerald-400/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-400/10 transition-colors duration-700"></div>
                         
                         <div className="flex justify-between items-start mb-12 relative z-10">
                             <div>
                                 <h3 className="text-5xl font-black italic uppercase tracking-tighter mb-6 flex items-center gap-6 leading-tight">
-                                   Check In <br/> Patient <ChevronRight size={48} className="text-emerald-400 group-hover:translate-x-4 transition-transform duration-500" />
+                                   Check In <br/> Patient <ChevronRight size={48} className="text-emerald-600 group-hover:translate-x-4 transition-transform duration-500" />
                                 </h3>
-                                <p className="text-emerald-100/60 font-medium uppercase tracking-[0.3em] text-[10px] max-w-sm leading-loose font-['Montserrat']">View patient records and start treatment.</p>
+                                <p className="text-gray-400 font-bold uppercase tracking-[0.3em] text-[10px] max-w-sm leading-loose font-['Montserrat']">View patient records and start treatment.</p>
                             </div>
-                            <div className="bg-white/10 p-10 rounded-[48px] flex items-center justify-center backdrop-blur-xl shrink-0 border border-white/10 shadow-inner group-hover:scale-110 transition-transform duration-700">
-                                <ScanFace size={72} className="text-white" />
+                            <div className="bg-emerald-50 p-10 rounded-[48px] flex items-center justify-center shrink-0 border border-emerald-100 shadow-sm group-hover:scale-110 transition-transform duration-700">
+                                <ScanFace size={72} className="text-emerald-600" />
                             </div>
                         </div>
                         
@@ -120,8 +120,8 @@ const DoctorOverview = () => {
                                 { icon: <History size={14}/>, text: 'View History' },
                                 { icon: <HeartPulse size={14}/>, text: 'Check Vitals' }
                             ].map((item, i) => (
-                                <div key={i} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] bg-white/5 border border-white/10 px-6 py-4 rounded-2xl hover:bg-white/10 transition-colors backdrop-blur-md">
-                                    <span className="text-emerald-400">{item.icon}</span> {item.text}
+                                <div key={i} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] bg-gray-50 border border-gray-100 px-6 py-4 rounded-2xl hover:bg-emerald-50 hover:border-emerald-100 transition-colors">
+                                    <span className="text-emerald-600">{item.icon}</span> {item.text}
                                 </div>
                             ))}
                         </div>
