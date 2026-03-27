@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, useLocation, Navigate } from 'react-router-dom';
 import { 
   Building2, Pill, Users, Settings, UserPlus, Scan, 
-  Calendar, Stethoscope, Search, LogOut, ChevronRight, Bell, HeartPulse
+  Calendar, Stethoscope, Search, LogOut, ChevronRight, Bell, HeartPulse, Clock
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -80,6 +80,7 @@ const DashboardLayout = () => {
           <>
             <SidebarLink to="/dashboard/hospital" icon={<Building2 size={20} />} label="Hospital Status" collapsed={collapsed} />
             <SidebarLink to="/dashboard/hospital/staff" icon={<Users size={20} />} label="Staff Registry" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/hospital/slots" icon={<Clock size={20} />} label="Clinic Slots" collapsed={collapsed} />
             <SidebarLink to="/dashboard/hospital/settings" icon={<Settings size={20} />} label="Settings" collapsed={collapsed} />
           </>
         );
@@ -91,6 +92,7 @@ const DashboardLayout = () => {
             <SidebarLink to="/dashboard/staff/patients" icon={<Users size={20} />} label="Patients" collapsed={collapsed} />
             <SidebarLink to="/dashboard/staff/scan" icon={<Scan size={20} />} label="Scan Patient Card" collapsed={collapsed} />
             <SidebarLink to="/dashboard/staff/appointments" icon={<Calendar size={20} />} label="Appointments" collapsed={collapsed} />
+            <SidebarLink to="/dashboard/staff/slots" icon={<Clock size={20} />} label="Configure Slots" collapsed={collapsed} />
           </>
         );
       case 'doctor':

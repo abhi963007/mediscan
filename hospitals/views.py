@@ -76,15 +76,21 @@ class DoctorSlotViewSet(viewsets.ModelViewSet):
     queryset = DoctorSlot.objects.all()
     serializer_class = DoctorSlotSerializer
     permission_classes = [IsAuthenticated]
+    filterset_fields = ['doctor', 'hospital']
 
     def get_queryset(self):
         user = self.request.user
+        queryset = DoctorSlot.objects.all()
         if user.is_authenticated and user.hospital:
-            return DoctorSlot.objects.filter(hospital=user.hospital)
-        return DoctorSlot.objects.all()
+            queryset = queryset.filter(hospital=user.hospital)
+        
+        doctor_id = self.request.query_params.get('doctor')
+        if doctor_id:
+            queryset = queryset.filter(doctor_id=doctor_id)
+            
+        return queryset
 
     def perform_create(self, serializer):
-        # Ensure hospital is set for hospital-staff roles
         if self.request.user.hospital:
             serializer.save(hospital=self.request.user.hospital)
         else:
@@ -95,14 +101,22 @@ class DoctorScheduleViewSet(viewsets.ModelViewSet):
     queryset = DoctorSchedule.objects.all()
     serializer_class = DoctorScheduleSerializer
     permission_classes = [IsAuthenticated]
+    filterset_fields = ['doctor', 'hospital']
 
     def get_queryset(self):
         user = self.request.user
+        queryset = DoctorSchedule.objects.all()
+        
         if user.role == 'doctor':
-            return DoctorSchedule.objects.filter(doctor=user)
-        elif user.role in ['hospital_admin', 'receptionist']:
-            return DoctorSchedule.objects.filter(hospital=user.hospital)
-        return DoctorSchedule.objects.all()
+            queryset = queryset.filter(doctor=user)
+        elif user.role in ['hospital_admin', 'receptionist'] and user.hospital:
+            queryset = queryset.filter(hospital=user.hospital)
+
+        doctor_id = self.request.query_params.get('doctor')
+        if doctor_id:
+            queryset = queryset.filter(doctor_id=doctor_id)
+            
+        return queryset
 
     def perform_create(self, serializer):
         if self.request.user.role == 'doctor':

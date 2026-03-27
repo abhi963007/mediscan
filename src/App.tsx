@@ -32,6 +32,7 @@ import ReceptionistAppointments from './pages/dashboard/receptionist/Appointment
 import DoctorOverview from './pages/dashboard/doctor/DoctorOverview';
 import Treatment from './pages/dashboard/doctor/Treatment';
 import DoctorAppointments from './pages/dashboard/doctor/Appointments';
+import SlotManagement from './pages/dashboard/doctor/SlotManagement';
 
 // Patient Pages
 import PatientOverview from './pages/dashboard/patient/PatientOverview';
@@ -104,6 +105,7 @@ function App() {
         <Route path="hospital">
            <Route index element={<ProtectedRoute allowedRoles={['hospital_admin']}><HospitalOverview /></ProtectedRoute>} />
            <Route path="staff" element={<ProtectedRoute allowedRoles={['hospital_admin']}><StaffManagement /></ProtectedRoute>} />
+           <Route path="slots" element={<ProtectedRoute allowedRoles={['hospital_admin']}><SlotManagement /></ProtectedRoute>} />
            <Route path="settings" element={<ProtectedRoute allowedRoles={['hospital_admin']}><HospitalSettings /></ProtectedRoute>} />
         </Route>
 
@@ -114,6 +116,7 @@ function App() {
            <Route path="patients" element={<ProtectedRoute allowedRoles={['receptionist']}><Patients /></ProtectedRoute>} />
            <Route path="scan" element={<ProtectedRoute allowedRoles={['receptionist']}><ScanQR /></ProtectedRoute>} />
            <Route path="appointments" element={<ProtectedRoute allowedRoles={['receptionist']}><ReceptionistAppointments /></ProtectedRoute>} />
+           <Route path="slots" element={<ProtectedRoute allowedRoles={['receptionist']}><SlotManagement /></ProtectedRoute>} />
         </Route>
 
         {/* === DOCTOR DRILLDOWN === */}

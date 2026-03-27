@@ -1,16 +1,21 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { ScanFace, UserCheck, Stethoscope, FileText, Pill, Plus, Activity, Wind, Thermometer, Droplets, Trash2, ChevronRight, Clock, RefreshCw, XCircle, HeartPulse, Weight, Ruler } from 'lucide-react';
+import { 
+    ScanFace, UserCheck, Stethoscope, FileText, Pill, Plus, Activity, 
+    Wind, Thermometer, Droplets, Trash2, ChevronRight, Clock, 
+    RefreshCw, XCircle, HeartPulse, Weight, Ruler, Search 
+} from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const Treatment = () => {
     const { user } = useAuth();
-    const [uhid, setUhid] = useState(''); // Kept for internal matching if needed
+    const [uhid, setUhid] = useState('');
     const [patient, setPatient] = useState<any>(null);
     const [history, setHistory] = useState<any[]>([]);
     const [medicines, setMedicines] = useState<any[]>([]);
+    const [loadingMeds, setLoadingMeds] = useState(false);
     const [queue, setQueue] = useState<any[]>([]);
     const [error, setError] = useState('');
     const [loadingQueue, setLoadingQueue] = useState(true);
@@ -43,16 +48,29 @@ const Treatment = () => {
     const fetchData = async () => {
         try {
             const token = localStorage.getItem('access');
-            const [medRes, queueRes] = await Promise.all([
-                axios.get('http://127.0.0.1:8000/api/hospitals/medicines/', { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get('http://127.0.0.1:8000/api/appointments/queue/', { headers: { Authorization: `Bearer ${token}` } })
-            ]);
-            // Pagination check for medicines
-            setMedicines(medRes.data.results || medRes.data);
+            const queueRes = await axios.get('http://127.0.0.1:8000/api/appointments/queue/', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setQueue(queueRes.data.results || queueRes.data);
             setLoadingQueue(false);
         } catch (err) {
             setLoadingQueue(false);
+        }
+    };
+
+    // Dynamic Medicine Search
+    const searchMedicines = async (term: string, idx: number) => {
+        if (!term) return;
+        setLoadingMeds(true);
+        try {
+            const token = localStorage.getItem('access');
+            const res = await axios.get(`http://127.0.0.1:8000/api/hospitals/medicines/?search=${encodeURIComponent(term)}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setMedicines(res.data.results || res.data);
+            setLoadingMeds(false);
+        } catch (err) {
+            setLoadingMeds(false);
         }
     };
 
@@ -89,10 +107,35 @@ const Treatment = () => {
         if (mountedRef.current) setScanning(false);
     }, []);
 
+    const performAutoCheckIn = async (patientId: number) => {
+        try {
+            const token = localStorage.getItem('access');
+            // 1. Find today's appointment for this patient with this doctor
+            const today = new Date().toISOString().split('T')[0];
+            const apptRes = await axios.get(`http://127.0.0.1:8000/api/appointments/?patient=${patientId}&date=${today}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const appts = apptRes.data.results || apptRes.data;
+            const targetAppt = appts.find((a: any) => a.status === 'confirmed' || a.status === 'pending');
+            
+            if (targetAppt) {
+                // 2. Perform check-in
+                await axios.post(`http://127.0.0.1:8000/api/appointments/${targetAppt.id}/check-in/`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                console.log('[Treatment] Auto Check-in successful for appointment:', targetAppt.id);
+                fetchData(); // Refresh queue
+            }
+        } catch (err) {
+            console.error('[Treatment] Auto Check-in failed:', err);
+        }
+    };
+
     const handlePatientSelect = useCallback((p: any) => {
         setPatient(p);
         fetchHistory(p.id);
         stopScanner();
+        performAutoCheckIn(p.id); // Trigger auto check-in when scanned
         setConsultation(prev => ({
             ...prev,
             weight: p.weight || '',
@@ -114,7 +157,6 @@ const Treatment = () => {
             });
             const data = res.data.results || res.data;
             if (data.length > 0) {
-                // Find exact match if multiple returned
                 const foundPatient = data.find((p: any) => p.uhid === cleanId) || data[0];
                 handlePatientSelect(foundPatient);
             } else {
@@ -162,20 +204,17 @@ const Treatment = () => {
     useEffect(() => { 
         mountedRef.current = true;
         fetchData(); 
-        
-        // Start scanner after a short delay to ensure DOM is ready
         const timer = setTimeout(() => {
             if (mountedRef.current && !patient) {
                 startScanner();
             }
         }, 500);
-
         return () => {
             mountedRef.current = false;
             clearTimeout(timer);
             stopScanner();
         };
-    }, [startScanner, stopScanner]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleAddPrescriptionRow = () => {
         setPrescriptions([...prescriptions, { medicine: '', dosage: '', duration_value: '', duration_unit: 'Days', frequency: '1-0-1', instructions: '', temp_search: '', show_list: false }]);
@@ -198,7 +237,6 @@ const Treatment = () => {
             }, { headers });
             const c_id = res.data.id;
             
-            // Save prescriptions
             for (const p of prescriptions) {
                 if (p.medicine) {
                     await axios.post('http://127.0.0.1:8000/api/patients/prescriptions/', {
@@ -213,8 +251,7 @@ const Treatment = () => {
                 }
             }
 
-            // If patient was in queue, complete it
-            const queueEntry = queue.find(q => q.appointment_details?.patient_username === patient.user?.username);
+            const queueEntry = queue.find(q => q.appointment_details?.patient_username === (patient.user?.username || patient.uhid));
             if (queueEntry) {
                 await axios.post(`http://127.0.0.1:8000/api/appointments/queue/${queueEntry.id}/complete/`, {}, { headers });
             }
@@ -247,11 +284,8 @@ const Treatment = () => {
                                         <RefreshCw size={14} className={scanning ? 'animate-spin' : ''} /> {scanning ? 'Scanning...' : 'Restart Camera'}
                                     </button>
                                 </div>
-                                {/* Wrapper: position relative so placeholder can overlay before scanner starts */}
-                                <div className="relative w-full overflow-hidden rounded-[32px] border-2 border-dashed border-gray-200 min-h-[300px] bg-gray-50">
-                                    {/* IMPORTANT: #qr-reader must be empty — html5-qrcode mutates its DOM directly */}
+                                <div className="relative w-full overflow-hidden rounded-[32px] border-2 border-dashed border-gray-200 min-h-[300px] bg-gray-50 flex items-center justify-center">
                                     <div id="qr-reader" className="w-full"></div>
-                                    {/* Placeholder shown only when scanner not yet active */}
                                     {!scanning && (
                                         <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 pointer-events-none">
                                             <ScanFace size={64} className="mb-4" />
@@ -261,16 +295,16 @@ const Treatment = () => {
                                 </div>
                             </div>
 
-                            <div className="w-full max-w-lg relative z-10 mt-4">
+                            <div className="w-full max-w-lg relative z-10 mt-4 text-center">
                                 {error && (
-                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 flex items-center gap-3 bg-red-50 border border-red-100 rounded-2xl p-4">
+                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 flex items-center gap-3 bg-red-50 border border-red-100 rounded-2xl p-4 mx-auto max-w-sm">
                                         <XCircle size={16} className="text-red-400 shrink-0" />
                                         <p className="font-black text-red-500 uppercase tracking-widest text-[9px] font-['Montserrat']">{error}</p>
                                     </motion.div>
                                 )}
-                                <div className="mt-10 flex flex-col items-center gap-4 text-center opacity-40">
+                                <div className="mt-10 flex flex-col items-center gap-4 opacity-40">
                                     <Activity size={24} className="text-emerald-500" />
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Scan health card to proceed</p>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Scan health card for auto-check-in</p>
                                 </div>
                             </div>
                         </div>
@@ -281,7 +315,7 @@ const Treatment = () => {
                             <h3 className="text-xl font-black italic uppercase text-gray-800 tracking-tighter mb-6 flex items-center gap-3">
                                 <Activity className="text-green-600" size={24} /> Patients Waiting
                             </h3>
-                            <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+                            <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
                                 {loadingQueue ? (
                                     <div className="animate-pulse space-y-3">
                                         {[1,2,3].map(i => <div key={i} className="h-20 bg-gray-50 rounded-2xl" />)}
@@ -292,7 +326,7 @@ const Treatment = () => {
                                             <div>
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <span className="w-6 h-6 bg-blue-600 text-white text-[10px] font-black rounded-lg flex items-center justify-center shadow-sm">#{q.queue_number}</span>
-                                                    <h4 className="font-black text-xs uppercase italic tracking-tighter text-gray-900">{q.appointment_details?.patient_username}</h4>
+                                                    <h4 className="font-black text-xs uppercase italic tracking-tighter text-gray-900">{q.patient_full_name || q.appointment_details?.patient_username}</h4>
                                                 </div>
                                                 <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
                                                     <Clock size={10} /> Wait: {q.estimated_wait_time} MIN
@@ -321,7 +355,6 @@ const Treatment = () => {
             <AnimatePresence>
                 {patient && (
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid lg:grid-cols-12 gap-10">
-                        {/* Left Column: Patient Profile & History */}
                         <div className="lg:col-span-4 space-y-6">
                             <div className="card-premium p-6 bg-gradient-to-br from-[#064E3B] to-[#065F46] text-white shadow-2xl relative overflow-hidden group">
                                 <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors"></div>
@@ -342,253 +375,177 @@ const Treatment = () => {
                                     <div className="bg-white/10 py-4 rounded-2xl backdrop-blur-sm border border-white/5">{patient.gender}</div>
                                     <div className="bg-white/10 py-4 rounded-2xl backdrop-blur-sm border border-white/5">{patient.weight || '--'} KG</div>
                                 </div>
-                                
-                                {patient.chronic_diseases && (
-                                    <div className="mt-6 p-4 bg-black/20 rounded-2xl backdrop-blur-sm border border-white/5">
-                                        <p className="text-[9px] font-black text-emerald-300 uppercase tracking-widest mb-2 flex items-center gap-2">
-                                            <Activity size={12} /> Chronic Alerts
-                                        </p>
-                                        <p className="text-xs font-bold text-white/80">{patient.chronic_diseases}</p>
-                                    </div>
-                                )}
                             </div>
 
                             <div className="card-premium p-8 border-2 border-gray-100 relative overflow-hidden h-[700px] flex flex-col bg-white">
                                 <h3 className="text-xl font-black italic uppercase text-gray-800 tracking-tighter mb-6 flex items-center gap-3">
                                     <FileText className="text-emerald-600" size={24} /> Medical History
                                 </h3>
-                                
                                 <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar">
                                     {history.map((h, i) => (
                                         <div key={i} className="p-5 bg-gray-50 rounded-3xl border border-gray-100 hover:border-emerald-200 transition-all group relative overflow-hidden">
-                                            <div className="absolute right-0 top-0 w-16 h-16 bg-emerald-50 rounded-bl-[40px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-3">
-                                                <ChevronRight className="text-emerald-500" size={20} />
-                                            </div>
                                             <div className="flex justify-between items-start mb-4">
                                                 <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100">{new Date(h.consultation_date).toLocaleDateString()}</span>
                                                 <span className="text-[8px] font-bold text-gray-400 bg-white shadow-sm border px-2.5 py-1.5 rounded-lg uppercase tracking-widest">
-                                                    DR. {h.doctor_name || h.doctor?.username}
+                                                    DR. {h.doctor_name}
                                                 </span>
                                             </div>
                                             <h4 className="font-black text-gray-900 uppercase text-sm italic tracking-tight mb-2">{h.diagnosis}</h4>
-                                            <div className="grid grid-cols-2 gap-2 mb-4">
-                                                <div className="text-[9px] font-bold text-gray-500 uppercase bg-white px-3 py-1.5 rounded-lg border border-gray-100 flex items-center gap-2">
-                                                    <Activity size={10} className="text-emerald-500" /> BP: {h.blood_pressure || '--'}
-                                                </div>
-                                                <div className="text-[9px] font-bold text-gray-500 uppercase bg-white px-3 py-1.5 rounded-lg border border-gray-100 flex items-center gap-2">
-                                                    <Thermometer size={10} className="text-orange-500" /> {h.temperature || '--'}°F
-                                                </div>
-                                            </div>
-                                            <p className="text-gray-500 text-[11px] font-medium leading-relaxed line-clamp-2 italic">“{h.treatment_plan || h.chief_complaint}”</p>
+                                            <p className="text-gray-500 text-[11px] font-medium leading-relaxed italic">“{h.treatment_plan || h.chief_complaint}”</p>
                                         </div>
                                     ))}
-                                    {history.length === 0 && (
-                                        <div className="h-full flex flex-col items-center justify-center opacity-30 text-center space-y-4">
-                                            <FileText size={56} className="text-gray-300" />
-                                            <p className="font-black uppercase text-[10px] tracking-[0.2em] text-gray-400 px-8">Patient found, but no past history yet.</p>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Right Column: Active Terminal */}
                         <div className="lg:col-span-8">
                             <form onSubmit={handleSaveConsultation} className="card-premium p-10 border-2 border-emerald-500 bg-emerald-50/5 shadow-3xl shadow-emerald-500/10">
                                 <div className="flex justify-between items-center mb-10 pb-6 border-b border-gray-100">
                                     <h3 className="text-3xl font-black italic uppercase text-emerald-900 tracking-tighter flex items-center gap-4">
                                         <Stethoscope size={36} className="text-emerald-500" /> Visit Record
                                     </h3>
-                                    <div className="flex items-center gap-3">
-                                        <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse shadow-lg shadow-red-500/20"></span>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Secure Connection</span>
-                                    </div>
                                 </div>
 
                                 {/* Vitals Grid */}
                                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-10">
                                     <div className="space-y-2">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">BP (mmHg)</label>
-                                        <div className="relative">
-                                            <HeartPulse size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
-                                            <input type="text" placeholder="120/80" className="input-field-terminal pl-12"
-                                                value={consultation.blood_pressure} onChange={e => setConsultation({...consultation, blood_pressure: e.target.value})}/>
-                                        </div>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">BP</label>
+                                        <input type="text" placeholder="120/80" className="input-field-terminal"
+                                            value={consultation.blood_pressure} onChange={e => setConsultation({...consultation, blood_pressure: e.target.value})}/>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Pulse (BPM)</label>
-                                        <div className="relative">
-                                            <Activity size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
-                                            <input type="text" placeholder="72" className="input-field-terminal pl-12"
-                                                value={consultation.pulse_rate} onChange={e => setConsultation({...consultation, pulse_rate: e.target.value})}/>
-                                        </div>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Pulse</label>
+                                        <input type="text" placeholder="72" className="input-field-terminal"
+                                            value={consultation.pulse_rate} onChange={e => setConsultation({...consultation, pulse_rate: e.target.value})}/>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">SPO2 (%)</label>
-                                        <div className="relative">
-                                            <Droplets size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300" />
-                                            <input type="text" placeholder="98" className="input-field-terminal pl-12"
-                                                value={consultation.sp_o2} onChange={e => setConsultation({...consultation, sp_o2: e.target.value})}/>
-                                        </div>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">SPO2</label>
+                                        <input type="text" placeholder="98" className="input-field-terminal"
+                                            value={consultation.sp_o2} onChange={e => setConsultation({...consultation, sp_o2: e.target.value})}/>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Temp (°F)</label>
-                                        <div className="relative">
-                                            <Thermometer size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-300" />
-                                            <input type="text" placeholder="98.6" className="input-field-terminal pl-12"
-                                                value={consultation.temperature} onChange={e => setConsultation({...consultation, temperature: e.target.value})}/>
-                                        </div>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Temp</label>
+                                        <input type="text" placeholder="98.6" className="input-field-terminal"
+                                            value={consultation.temperature} onChange={e => setConsultation({...consultation, temperature: e.target.value})}/>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Resp Rate</label>
-                                        <div className="relative">
-                                            <Wind size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
-                                            <input type="text" placeholder="18" className="input-field-terminal pl-12"
-                                                value={consultation.respiratory_rate} onChange={e => setConsultation({...consultation, respiratory_rate: e.target.value})}/>
-                                        </div>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Resp</label>
+                                        <input type="text" placeholder="18" className="input-field-terminal"
+                                            value={consultation.respiratory_rate} onChange={e => setConsultation({...consultation, respiratory_rate: e.target.value})}/>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">WT (KG)</label>
-                                        <div className="relative">
-                                            <Weight size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
-                                            <input type="text" placeholder="0.0" className="input-field-terminal pl-12"
-                                                value={consultation.weight} onChange={e => setConsultation({...consultation, weight: e.target.value})}/>
-                                        </div>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">WT</label>
+                                        <input type="text" placeholder="0.0" className="input-field-terminal"
+                                            value={consultation.weight} onChange={e => setConsultation({...consultation, weight: e.target.value})}/>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">HT (CM)</label>
-                                        <div className="relative">
-                                            <Ruler size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
-                                            <input type="text" placeholder="0" className="input-field-terminal pl-12"
-                                                value={consultation.height} onChange={e => setConsultation({...consultation, height: e.target.value})}/>
-                                        </div>
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">HT</label>
+                                        <input type="text" placeholder="0" className="input-field-terminal"
+                                            value={consultation.height} onChange={e => setConsultation({...consultation, height: e.target.value})}/>
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">BMI</label>
-                                        <div className="relative">
-                                            <Activity size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
-                                            <input type="text" placeholder="0.0" className="input-field-terminal pl-12"
-                                                value={consultation.bmi} onChange={e => setConsultation({...consultation, bmi: e.target.value})}/>
-                                        </div>
+                                        <input type="text" placeholder="0.0" className="input-field-terminal"
+                                            value={consultation.bmi} onChange={e => setConsultation({...consultation, bmi: e.target.value})}/>
                                     </div>
                                 </div>
 
                                 <div className="grid md:grid-cols-2 gap-8 mb-10">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 block ml-1">Reason for Visit & History</label>
-                                        <textarea required rows={4} className="input-field-terminal min-h-[120px] py-6 px-8 leading-relaxed font-medium"
-                                            placeholder="DESCRIBE THE ISSUE..."
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 block ml-1">Chief Complaint</label>
+                                        <textarea required rows={4} className="input-field-terminal min-h-[120px]"
+                                            placeholder="REASON FOR VISIT..."
                                             value={consultation.chief_complaint} onChange={e => setConsultation({...consultation, chief_complaint: e.target.value})}></textarea>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 block ml-1">Check-up Notes</label>
-                                        <textarea rows={4} className="input-field-terminal min-h-[120px] py-6 px-8 leading-relaxed font-medium"
-                                            placeholder="WHAT DID YOU NOTICE?..."
-                                            value={consultation.physical_examination} onChange={e => setConsultation({...consultation, physical_examination: e.target.value})}></textarea>
-                                    </div>
-                                    <div className="col-span-2 space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3 block ml-1">Doctor's Finding / Diagnosis</label>
-                                        <input required type="text" className="input-field-terminal py-6 px-8 font-black text-lg text-emerald-900 placeholder:opacity-30 uppercase tracking-tighter italic"
-                                            placeholder="WHAT IS THE ISSUE?"
-                                            value={consultation.diagnosis} onChange={e => setConsultation({...consultation, diagnosis: e.target.value})} />
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 block ml-1">Diagnosis</label>
+                                        <textarea required rows={4} className="input-field-terminal min-h-[120px] font-black text-emerald-900"
+                                            placeholder="FINAL DIAGNOSIS..."
+                                            value={consultation.diagnosis} onChange={e => setConsultation({...consultation, diagnosis: e.target.value})}></textarea>
                                     </div>
                                 </div>
 
-                                {/* Enhanced Prescriptions */}
-                                <div className="bg-white p-8 rounded-[40px] border border-emerald-100 shadow-xl shadow-emerald-500/5 mb-10 relative overflow-hidden">
-                                    <div className="absolute right-0 top-0 w-32 h-32 bg-emerald-50/50 rounded-bl-[100px] -z-0"></div>
-                                    <div className="flex justify-between items-center mb-10 relative z-10">
+                                <div className="bg-white p-8 rounded-[40px] border border-emerald-100 shadow-xl mb-10">
+                                    <div className="flex justify-between items-center mb-8">
                                         <h4 className="text-xl font-black italic uppercase tracking-tighter text-gray-800 flex items-center gap-3">
-                                            <Pill size={28} className="text-emerald-500" /> Medicines
+                                            <Pill size={28} className="text-emerald-500" /> Prescriptions
                                         </h4>
-                                        <button type="button" onClick={handleAddPrescriptionRow} className="group flex items-center gap-3 bg-emerald-600 text-white px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-emerald-700 hover:scale-105 transition-all shadow-lg shadow-emerald-600/20 active:scale-95">
-                                            <Plus size={16} className="group-hover:rotate-90 transition-transform" /> Add Medicine
+                                        <button type="button" onClick={handleAddPrescriptionRow} className="bg-emerald-600 text-white px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-emerald-700 transition-all flex items-center gap-2">
+                                            <Plus size={16} /> Add 
                                         </button>
                                     </div>
 
-                                    <div className="space-y-6 relative z-10">
+                                    <div className="space-y-6">
                                         {prescriptions.map((p, idx) => (
-                                            <div key={idx} className="bg-gray-50/50 p-3 pr-6 rounded-[28px] border border-gray-100 transition-all hover:bg-white hover:shadow-xl hover:shadow-gray-200/40 relative group/row">
-                                                <div className="flex flex-wrap lg:flex-nowrap gap-4 items-center">
-                                                    <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center font-black italic text-gray-300 border border-gray-100 group-hover/row:bg-emerald-500 group-hover/row:text-white group-hover/row:border-emerald-500 transition-all">{idx + 1}</div>
-                                                    
-                                                    {/* Medicine Search */}
-                                                    <div className="flex-[3] min-w-[200px] relative">
-                                                        <input 
-                                                            type="text" 
-                                                            placeholder="SEARCH MEDICINE..."
-                                                            className="w-full bg-transparent font-black text-gray-800 uppercase text-[11px] tracking-[0.1em] outline-none placeholder:text-gray-300"
-                                                            value={medicines.find(m => m.id.toString() === p.medicine)?.name || p.temp_search || ''}
-                                                            onChange={e => {
-                                                                const val = e.target.value;
-                                                                const np = [...prescriptions];
-                                                                np[idx].temp_search = val;
-                                                                np[idx].show_list = true;
-                                                                if (val === '') np[idx].medicine = '';
-                                                                setPrescriptions(np);
-                                                            }}
-                                                            onFocus={() => {
-                                                                const np = [...prescriptions];
-                                                                np[idx].show_list = true;
-                                                                setPrescriptions(np);
-                                                            }}
-                                                        />
-                                                        <AnimatePresence>
-                                                            {p.show_list && (
-                                                                <motion.div 
-                                                                    initial={{ opacity: 0, y: 10 }}
-                                                                    animate={{ opacity: 1, y: 0 }}
-                                                                    exit={{ opacity: 0 }}
-                                                                    className="absolute left-0 right-0 top-full mt-4 bg-white border border-gray-100 rounded-3xl shadow-3xl z-[100] max-h-64 overflow-y-auto custom-scrollbar"
-                                                                >
-                                                                    {medicines
-                                                                        .filter(m => m.name.toLowerCase().includes((p.temp_search || '').toLowerCase()))
-                                                                        .map(m => (
-                                                                            <div 
-                                                                                key={m.id} 
-                                                                                onClick={() => {
-                                                                                    const np = [...prescriptions];
-                                                                                    np[idx].medicine = m.id.toString();
-                                                                                    np[idx].temp_search = m.name;
-                                                                                    np[idx].show_list = false;
-                                                                                    setPrescriptions(np);
-                                                                                }}
-                                                                                className="p-5 hover:bg-emerald-50 cursor-pointer border-b border-gray-50 last:border-0 group/item flex justify-between items-center"
-                                                                            >
+                                            <div key={idx} className="bg-gray-50/50 p-6 rounded-[28px] border border-gray-100 relative group/row">
+                                                <div className="flex flex-wrap lg:flex-nowrap gap-4 items-end">
+                                                    <div className="flex-1 min-w-[300px] space-y-2">
+                                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-1">Medicine Search</label>
+                                                        <div className="relative">
+                                                            <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                                                            <input 
+                                                                type="text" 
+                                                                placeholder="TYPE TO SEARCH..."
+                                                                className="input-field-terminal pl-12 uppercase"
+                                                                value={p.temp_search}
+                                                                onChange={e => {
+                                                                    const val = e.target.value;
+                                                                    const np = [...prescriptions];
+                                                                    np[idx].temp_search = val;
+                                                                    np[idx].show_list = true;
+                                                                    setPrescriptions(np);
+                                                                    searchMedicines(val, idx);
+                                                                }}
+                                                            />
+                                                            <AnimatePresence>
+                                                                {p.show_list && (
+                                                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute left-0 right-0 top-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 max-h-60 overflow-y-auto">
+                                                                        {loadingMeds ? (
+                                                                            <div className="p-4 text-center text-[10px] font-black text-gray-400 animate-pulse">SEARCHING DATABASE...</div>
+                                                                        ) : medicines.map(m => (
+                                                                            <div key={m.id} onClick={() => {
+                                                                                const np = [...prescriptions];
+                                                                                np[idx].medicine = m.id.toString();
+                                                                                np[idx].temp_search = m.name;
+                                                                                np[idx].show_list = false;
+                                                                                setPrescriptions(np);
+                                                                            }} className="p-4 hover:bg-emerald-50 cursor-pointer border-b border-gray-50 flex justify-between items-center group/item">
                                                                                 <div>
-                                                                                    <p className="text-[11px] font-black uppercase text-gray-800 tracking-widest group-hover/item:text-emerald-700 transition-colors">{m.name}</p>
-                                                                                    <p className="text-[9px] font-bold text-gray-400 uppercase mt-0.5">{m.category}</p>
+                                                                                    <p className="text-[10px] font-black uppercase text-gray-800">{m.name}</p>
+                                                                                    <p className="text-[8px] font-bold text-gray-400 uppercase">{m.category}</p>
                                                                                 </div>
-                                                                                <ChevronRight size={14} className="text-gray-200 group-hover/item:text-emerald-500 group-hover/item:translate-x-1 transition-all" />
+                                                                                <Plus size={14} className="text-gray-200 group-hover/item:text-emerald-500" />
                                                                             </div>
-                                                                        ))
-                                                                    }
-                                                                </motion.div>
-                                                            )}
-                                                        </AnimatePresence>
+                                                                        ))}
+                                                                    </motion.div>
+                                                                )}
+                                                            </AnimatePresence>
+                                                        </div>
                                                     </div>
 
-                                                    <div className="flex-[2] flex gap-3">
-                                                        <input type="text" placeholder="TIMES PER DAY (1-0-1)" className="w-full bg-white border border-gray-200 py-3 px-5 rounded-xl font-black uppercase text-[10px] tracking-widest outline-none focus:border-emerald-500 transition-all font-['Montserrat'] shadow-sm"
+                                                    <div className="w-full lg:w-48 space-y-2">
+                                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-1">Dosage / Frequency</label>
+                                                        <input type="text" placeholder="1-0-1" className="input-field-terminal text-center"
                                                             value={p.frequency} onChange={e => { const np = [...prescriptions]; np[idx].frequency = e.target.value; setPrescriptions(np); }} />
-                                                        <div className="flex gap-1 bg-white border border-gray-200 rounded-xl p-1 shadow-sm">
-                                                            <input type="text" placeholder="5" className="w-12 bg-transparent text-center font-black text-gray-800 outline-none"
+                                                    </div>
+
+                                                    <div className="w-full lg:w-48 space-y-2">
+                                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-1">Duration</label>
+                                                        <div className="flex bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                                                            <input type="text" placeholder="5" className="w-full text-center font-black outline-none py-4"
                                                                 value={p.duration_value} onChange={e => { const np = [...prescriptions]; np[idx].duration_value = e.target.value; setPrescriptions(np); }} />
-                                                            <select className="bg-gray-100 rounded-lg text-[9px] font-black uppercase px-2 outline-none border-none py-2"
+                                                            <select className="bg-gray-50 px-4 text-[9px] font-black uppercase border-l outline-none"
                                                                 value={p.duration_unit} onChange={e => { const np = [...prescriptions]; np[idx].duration_unit = e.target.value; setPrescriptions(np); }}>
-                                                                <option>Days</option>
-                                                                <option>Weeks</option>
-                                                                <option>Months</option>
-                                                                <option>SOS</option>
+                                                                <option>Days</option><option>Weeks</option><option>Months</option><option>SOS</option>
                                                             </select>
                                                         </div>
                                                     </div>
 
-                                                    <button type="button" onClick={() => handleRemovePrescriptionRow(idx)} className="p-3 text-gray-200 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover/row:opacity-100">
-                                                        <Trash2 size={18} />
+                                                    <button type="button" onClick={() => handleRemovePrescriptionRow(idx)} className="p-4 text-gray-300 hover:text-red-500 transition-all">
+                                                        <Trash2 size={20} />
                                                     </button>
                                                 </div>
-                                                <input type="text" placeholder="ADDITIONAL INSTRUCTIONS (E.G. AFTER MEAL, EMPTY STOMACH...)" className="w-full mt-4 bg-transparent border-t border-gray-100 pt-3 font-bold text-gray-400 uppercase text-[9px] tracking-widest outline-none focus:text-gray-600 transition-all"
+                                                <input type="text" placeholder="ADDITIONAL INSTRUCTIONS (E.G. AFTER MEAL, EMPTY STOMACH...)" className="w-full mt-4 bg-transparent border-t border-gray-100 pt-4 font-bold text-gray-400 uppercase text-[9px] tracking-widest outline-none"
                                                     value={p.instructions} onChange={e => { const np = [...prescriptions]; np[idx].instructions = e.target.value; setPrescriptions(np); }} />
                                             </div>
                                         ))}
@@ -596,10 +553,10 @@ const Treatment = () => {
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-6">
-                                    <button type="submit" className="py-6 rounded-[32px] bg-emerald-600 text-white font-black italic uppercase tracking-[0.1em] text-xl shadow-2xl shadow-emerald-900/40 hover:bg-emerald-700 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-4 group">
-                                        <Plus size={28} className="group-hover:rotate-180 transition-transform duration-500" /> Save & Finish Visit
+                                    <button type="submit" className="py-6 rounded-[32px] bg-emerald-600 text-white font-black italic uppercase tracking-widest text-xl shadow-2xl hover:bg-emerald-700 active:scale-95 transition-all outline-none">
+                                        Save & Finish Visit
                                     </button>
-                                    <button type="button" onClick={() => {setPatient(null); setUhid('');}} className="py-6 rounded-[32px] bg-gray-100 text-gray-400 font-black uppercase text-xs tracking-[0.2em] hover:bg-gray-200 transition-all font-['Montserrat']">
+                                    <button type="button" onClick={() => {setPatient(null); setUhid('');}} className="py-6 rounded-[32px] bg-gray-100 text-gray-400 font-black uppercase text-xs tracking-widest hover:bg-gray-200 transition-all">
                                         Cancel Visit
                                     </button>
                                 </div>
@@ -608,57 +565,30 @@ const Treatment = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            
+
             <style>{`
+                .card-premium { border-radius: 48px; }
                 .input-field-terminal {
                     width: 100%;
                     background-color: white;
                     border: 2px solid #F1F5F9;
                     border-radius: 20px;
-                    padding: 1rem 1.5rem;
+                    padding: 1.2rem 1.5rem;
                     font-weight: 700;
                     letter-spacing: 0.05em;
                     outline: none;
                     transition: all 0.3s;
-                    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
                 }
                 .input-field-terminal:focus {
                     border-color: #10B981;
-                    background-color: #F0FDF4;
-                    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1);
+                    box-shadow: 0 10px 20px -10px rgba(16, 185, 129, 0.2);
                 }
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #E2E8F0;
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #CBD5E1;
-                }
+                .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
                 #qr-reader { border: none !important; }
-                #qr-reader video { border-radius: 28px !important; width: 100% !important; object-fit: cover !important; }
-                #qr-reader__scan_region { background: transparent !important; }
-                #qr-reader__dashboard { padding: 12px 0 0 !important; }
-                #qr-reader__dashboard_section_swaplink { display: none !important; }
-                #qr-reader__status_span { font-family: 'Montserrat', sans-serif !important; font-size: 10px !important; font-weight: 900 !important; text-transform: uppercase !important; letter-spacing: 0.1em !important; color: #6B7280 !important; }
+                #qr-reader video { border-radius: 32px !important; width: 100% !important; object-fit: cover !important; }
                 #qr-reader__camera_permission_button {
-                    background: #10B981 !important;
-                    color: white !important;
-                    border: none !important;
-                    padding: 14px 28px !important;
-                    border-radius: 16px !important;
-                    font-family: 'Montserrat', sans-serif !important;
-                    font-weight: 900 !important;
-                    font-size: 10px !important;
-                    text-transform: uppercase !important;
-                    letter-spacing: 0.15em !important;
-                    cursor: pointer !important;
-                    width: 100% !important;
+                    background: #10B981 !important; color: white !important; padding: 16px 32px !important; border-radius: 16px !important; font-weight: 900 !important; cursor: pointer !important; width: 100% !important; border: none !important;
                 }
             `}</style>
         </motion.div>

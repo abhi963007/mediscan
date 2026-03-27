@@ -12,7 +12,6 @@ const Appointments = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const fetchAppts = async () => {
-        setLoading(true);
         try {
             const token = localStorage.getItem('access');
             const res = await axios.get('http://127.0.0.1:8000/api/appointments/', {
@@ -27,6 +26,8 @@ const Appointments = () => {
 
     useEffect(() => {
         fetchAppts();
+        const interval = setInterval(fetchAppts, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     const handleUpdateStatus = async (id: number, status: string, suggestionText?: string) => {
