@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.conf import settings
 
 
 class Hospital(models.Model):
@@ -55,6 +56,48 @@ class HospitalSettings(models.Model):
 
     def __str__(self):
         return f"Settings for {self.hospital.name}"
+
+
+class DoctorProfile(models.Model):
+    SPECIALIZATION_CHOICES = (
+        ('cardiology', 'Cardiology'),
+        ('dermatology', 'Dermatology'),
+        ('neurology', 'Neurology'),
+        ('pediatrics', 'Pediatrics'),
+        ('orthopedics', 'Orthopedics'),
+        ('gynecology', 'Gynecology'),
+        ('ophthalmology', 'Ophthalmology'),
+        ('ent', 'ENT Specialist'),
+        ('psychiatry', 'Psychiatry'),
+        ('dentistry', 'Dentistry'),
+        ('radiology', 'Radiology'),
+        ('surgery', 'General Surgery'),
+        ('internal_medicine', 'Internal Medicine'),
+        ('emergency', 'Emergency Medicine'),
+        ('other', 'Other'),
+    )
+
+    user = models.OneToOneField('accounts.CustomUser', on_delete=models.CASCADE, related_name='doctor_profile')
+    specialization = models.CharField(max_length=50, choices=SPECIALIZATION_CHOICES)
+    qualification = models.CharField(max_length=100, blank=True)
+    experience_years = models.IntegerField(default=0)
+    registration_number = models.CharField(max_length=100, blank=True)
+    bio = models.TextField(blank=True)
+    consultation_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    languages = models.CharField(max_length=200, default="English")
+
+    def __str__(self):
+        return f"Dr. {self.user.username} - {self.specialization}"
+
+
+class StaffProfile(models.Model):
+    user = models.OneToOneField('accounts.CustomUser', on_delete=models.CASCADE, related_name='staff_profile')
+    department = models.CharField(max_length=100, blank=True)
+    qualification = models.CharField(max_length=100, blank=True)
+    joining_date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Staff: {self.user.username} - {self.department}"
 
 
 class DoctorSlot(models.Model):

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { ScanFace, UserCheck, Stethoscope, FileText, Pill, Plus, Activity, Wind, Thermometer, Droplets, Trash2, ChevronRight, Clock, RefreshCw, XCircle } from 'lucide-react';
+import { ScanFace, UserCheck, Stethoscope, FileText, Pill, Plus, Activity, Wind, Thermometer, Droplets, Trash2, ChevronRight, Clock, RefreshCw, XCircle, HeartPulse } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useAuth } from '../../../contexts/AuthContext';
 
@@ -330,7 +330,7 @@ const Treatment = () => {
                                         <UserCheck size={40} />
                                     </div>
                                     <div>
-                                        <h3 className="text-3xl font-black italic uppercase tracking-tighter leading-none mb-2">{patient.full_name}</h3>
+                                        <h3 className="text-3xl font-black italic uppercase tracking-tighter leading-none mb-2 text-white">{patient.full_name}</h3>
                                         <div className="flex gap-2">
                                             <span className="bg-white/20 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest">{patient.uhid}</span>
                                             <span className="bg-red-500 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg">{patient.blood_group}</span>
@@ -409,14 +409,17 @@ const Treatment = () => {
                                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
                                     <div className="space-y-2">
                                         <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">BP (mmHg)</label>
-                                        <input type="text" placeholder="120/80" className="input-field-terminal"
-                                            value={consultation.blood_pressure} onChange={e => setConsultation({...consultation, blood_pressure: e.target.value})}/>
+                                        <div className="relative">
+                                            <HeartPulse size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
+                                            <input type="text" placeholder="120/80" className="input-field-terminal pl-12"
+                                                value={consultation.blood_pressure} onChange={e => setConsultation({...consultation, blood_pressure: e.target.value})}/>
+                                        </div>
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Pulse (BPM)</label>
                                         <div className="relative">
                                             <Activity size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
-                                            <input type="text" placeholder="72" className="input-field-terminal pl-10"
+                                            <input type="text" placeholder="72" className="input-field-terminal pl-12"
                                                 value={consultation.pulse_rate} onChange={e => setConsultation({...consultation, pulse_rate: e.target.value})}/>
                                         </div>
                                     </div>
@@ -424,7 +427,7 @@ const Treatment = () => {
                                         <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">SPO2 (%)</label>
                                         <div className="relative">
                                             <Droplets size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300" />
-                                            <input type="text" placeholder="98" className="input-field-terminal pl-10"
+                                            <input type="text" placeholder="98" className="input-field-terminal pl-12"
                                                 value={consultation.sp_o2} onChange={e => setConsultation({...consultation, sp_o2: e.target.value})}/>
                                         </div>
                                     </div>
@@ -432,7 +435,7 @@ const Treatment = () => {
                                         <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Temp (°F)</label>
                                         <div className="relative">
                                             <Thermometer size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-300" />
-                                            <input type="text" placeholder="98.6" className="input-field-terminal pl-10"
+                                            <input type="text" placeholder="98.6" className="input-field-terminal pl-12"
                                                 value={consultation.temperature} onChange={e => setConsultation({...consultation, temperature: e.target.value})}/>
                                         </div>
                                     </div>
@@ -440,7 +443,7 @@ const Treatment = () => {
                                         <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">Resp Rate</label>
                                         <div className="relative">
                                             <Wind size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
-                                            <input type="text" placeholder="18" className="input-field-terminal pl-10"
+                                            <input type="text" placeholder="18" className="input-field-terminal pl-12"
                                                 value={consultation.respiratory_rate} onChange={e => setConsultation({...consultation, respiratory_rate: e.target.value})}/>
                                         </div>
                                     </div>

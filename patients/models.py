@@ -133,10 +133,20 @@ class Consultation(models.Model):
 
     # Vitals
     bp = models.CharField(max_length=20, verbose_name="Blood Pressure", blank=True, default='')
+    # Legacy fields still accepted from frontend (blood_pressure, pulse_rate, sp_o2, temperature)
+    blood_pressure = models.CharField(max_length=20, blank=True, default='')
     pulse = models.PositiveIntegerField(default=0)
+    pulse_rate = models.CharField(max_length=20, blank=True, default='')
     temp = models.DecimalField(max_digits=4, decimal_places=1, verbose_name="Temperature (°F)", default=98.6)
+    temperature = models.CharField(max_length=20, blank=True, default='')
     spo2 = models.PositiveIntegerField(verbose_name="Oxygen Saturation (%)", default=98)
+    sp_o2 = models.CharField(max_length=20, blank=True, default='')
     respiratory_rate = models.IntegerField(null=True, blank=True)
+
+    # Body metrics
+    weight = models.FloatField(null=True, blank=True, help_text="Weight in kg")
+    height = models.FloatField(null=True, blank=True, help_text="Height in cm")
+    bmi = models.FloatField(null=True, blank=True)
 
     # Examination
     physical_examination = models.TextField(blank=True)
@@ -236,6 +246,12 @@ class Prescription(models.Model):
     dispensed_date = models.DateTimeField(null=True, blank=True)
 
     prescribed_date = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        # Auto-populate medicine_name from FK if not provided
+        if not self.medicine_name and self.medicine:
+            self.medicine_name = self.medicine.name
+        super().save(*args, **kwargs)
 
     def __str__(self):
         name = self.medicine_name or (self.medicine.name if self.medicine else "Unknown")

@@ -8,7 +8,7 @@ class PrescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prescription
         fields = '__all__'
-        read_only_fields = ('consultation', 'prescribed_date')
+        read_only_fields = ('prescribed_date',)
 
     def get_medicine_display(self, obj):
         if obj.medicine:
@@ -32,7 +32,7 @@ class PatientDocumentSerializer(serializers.ModelSerializer):
 class ConsultationSerializer(serializers.ModelSerializer):
     prescriptions = PrescriptionSerializer(many=True, read_only=True)
     documents = PatientDocumentSerializer(many=True, read_only=True)
-    doctor_name = serializers.CharField(source='doctor.username', read_only=True)
+    doctor_name = serializers.CharField(source='doctor.get_full_name', read_only=True)
     hospital_name = serializers.CharField(source='hospital.name', read_only=True)
 
     class Meta:
@@ -48,8 +48,18 @@ class ConsultationSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
+class ConsultationSummarySerializer(serializers.ModelSerializer):
+    """Lightweight serializer for nesting inside Patient responses."""
+    doctor_name = serializers.CharField(source='doctor.get_full_name', read_only=True)
+
+    class Meta:
+        model = Consultation
+        fields = ('id', 'consultation_date', 'diagnosis', 'chief_complaint', 'doctor_name',
+                  'blood_pressure', 'temperature', 'pulse_rate', 'sp_o2', 'visit_type', 'status')
+
+
 class PatientSerializer(serializers.ModelSerializer):
-    consultations = ConsultationSerializer(many=True, read_only=True)
+    consultations = ConsultationSummarySerializer(many=True, read_only=True)
     documents = PatientDocumentSerializer(many=True, read_only=True)
 
     class Meta:

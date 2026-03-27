@@ -133,17 +133,40 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             data['uhid'] = self.user.patient_profile.uhid
         return data
 
+from hospitals.models import Hospital, DoctorProfile, StaffProfile
+
 class HospitalStaffSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    
+    # Custom fields for profiles
+    specialization = serializers.CharField(required=False, write_only=True)
+    qualification = serializers.CharField(required=False, write_only=True)
+    experience_years = serializers.IntegerField(required=False, write_only=True)
+    registration_number = serializers.CharField(required=False, write_only=True)
+    consultation_fee = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, write_only=True)
+    bio = serializers.CharField(required=False, write_only=True)
+    department = serializers.CharField(required=False, write_only=True)
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'password', 'email', 'role', 'is_approved', 'hospital')
+        fields = ('id', 'username', 'password', 'email', 'role', 'is_approved', 'hospital',
+                  'specialization', 'qualification', 'experience_years', 'registration_number', 
+                  'consultation_fee', 'bio', 'department')
         read_only_fields = ('is_approved', 'hospital')
 
     def create(self, validated_data):
         hospital = self.context['request'].user.hospital
         role = validated_data.get('role')
+        
+        # Pop profile data
+        spec = validated_data.pop('specialization', '')
+        qual = validated_data.pop('qualification', '')
+        exp = validated_data.pop('experience_years', 0)
+        reg = validated_data.pop('registration_number', '')
+        fee = validated_data.pop('consultation_fee', 0)
+        bio = validated_data.pop('bio', '')
+        dept = validated_data.pop('department', '')
+
         if role not in ['doctor', 'receptionist']:
             raise serializers.ValidationError("Only doctors and receptionists can be created.")
 
@@ -153,6 +176,37 @@ class HospitalStaffSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             role=role,
             hospital=hospital,
-            is_approved=True  # Auto approved because hospital admin creates them
+            is_approved=True
         )
+        
+        if role == 'doctor':
+             DoctorProfile.objects.create(
+                 user=user,
+                 specialization=spec or 'other',
+                 qualification=qual,
+                 experience_years=exp,
+                 registration_number=reg,
+                 consultation_fee=fee,
+                 bio=bio
+             )
+        elif role == 'receptionist':
+            StaffProfile.objects.create(
+                user=user,
+                department=dept or 'Reception',
+                qualification=qual
+            )
+
         return user
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if instance.role == 'doctor' and hasattr(instance, 'doctor_profile'):
+            ret['specialization'] = instance.doctor_profile.specialization
+            ret['qualification'] = instance.doctor_profile.qualification
+            ret['experience_years'] = instance.doctor_profile.experience_years
+            ret['registration_number'] = instance.doctor_profile.registration_number
+            ret['consultation_fee'] = instance.doctor_profile.consultation_fee
+        elif instance.role == 'receptionist' and hasattr(instance, 'staff_profile'):
+            ret['department'] = instance.staff_profile.department
+            ret['qualification'] = instance.staff_profile.qualification
+        return ret
