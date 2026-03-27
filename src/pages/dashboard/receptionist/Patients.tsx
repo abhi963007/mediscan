@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { 
-  Users, Search, Filter, MoreVertical, Eye, Edit2, 
-  Trash2, Plus, Download, ChevronLeft, ChevronRight, UserCheck, X, Save, Phone, Mail, MapPin, Calendar, Heart, Shield
+  Users, Search, Eye, Edit2, 
+  Trash2, Plus, ChevronLeft, ChevronRight, X, Save, Phone, Heart, Shield, User
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -200,15 +200,15 @@ const Patients = () => {
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-8 mb-12">
-                                    <div className="card-detail p-6 bg-gray-50 rounded-[32px] border border-gray-100 flex items-center gap-6">
+                                    <div className="p-6 bg-gray-50 rounded-[32px] border border-gray-100 flex items-center gap-6">
                                         <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-emerald-600 shadow-sm"><Users size={24} /></div>
                                         <div><p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">AGE / GENDER</p><p className="font-black uppercase tracking-tighter text-gray-900 text-lg">{viewPatient.age}Y · {viewPatient.gender}</p></div>
                                     </div>
-                                    <div className="card-detail p-6 bg-gray-50 rounded-[32px] border border-gray-100 flex items-center gap-6">
+                                    <div className="p-6 bg-gray-50 rounded-[32px] border border-gray-100 flex items-center gap-6">
                                         <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-red-600 shadow-sm"><Heart size={24} /></div>
                                         <div><p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">BLOOD GROUP</p><p className="font-black uppercase tracking-tighter text-gray-900 text-lg">{viewPatient.blood_group || 'NOT SET'}</p></div>
                                     </div>
-                                    <div className="card-detail p-6 bg-gray-50 rounded-[32px] border border-gray-100 flex items-center gap-6">
+                                    <div className="p-6 bg-gray-50 rounded-[32px] border border-gray-100 flex items-center gap-6">
                                         <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-blue-600 shadow-sm"><Phone size={24} /></div>
                                         <div><p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">CONTACT</p><p className="font-black uppercase tracking-tighter text-gray-900 text-lg">{viewPatient.phone}</p></div>
                                     </div>
@@ -226,45 +226,164 @@ const Patients = () => {
                     </div>
                 )}
 
-                {/* Edit Profile Modal */}
+                {/* ────────── Edit Profile Modal ────────── */}
                 {editPatient && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEditPatient(null)} className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" />
-                        <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="bg-white w-full max-w-2xl rounded-[48px] shadow-4xl relative z-10 overflow-hidden">
-                            <form onSubmit={handleUpdate}>
-                                <div className="p-10 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            onClick={() => setEditPatient(null)}
+                            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 16 }}
+                            className="bg-white w-full max-w-2xl rounded-[28px] shadow-2xl relative z-10 flex flex-col"
+                            style={{ maxHeight: 'calc(100vh - 2rem)' }}
+                        >
+                            <form onSubmit={handleUpdate} className="flex flex-col min-h-0 h-full">
+
+                                {/* ── Header ── */}
+                                <div className="px-6 py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center flex-shrink-0 rounded-t-[28px]">
                                     <div>
-                                        <h3 className="text-3xl font-black italic uppercase tracking-tighter text-gray-900 leading-none mb-2">Edit Profile</h3>
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Update patient contact and medical info</p>
+                                        <h3 className="text-xl font-black italic uppercase tracking-tight text-gray-900 leading-none">Edit Profile</h3>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Update patient contact and medical info</p>
                                     </div>
-                                    <button type="button" onClick={() => setEditPatient(null)} className="w-12 h-12 bg-white text-gray-400 hover:text-rose-500 rounded-2xl flex items-center justify-center shadow-sm transition-all"><X size={24} /></button>
-                                </div>
-                                <div className="p-10 space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
-                                    <div className="grid grid-cols-2 gap-6">
-                                        <div className="space-y-2 col-span-2"><label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Full Name</label><input type="text" className="edit-input" value={editPatient.full_name} onChange={e => setEditPatient({...editPatient, full_name: e.target.value})} /></div>
-                                        <div className="space-y-2"><label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Phone</label><input type="text" className="edit-input" value={editPatient.phone} onChange={e => setEditPatient({...editPatient, phone: e.target.value})} /></div>
-                                        <div className="space-y-2"><label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Email</label><input type="email" className="edit-input" value={editPatient.email || ''} onChange={e => setEditPatient({...editPatient, email: e.target.value})} /></div>
-                                        <div className="space-y-2"><label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Age</label><input type="number" className="edit-input" value={editPatient.age} onChange={e => setEditPatient({...editPatient, age: parseInt(e.target.value)})} /></div>
-                                        <div className="space-y-2"><label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Blood Group</label><select className="edit-input" value={editPatient.blood_group} onChange={e => setEditPatient({...editPatient, blood_group: e.target.value})}>{['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(g => <option key={g}>{g}</option>)}</select></div>
-                                    </div>
-                                    <div className="space-y-2"><label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">Allergies</label><textarea className="edit-input h-24" value={editPatient.known_allergies || ''} onChange={e => setEditPatient({...editPatient, known_allergies: e.target.value})} /></div>
-                                </div>
-                                <div className="p-10 bg-white border-t border-gray-100">
-                                    <button disabled={saving} type="submit" className="w-full bg-emerald-600 text-white py-6 rounded-[24px] font-black uppercase tracking-widest flex items-center justify-center gap-4 hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-50">
-                                        {saving ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><Save size={20} /> SAVE CHANGES</>}
+                                    <button type="button" onClick={() => setEditPatient(null)} className="w-9 h-9 bg-white text-gray-400 hover:text-rose-500 rounded-xl flex items-center justify-center shadow-sm transition-all flex-shrink-0">
+                                        <X size={18} />
                                     </button>
                                 </div>
+
+                                {/* ── Scrollable Body ── */}
+                                <div className="px-6 py-4 space-y-5 overflow-y-auto ef-scroll flex-1">
+
+                                    {/* Basic Information */}
+                                    <section className="space-y-2">
+                                        <h4 className="ef-section-title text-emerald-600"><User size={11} /> Basic Information</h4>
+                                        <div className="grid grid-cols-4 gap-3">
+                                            <div className="col-span-4 ef-field">
+                                                <label className="ef-label">Full Name</label>
+                                                <input type="text" className="ef-input" value={editPatient.full_name} onChange={e => setEditPatient({...editPatient, full_name: e.target.value})} />
+                                            </div>
+                                            <div className="ef-field">
+                                                <label className="ef-label">Age</label>
+                                                <input type="number" className="ef-input" value={editPatient.age} onChange={e => setEditPatient({...editPatient, age: parseInt(e.target.value)})} />
+                                            </div>
+                                            <div className="ef-field">
+                                                <label className="ef-label">Gender</label>
+                                                <select className="ef-input" value={editPatient.gender} onChange={e => setEditPatient({...editPatient, gender: e.target.value})}>
+                                                    {['Male','Female','Other'].map(g => <option key={g} value={g}>{g}</option>)}
+                                                </select>
+                                            </div>
+                                            <div className="ef-field">
+                                                <label className="ef-label">Blood Group</label>
+                                                <select className="ef-input" value={editPatient.blood_group} onChange={e => setEditPatient({...editPatient, blood_group: e.target.value})}>
+                                                    {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(g => <option key={g} value={g}>{g}</option>)}
+                                                </select>
+                                            </div>
+                                            <div className="ef-field">
+                                                <label className="ef-label">Marital Status</label>
+                                                <select className="ef-input" value={editPatient.marital_status} onChange={e => setEditPatient({...editPatient, marital_status: e.target.value})}>
+                                                    {[{v:'single',l:'Single'},{v:'married',l:'Married'},{v:'divorced',l:'Divorced'},{v:'widowed',l:'Widowed'}].map(m => <option key={m.v} value={m.v}>{m.l}</option>)}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    {/* Contact Details */}
+                                    <section className="space-y-2">
+                                        <h4 className="ef-section-title text-blue-600"><Phone size={11} /> Contact Details</h4>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="ef-field">
+                                                <label className="ef-label">Phone</label>
+                                                <input type="text" className="ef-input" value={editPatient.phone} onChange={e => setEditPatient({...editPatient, phone: e.target.value})} />
+                                            </div>
+                                            <div className="ef-field">
+                                                <label className="ef-label">Email</label>
+                                                <input type="email" className="ef-input" value={editPatient.email || ''} onChange={e => setEditPatient({...editPatient, email: e.target.value})} />
+                                            </div>
+                                            <div className="ef-field col-span-2">
+                                                <label className="ef-label">Address</label>
+                                                <textarea className="ef-input ef-ta" value={editPatient.address || ''} onChange={e => setEditPatient({...editPatient, address: e.target.value})} />
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    {/* Medical History */}
+                                    <section className="space-y-2">
+                                        <h4 className="ef-section-title text-red-500"><Heart size={11} /> Medical History</h4>
+                                        <div className="grid grid-cols-3 gap-3">
+                                            <div className="ef-field">
+                                                <label className="ef-label">Known Allergies</label>
+                                                <textarea className="ef-input ef-ta" value={editPatient.known_allergies || ''} onChange={e => setEditPatient({...editPatient, known_allergies: e.target.value})} />
+                                            </div>
+                                            <div className="ef-field">
+                                                <label className="ef-label">Chronic Diseases</label>
+                                                <textarea className="ef-input ef-ta" value={editPatient.chronic_diseases || ''} onChange={e => setEditPatient({...editPatient, chronic_diseases: e.target.value})} />
+                                            </div>
+                                            <div className="ef-field">
+                                                <label className="ef-label">Current Medications</label>
+                                                <textarea className="ef-input ef-ta" value={editPatient.current_medications || ''} onChange={e => setEditPatient({...editPatient, current_medications: e.target.value})} />
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    {/* Emergency & Insurance */}
+                                    <section className="space-y-2">
+                                        <h4 className="ef-section-title text-orange-500"><Shield size={11} /> Emergency &amp; Insurance</h4>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="ef-field">
+                                                <label className="ef-label">Emergency Phone</label>
+                                                <input type="text" className="ef-input" value={editPatient.emergency_contact_phone || ''} onChange={e => setEditPatient({...editPatient, emergency_contact_phone: e.target.value})} />
+                                            </div>
+                                            <div className="ef-field">
+                                                <label className="ef-label">Relation</label>
+                                                <input type="text" className="ef-input" value={editPatient.emergency_contact_relation || ''} onChange={e => setEditPatient({...editPatient, emergency_contact_relation: e.target.value})} />
+                                            </div>
+                                            <div className="ef-field">
+                                                <label className="ef-label">Insurance Provider</label>
+                                                <input type="text" className="ef-input" value={editPatient.insurance_provider || ''} onChange={e => setEditPatient({...editPatient, insurance_provider: e.target.value})} />
+                                            </div>
+                                            <div className="ef-field">
+                                                <label className="ef-label">Policy Number</label>
+                                                <input type="text" className="ef-input" value={editPatient.insurance_policy_number || ''} onChange={e => setEditPatient({...editPatient, insurance_policy_number: e.target.value})} />
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                </div>
+
+                                {/* ── Footer ── */}
+                                <div className="px-6 py-4 bg-white border-t border-gray-100 flex-shrink-0 rounded-b-[28px]">
+                                    <button
+                                        disabled={saving}
+                                        type="submit"
+                                        className="w-full bg-emerald-600 text-white py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-50"
+                                    >
+                                        {saving
+                                            ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            : <><Save size={15} /> Save Changes</>
+                                        }
+                                    </button>
+                                </div>
+
                             </form>
                         </motion.div>
                     </div>
                 )}
+
             </AnimatePresence>
 
             <style>{`
-                .edit-input { width: 100%; background: white; border: 2px solid #F1F5F9; border-radius: 16px; padding: 1rem 1.5rem; font-weight: 800; font-size: 0.8rem; outline: none; transition: all 0.2s; }
-                .edit-input:focus { border-color: #10B981; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.05); }
-                .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+                /* Edit-form helpers */
+                .ef-field   { display:flex; flex-direction:column; gap:3px; }
+                .ef-label   { font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.1em; color:#94a3b8; padding-left:2px; }
+                .ef-input   { width:100%; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:10px; padding:.5rem .85rem; font-weight:700; font-size:.78rem; outline:none; transition:all .2s; color:#1e293b; }
+                .ef-input:focus { background:white; border-color:#10B981; box-shadow:0 0 0 3px rgba(16,185,129,.08); }
+                .ef-ta      { resize:none; height:60px; line-height:1.4; }
+                .ef-section-title { font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.15em; display:flex; align-items:center; gap:6px; }
+                .ef-scroll::-webkit-scrollbar       { width:4px; }
+                .ef-scroll::-webkit-scrollbar-thumb { background:#e2e8f0; border-radius:10px; }
             `}</style>
         </motion.div>
     );

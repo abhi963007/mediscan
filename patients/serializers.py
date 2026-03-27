@@ -55,7 +55,8 @@ class ConsultationSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Consultation
         fields = ('id', 'consultation_date', 'diagnosis', 'chief_complaint', 'doctor_name',
-                  'blood_pressure', 'temperature', 'pulse_rate', 'sp_o2', 'visit_type', 'status')
+                  'blood_pressure', 'temperature', 'pulse_rate', 'sp_o2', 'respiratory_rate',
+                  'weight', 'height', 'bmi', 'visit_type', 'status')
 
 
 class PatientSerializer(serializers.ModelSerializer):

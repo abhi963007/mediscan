@@ -20,6 +20,7 @@ class HospitalSettingsSerializer(serializers.ModelSerializer):
 
 class DoctorSlotSerializer(serializers.ModelSerializer):
     doctor_username = serializers.CharField(source='doctor.username', read_only=True)
+    doctor_name = serializers.CharField(source='doctor.get_full_name', read_only=True)
 
     class Meta:
         model = DoctorSlot

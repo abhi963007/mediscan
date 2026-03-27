@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { ScanFace, UserCheck, Stethoscope, FileText, Pill, Plus, Activity, Wind, Thermometer, Droplets, Trash2, ChevronRight, Clock, RefreshCw, XCircle, HeartPulse } from 'lucide-react';
+import { ScanFace, UserCheck, Stethoscope, FileText, Pill, Plus, Activity, Wind, Thermometer, Droplets, Trash2, ChevronRight, Clock, RefreshCw, XCircle, HeartPulse, Weight, Ruler } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useAuth } from '../../../contexts/AuthContext';
 
@@ -406,7 +406,7 @@ const Treatment = () => {
                                 </div>
 
                                 {/* Vitals Grid */}
-                                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
+                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-10">
                                     <div className="space-y-2">
                                         <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">BP (mmHg)</label>
                                         <div className="relative">
@@ -445,6 +445,30 @@ const Treatment = () => {
                                             <Wind size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
                                             <input type="text" placeholder="18" className="input-field-terminal pl-12"
                                                 value={consultation.respiratory_rate} onChange={e => setConsultation({...consultation, respiratory_rate: e.target.value})}/>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">WT (KG)</label>
+                                        <div className="relative">
+                                            <Weight size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
+                                            <input type="text" placeholder="0.0" className="input-field-terminal pl-12"
+                                                value={consultation.weight} onChange={e => setConsultation({...consultation, weight: e.target.value})}/>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">HT (CM)</label>
+                                        <div className="relative">
+                                            <Ruler size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
+                                            <input type="text" placeholder="0" className="input-field-terminal pl-12"
+                                                value={consultation.height} onChange={e => setConsultation({...consultation, height: e.target.value})}/>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 ml-1">BMI</label>
+                                        <div className="relative">
+                                            <Activity size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-300" />
+                                            <input type="text" placeholder="0.0" className="input-field-terminal pl-12"
+                                                value={consultation.bmi} onChange={e => setConsultation({...consultation, bmi: e.target.value})}/>
                                         </div>
                                     </div>
                                 </div>

@@ -44,8 +44,15 @@ const HospitalSettings = () => {
             ]);
             
             setHospitalInfo(resSettings.data);
-            setDoctors(resSlots.data);
-            setAvailableDoctors(resStaff.data.filter((s: any) => s.role === 'doctor'));
+            
+            // Handle potentially paginated slots
+            const slotsData = resSlots.data.results || resSlots.data;
+            setDoctors(slotsData);
+            
+            // Handle potentially paginated staff list
+            const staffList = resStaff.data.results || resStaff.data;
+            setAvailableDoctors(staffList.filter((s: any) => s.role?.toLowerCase() === 'doctor'));
+            
             setLoading(false);
         } catch (err) {
             setLoading(false);
@@ -189,7 +196,7 @@ const HospitalSettings = () => {
                                             <select required className="input-field-infra shadow-sm appearance-none bg-white font-black" value={newSlot.doctor} onChange={e => setNewSlot({...newSlot, doctor: e.target.value})}>
                                                 <option value="">Select Doctor</option>
                                                 {availableDoctors.map(d => (
-                                                    <option key={d.id} value={d.id}>@{d.username}</option>
+                                                    <option key={d.id} value={d.id}>{d.hospital_name ? `Dr. ${d.username}` : d.username} (@{d.username})</option>
                                                 ))}
                                             </select>
                                         </div>

@@ -46,8 +46,8 @@ class HospitalViewSet(viewsets.ModelViewSet):
         serializer = HospitalSettingsSerializer(settings)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['get'], url_path='my-hospital-staff-slots')
-    def my_hospital_staff_slots(self, request):
+    @action(detail=False, methods=['get'], url_path='my-slots')
+    def my_slots(self, request):
         if not request.user.hospital:
             return Response({'error': 'No hospital linked to your account'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -76,6 +76,12 @@ class DoctorSlotViewSet(viewsets.ModelViewSet):
     queryset = DoctorSlot.objects.all()
     serializer_class = DoctorSlotSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated and user.hospital:
+            return DoctorSlot.objects.filter(hospital=user.hospital)
+        return DoctorSlot.objects.all()
 
     def perform_create(self, serializer):
         # Ensure hospital is set for hospital-staff roles
